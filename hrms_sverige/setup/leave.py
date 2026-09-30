@@ -28,6 +28,28 @@ LEAVE_TYPES = {
 }
 
 
+# Skapas av HRMS vid installation. Bara exakta engelska namn: översatta namn kan krocka med våra
+# (HRMS "Sick Leave" översätts till "Sjukfrånvaro").
+HRMS_DEFAULT_LEAVE_TYPES = (
+	"Casual Leave",
+	"Compensatory Off",
+	"Sick Leave",
+	"Privilege Leave",
+	"Leave Without Pay",
+)
+
+
+def remove_unused_hrms_leave_types():
+	"""Ta bort HRMS engelska standardtyper som inte används; de som är länkade behålls."""
+	for name in HRMS_DEFAULT_LEAVE_TYPES:
+		if not frappe.db.exists("Leave Type", name):
+			continue
+		try:
+			frappe.delete_doc("Leave Type", name, ignore_permissions=True)
+		except frappe.LinkExistsError:
+			frappe.clear_last_message()
+
+
 def ensure_leave_types():
 	"""Skapa saknade frånvarotyper. Befintliga rörs inte, så HR:s ändringar ligger kvar."""
 	for name, settings in LEAVE_TYPES.items():

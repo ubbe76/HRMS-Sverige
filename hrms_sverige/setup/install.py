@@ -4,7 +4,12 @@ from frappe.utils import getdate
 from hrms_sverige.setup.custom_fields import create_custom_fields, ensure_personnummer_permissions
 from hrms_sverige.setup.employment_types import ensure_employment_types
 from hrms_sverige.setup.holidays import create_holiday_list
-from hrms_sverige.setup.leave import ensure_leave_period, ensure_leave_types, ensure_semester_policy
+from hrms_sverige.setup.leave import (
+	ensure_leave_period,
+	ensure_leave_types,
+	ensure_semester_policy,
+	remove_unused_hrms_leave_types,
+)
 from hrms_sverige.setup.workspaces import hide_unused
 
 
@@ -18,6 +23,7 @@ def setup_all(company: str | None = None):
 	ensure_personnummer_permissions()
 	ensure_employment_types()
 	ensure_leave_types()
+	remove_unused_hrms_leave_types()
 	ensure_semester_policy()
 	if company:
 		year = getdate().year
