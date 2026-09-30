@@ -8,7 +8,7 @@ app_license = "gpl-3.0"
 # Apps
 # ------------------
 
-# required_apps = []
+required_apps = ["hrms"]
 
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
@@ -86,7 +86,8 @@ app_license = "gpl-3.0"
 # ------------
 
 # before_install = "hrms_sverige.install.before_install"
-# after_install = "hrms_sverige.install.after_install"
+after_install = "hrms_sverige.setup.install.after_install"
+after_migrate = "hrms_sverige.setup.install.after_migrate"
 
 # Uninstallation
 # ------------
@@ -144,13 +145,17 @@ app_license = "gpl-3.0"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Employee": {
+		"validate": "hrms_sverige.hr.personnummer.validate_employee",
+	},
+	"Leave Allocation": {
+		"before_insert": "hrms_sverige.hr.leave_allocation.justera_for_deltid",
+	},
+	"Version": {
+		"before_insert": "hrms_sverige.hr.personnummer.strip_from_version",
+	},
+}
 
 # Scheduled Tasks
 # ---------------
@@ -261,4 +266,3 @@ app_license = "gpl-3.0"
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
-
