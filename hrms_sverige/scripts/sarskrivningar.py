@@ -9,7 +9,9 @@ Körs efter uppdatering av hrms för att hitta nya strängar att rätta:
     bench --site <site> execute hrms_sverige.scripts.sarskrivningar.report --kwargs "{'output': '/tmp/sv.json'}"
 """
 
+import glob
 import json
+import os
 import re
 
 import frappe
@@ -119,6 +121,79 @@ def find_conflicts() -> list[dict]:
 	]
 
 
+# Sökvägsdelar för HRMS-moduler som är dolda eller inte används (lön, rekrytering, utlägg m.m.)
+HIDDEN_PATHS = (
+	"payroll",
+	"salary",
+	"tax",
+	"gratuity",
+	"appraisal",
+	"recruit",
+	"interview",
+	"job_",
+	"expense",
+	"travel",
+	"training",
+	"loan",
+	"grievance",
+	"vehicle",
+	"benefit",
+	"incentive",
+	"retention",
+	"promotion",
+	"transfer",
+	"separation",
+	"boarding",
+	"exit",
+	"kra",
+	"goal",
+	"skill",
+	"appointment",
+	"staffing",
+	"full_and_final",
+	"employee_advance",
+	"pwa",
+	"referral",
+	"daily_work",
+	"encashment",
+	"performance",
+	"feedback",
+	"telemetry",
+)
+
+
+def _labels(path: str) -> list[str]:
+	try:
+		with open(path, encoding="utf-8") as f:
+			d = json.load(f)
+	except (ValueError, OSError):
+		return []
+	if not isinstance(d, dict):
+		return []
+	labels = []
+	if d.get("doctype") in ("Workspace", "Workspace Sidebar", "Desktop Icon"):
+		labels += [d.get("label"), d.get("title")]
+	if d.get("doctype") == "DocType":
+		labels.append(d.get("name"))
+	for key in ("fields", "items", "links", "shortcuts", "cards"):
+		labels += [row.get("label") for row in d.get(key) or [] if isinstance(row, dict)]
+	return [label for label in labels if label]
+
+
+def find_untranslated_labels() -> list[str]:
+	"""Etiketter (doctypes, fält, arbetsytor, sidomeny) i HRMS-delar vi använder som saknar svensk översättning."""
+	from frappe.translate import get_all_translations
+
+	translations = get_all_translations("sv")
+	root = frappe.get_app_path("hrms")
+	missing = set()
+	for path in glob.glob(os.path.join(root, "**", "*.json"), recursive=True):
+		if any(part in path.lower() for part in HIDDEN_PATHS):
+			continue
+		missing.update(label for label in _labels(path) if label not in translations)
+	return sorted(missing)
+
+
 def report(output: str | None = None, title_case_only: bool = False):
 	candidates = find_candidates(title_case_only)
 	if output:
@@ -127,5 +202,7 @@ def report(output: str | None = None, title_case_only: bool = False):
 	for c in candidates[:50]:
 		print(f"{c['msgid']!r} -> {c['msgstr']!r}")
 	print(f"{len(candidates)} kandidater")
+	for label in find_untranslated_labels():
+		print(f"SAKNAS {label!r}")
 	for c in find_conflicts():
 		print(f"KONFLIKT {c['msgid']!r}: erpnext_sverige {c['erpnext_sverige']!r}, hrms {c['hrms']!r}")
