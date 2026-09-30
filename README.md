@@ -4,6 +4,7 @@ Svensk anpassning av Frappe HRMS: personalregister, frånvaro/ledighet och närv
 
 - Frånvarotyper: Semester (25 dagar/år, max 5 sparade dagar/år, förfaller efter 5 år), Sjukfrånvaro, VAB,
   Föräldraledighet, Tjänstledighet, Kompledighet.
+  HRMS engelska standardtyper (Casual Leave, Sick Leave m.fl.) tas bort om de inte används.
 - Helglistor "Sverige ÅÅÅÅ" med röda dagar samt midsommar-, jul- och nyårsafton, kopplade till företaget
   från 1 januari.
 - Anställd: personnummer (bara HR-roller), anställningsform, arbetsdagar per vecka, sysselsättningsgrad.

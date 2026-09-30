@@ -76,3 +76,29 @@ class TestLeaveSetup(IntegrationTestCase):
 			}
 		).insert()
 		self.assertEqual(ensure_leave_period(2037, COMPANY), own.name)
+
+	def test_unused_hrms_leave_types_are_removed(self):
+		from hrms_sverige.setup.leave import HRMS_DEFAULT_LEAVE_TYPES, remove_unused_hrms_leave_types
+
+		for name in HRMS_DEFAULT_LEAVE_TYPES:
+			if not frappe.db.exists("Leave Type", name):
+				frappe.get_doc({"doctype": "Leave Type", "leave_type_name": name}).insert()
+		employee = make_test_employee("Engelsk")
+		frappe.get_doc(
+			{
+				"doctype": "Leave Allocation",
+				"employee": employee,
+				"leave_type": "Casual Leave",
+				"from_date": "2039-01-01",
+				"to_date": "2039-12-31",
+				"new_leaves_allocated": 5,
+			}
+		).insert()
+
+		remove_unused_hrms_leave_types()
+
+		self.assertTrue(frappe.db.exists("Leave Type", "Casual Leave"))  # används, behålls
+		for name in set(HRMS_DEFAULT_LEAVE_TYPES) - {"Casual Leave"}:
+			self.assertFalse(frappe.db.exists("Leave Type", name), name)
+		for name in LEAVE_TYPES:
+			self.assertTrue(frappe.db.exists("Leave Type", name), name)
