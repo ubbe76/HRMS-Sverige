@@ -148,6 +148,9 @@ doc_events = {
 	"Employee": {
 		"validate": "hrms_sverige.hr.personnummer.validate_employee",
 	},
+	"Leave Allocation": {
+		"before_insert": "hrms_sverige.hr.leave_allocation.justera_for_deltid",
+	},
 }
 
 # Scheduled Tasks
