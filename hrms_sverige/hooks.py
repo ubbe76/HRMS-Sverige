@@ -151,6 +151,7 @@ doc_events = {
 	},
 	"Leave Allocation": {
 		"before_insert": "hrms_sverige.hr.leave_allocation.justera_for_deltid",
+		"validate": "hrms_sverige.hr.leave_allocation.begransa_sparade_dagar",
 	},
 	"Version": {
 		"before_insert": "hrms_sverige.hr.personnummer.strip_from_version",

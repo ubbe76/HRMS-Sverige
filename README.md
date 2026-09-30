@@ -7,8 +7,10 @@ Svensk anpassning av Frappe HRMS: personalregister, frånvaro/ledighet och närv
   HRMS engelska standardtyper (Casual Leave, Sick Leave m.fl.) tas bort om de inte används.
 - Helglistor "Sverige ÅÅÅÅ" med röda dagar samt midsommar-, jul- och nyårsafton, kopplade till företaget
   från 1 januari.
-- Anställd: personnummer (bara HR-roller), anställningsform, arbetsdagar per vecka, sysselsättningsgrad.
+- Anställd: personnummer (bara HR-roller, unikt, tål tankstreck och mellanslag), anställningsform, arbetsdagar per
+  vecka, sysselsättningsgrad (0–100 %).
 - Semester vid deltid: 25 × arbetsdagar/5, avrundat uppåt, när tilldelningen skapas från frånvaropolicyn.
+  Taket för sparade dagar räknas om på samma sätt (3 dagar/vecka → högst 3 sparade dagar).
 - Lön, rekrytering, utlägg och medarbetarsamtal är dolda.
 - Rättade svenska översättningar för frånvaro, närvaro och skift.
 

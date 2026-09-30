@@ -9,6 +9,13 @@ READER = "hrms-sverige-reader@example.com"
 HR_READER = "hrms-sverige-hr@example.com"
 
 
+def free(personnummer: str, keep: str | None = None):
+	"""Testanställda återanvänds mellan körningar; ta bort numret från alla andra."""
+	frappe.db.set_value(
+		"Employee", {"personnummer": personnummer, "name": ("!=", keep or "")}, "personnummer", None
+	)
+
+
 class TestEmployeeFields(IntegrationTestCase):
 	@classmethod
 	def setUpClass(cls):
@@ -19,6 +26,7 @@ class TestEmployeeFields(IntegrationTestCase):
 
 	def test_personnummer_is_normalized(self):
 		name = make_test_employee("Pnr")
+		free("19811218-9876")
 		doc = frappe.get_doc("Employee", name)
 		doc.personnummer = "811218-9876"
 		doc.save()
@@ -45,7 +53,8 @@ class TestEmployeeFields(IntegrationTestCase):
 			self.assertTrue(frappe.db.exists("Employment Type", name), name)
 
 	def _personnummer_as(self, email, role):
-		name = make_test_employee("Dold", personnummer="19811218-9876")
+		free("19900101-1239")
+		name = make_test_employee("Dold", personnummer="19900101-1239")
 		if not frappe.db.exists("User", email):
 			user = frappe.get_doc(
 				{"doctype": "User", "email": email, "first_name": role, "send_welcome_email": 0}
@@ -64,11 +73,12 @@ class TestEmployeeFields(IntegrationTestCase):
 		self.assertFalse(self._personnummer_as(READER, "Accounts User"))
 
 	def test_personnummer_visible_for_hr_user(self):
-		self.assertEqual(self._personnummer_as(HR_READER, "HR User"), "19811218-9876")
+		self.assertEqual(self._personnummer_as(HR_READER, "HR User"), "19900101-1239")
 
 	def test_personnummer_not_in_version_history(self):
+		free("19900202-2342")
 		doc = frappe.get_doc("Employee", make_test_employee("Historik"))
-		doc.personnummer = "811218-9876"
+		doc.personnummer = "900202-2342"
 		doc.cell_number = "0701234567"
 		doc.save(ignore_version=False)  # Frappe sparar ingen historik i tester annars
 		data = frappe.get_all(
@@ -78,7 +88,7 @@ class TestEmployeeFields(IntegrationTestCase):
 			order_by="creation desc",
 			limit=1,
 		)[0]
-		self.assertNotIn("9876", data)
+		self.assertNotIn("2342", data)
 		self.assertIn("0701234567", data)
 
 	def test_migrate_keeps_admin_permission_changes(self):
@@ -90,3 +100,26 @@ class TestEmployeeFields(IntegrationTestCase):
 		frappe.db.set_value("Custom DocPerm", perm, "write", 0)
 		after_migrate()
 		self.assertEqual(frappe.db.get_value("Custom DocPerm", perm, "write"), 0)
+
+	def test_duplicate_personnummer_rejected(self):
+		free("19900303-3454")
+		make_test_employee("Först", personnummer="19900303-3454")
+		doc = frappe.get_doc("Employee", make_test_employee("Andra"))
+		doc.personnummer = "900303-3454"
+		self.assertRaises(frappe.ValidationError, doc.save)
+
+	def test_sysselsattningsgrad_range(self):
+		doc = frappe.get_doc("Employee", make_test_employee("Grad"))
+		doc.sysselsattningsgrad = 120
+		self.assertRaises(frappe.ValidationError, doc.save)
+		doc = frappe.get_doc("Employee", doc.name)
+		doc.sysselsattningsgrad = 75
+		doc.save()
+
+	def test_migrate_keeps_label_edits(self):
+		from hrms_sverige.setup.install import after_migrate
+
+		name = frappe.db.get_value("Custom Field", {"dt": "Employee", "fieldname": "sysselsattningsgrad"})
+		frappe.db.set_value("Custom Field", name, "label", "Tjänstgöringsgrad")
+		after_migrate()
+		self.assertEqual(frappe.db.get_value("Custom Field", name, "label"), "Tjänstgöringsgrad")

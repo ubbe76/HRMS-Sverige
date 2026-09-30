@@ -1,4 +1,5 @@
 from datetime import date
+from unittest.mock import patch
 
 from frappe.tests import UnitTestCase
 
@@ -45,3 +46,16 @@ class TestPersonnummer(UnitTestCase):
 		):
 			with self.assertRaises(OgiltigtPersonnummer, msg=value):
 				normalize(value, TODAY)
+
+	def test_dash_variants_accepted(self):
+		for value in ("811218–9876", "811218—9876", "811218−9876"):  # noqa: RUF001
+			self.assertEqual(normalize(value, TODAY), "19811218-9876", value)
+
+	def test_twelve_digits_with_plus_requires_hundred_years(self):
+		self.assertEqual(normalize("19121212+1212", TODAY), "19121212-1212")
+		with self.assertRaises(OgiltigtPersonnummer):
+			normalize("19811218+9876", TODAY)
+
+	def test_default_today_uses_site_date(self):
+		with patch("hrms_sverige.hr.personnummer.getdate", return_value=date(2026, 9, 30)):
+			self.assertEqual(normalize("261201-1235"), "19261201-1235")
