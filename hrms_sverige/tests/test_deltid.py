@@ -112,3 +112,34 @@ class TestDeltidAllocation(IntegrationTestCase):
 		amended.docstatus = 0
 		amended.insert()
 		self.assertEqual(amended.new_leaves_allocated, 15)
+
+	def _manual(self, employee, year, days, carry_forward=0):
+		doc = frappe.get_doc(
+			{
+				"doctype": "Leave Allocation",
+				"employee": employee,
+				"leave_type": SEMESTER,
+				"from_date": f"{year}-01-01",
+				"to_date": f"{year}-12-31",
+				"new_leaves_allocated": days,
+				"carry_forward": carry_forward,
+			}
+		)
+		doc.insert()
+		doc.submit()
+		return doc
+
+	def test_carry_forward_limit_scaled_for_part_time(self):
+		employee = make_test_employee("Spara3", arbetsdagar_per_vecka=3)
+		self._clean(employee)
+		self._manual(employee, 2040, 15)
+		allocation = self._manual(employee, 2041, 15, carry_forward=1)
+		self.assertEqual(allocation.unused_leaves, 3)  # 5 * 3/5
+		self.assertEqual(allocation.total_leaves_allocated, 18)
+
+	def test_carry_forward_limit_full_time(self):
+		employee = make_test_employee("Spara5")
+		self._clean(employee)
+		self._manual(employee, 2040, 25)
+		allocation = self._manual(employee, 2041, 25, carry_forward=1)
+		self.assertEqual(allocation.unused_leaves, 5)

@@ -21,13 +21,13 @@ msgid "Allocate Based On Leave Policy"
 msgstr "Tilldela enligt frånvaropolicy"
 
 msgid "Allocate Leave"
-msgstr "Tilldela frånvaro"
+msgstr "Tilldela ledighet"
 
 msgid "Allocated Leaves"
-msgstr "Tilldelad frånvaro"
+msgstr "Tilldelad ledighet"
 
 msgid "Allocating Leave"
-msgstr "Tilldelar frånvaro"
+msgstr "Tilldelar ledighet"
 
 msgid "Allow Leave Application After (Working Days)"
 msgstr "Tillåt ledighetsansökan efter (arbetsdagar)"
@@ -420,7 +420,7 @@ msgid "Please set the Holiday List."
 msgstr "Ange helglistan."
 
 msgid "Privilege Leave"
-msgstr "Förmånsledighet"
+msgstr "Betald ledighet"
 
 msgid "Process Attendance After"
 msgstr "Bearbeta närvaro efter"
@@ -585,7 +585,7 @@ msgid "Upload Attendance"
 msgstr "Ladda upp närvaro"
 
 msgid "Uploading..."
-msgstr "Ladda upp..."
+msgstr "Laddar upp..."
 
 msgid "Used Leave(s)"
 msgstr "Använd ledighet"

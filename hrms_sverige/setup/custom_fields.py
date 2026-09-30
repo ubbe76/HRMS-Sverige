@@ -37,7 +37,8 @@ def get_custom_fields():
 
 
 def create_custom_fields():
-	_create_custom_fields(get_custom_fields(), update=True)
+	# update=False: skapa bara saknade fält, så att en administratörs etiketter och beskrivningar ligger kvar
+	_create_custom_fields(get_custom_fields(), update=False)
 
 
 def ensure_personnummer_permissions():
