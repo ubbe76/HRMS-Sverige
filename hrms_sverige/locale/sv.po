@@ -29,6 +29,9 @@ msgstr "Tilldelad ledighet"
 msgid "Allocating Leave"
 msgstr "Tilldelar ledighet"
 
+msgid "Allow Leave Application After (Calendar Days)"
+msgstr "Tillåt ledighetsansökan efter (kalenderdagar)"
+
 msgid "Allow Leave Application After (Working Days)"
 msgstr "Tillåt ledighetsansökan efter (arbetsdagar)"
 
@@ -40,6 +43,9 @@ msgstr "Tilldela skift"
 
 msgid "Assign Shift Schedule"
 msgstr "Tilldela skiftschema"
+
+msgid "Assignment Starts From"
+msgstr "Kopplingen gäller från"
 
 msgid "Attendance Date"
 msgstr "Närvarodatum"
@@ -152,6 +158,12 @@ msgstr "Närvaroverktyg"
 msgid "Employee Checkin History"
 msgstr "Stämplingshistorik"
 
+msgid "Employee Company"
+msgstr "Den anställdes företag"
+
+msgid "Employee Hours Utilization"
+msgstr "Timutnyttjande per anställd"
+
 msgid "Employee Leave Balance"
 msgstr "Frånvarosaldo"
 
@@ -170,6 +182,9 @@ msgstr "Anställningsform"
 msgid "Enable Auto Attendance"
 msgstr "Aktivera automatisk närvaro"
 
+msgid "Enable Multi-Currency Expense Claims"
+msgstr "Tillåt utlägg i flera valutor"
+
 msgid "Every Valid Check-in and Check-out"
 msgstr "Varje giltig in- och utstämpling"
 
@@ -178,6 +193,9 @@ msgstr "Exkludera helgdagar"
 
 msgid "Existing Shift Assignments"
 msgstr "Befintliga skifttilldelningar"
+
+msgid "Expenses Settings"
+msgstr "Utläggsinställningar"
 
 msgid "Expire Leaves"
 msgstr "Låt ledighet förfalla"
@@ -208,6 +226,21 @@ msgstr "Rubrik för anställda med halvdag"
 
 msgid "Half Day Records"
 msgstr "Halvdagar"
+
+msgid "Holiday List Assignment"
+msgstr "Koppling till helglista"
+
+msgid "Holiday List End"
+msgstr "Helglistans slutdatum"
+
+msgid "Holiday List Start"
+msgstr "Helglistans startdatum"
+
+msgid "HR Settings"
+msgstr "HR-inställningar"
+
+msgid "HR Setup"
+msgstr "HR-uppsättning"
 
 msgid "Import Attendance"
 msgstr "Importera närvaro"
@@ -272,6 +305,9 @@ msgstr "Frånvarosaldo"
 msgid "Leave Balance Before Application"
 msgstr "Frånvarosaldo före ansökan"
 
+msgid "Leave Balance Summary"
+msgstr "Sammanställning av frånvarosaldo"
+
 msgid "Leave Block List"
 msgstr "Spärrlista för ledighet"
 
@@ -328,6 +364,12 @@ msgstr "Frånvaropolicydetalj"
 
 msgid "Leave Policy Details"
 msgstr "Frånvaropolicydetaljer"
+
+msgid "Leave Policy Name"
+msgstr "Frånvaropolicyns namn"
+
+msgid "Leave Settings"
+msgstr "Frånvaroinställningar"
 
 msgid "Leave Status Notification"
 msgstr "Avisering om ledighetsstatus"
@@ -484,6 +526,9 @@ msgstr "Faktisk skiftstart"
 
 msgid "Shift Actual Start Time"
 msgstr "Faktisk starttid för skift"
+
+msgid "Shift and Attendance"
+msgstr "Skift och närvaro"
 
 msgid "Shift Assignment"
 msgstr "Skifttilldelning"

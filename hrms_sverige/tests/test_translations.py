@@ -1,7 +1,7 @@
 import frappe
 from frappe.tests import UnitTestCase
 
-from hrms_sverige.scripts.sarskrivningar import find_candidates, find_conflicts
+from hrms_sverige.scripts.sarskrivningar import find_candidates, find_conflicts, find_untranslated_labels
 
 IN_SCOPE = ("Leave", "Attendance", "Shift", "Check", "Holiday", "Compensatory", "Employment", "Half Day")
 
@@ -29,3 +29,6 @@ class TestTranslations(UnitTestCase):
 
 	def test_no_conflicts_with_erpnext_sverige(self):
 		self.assertEqual(find_conflicts(), [])
+
+	def test_visible_labels_translated(self):
+		self.assertEqual(find_untranslated_labels(), [])
