@@ -3,6 +3,9 @@
 import re
 from datetime import date
 
+import frappe
+from frappe import _
+
 PATTERN = re.compile(r"^(\d{2})?(\d{2})(\d{2})(\d{2})([-+]?)(\d{4})$")
 SAMORDNING_OFFSET = 60
 
@@ -56,3 +59,17 @@ def normalize(value: str, today: date | None = None) -> str:
 	if not luhn_ok(yy + mm + dd + tail):
 		raise OgiltigtPersonnummer(value)
 	return f"{year:04d}{mm}{dd}-{tail}"
+
+
+HELTID_DAGAR = 5
+
+
+def validate_employee(doc, method=None):
+	"""Employee.validate: normalisera personnummer och kontrollera arbetsdagar per vecka."""
+	if doc.get("personnummer"):
+		try:
+			doc.personnummer = normalize(doc.personnummer)
+		except OgiltigtPersonnummer:
+			frappe.throw(_("Ogiltigt personnummer: {0}").format(doc.personnummer))
+	if doc.get("arbetsdagar_per_vecka") and not 1 <= doc.arbetsdagar_per_vecka <= HELTID_DAGAR:
+		frappe.throw(_("Arbetsdagar per vecka ska vara mellan 1 och {0}.").format(HELTID_DAGAR))
