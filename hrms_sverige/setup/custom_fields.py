@@ -38,9 +38,18 @@ def get_custom_fields():
 
 def create_custom_fields():
 	_create_custom_fields(get_custom_fields(), update=True)
+
+
+def ensure_personnummer_permissions():
+	"""Läs- och skrivrätt på permlevel 1 för HR-rollerna. Körs bara vid installation/uppsättning,
+	inte vid migrate, så att en administratörs ändringar ligger kvar.
+
+	Obs: första gången kopieras Employees standardbehörigheter till Custom DocPerm (Frappes sätt att
+	anpassa behörigheter); senare ändringar i HRMS/ERPNext:s standardbehörigheter för Employee
+	slår då inte igenom automatiskt."""
 	for role in HR_ROLES:
 		if not frappe.db.exists(
 			"Custom DocPerm", {"parent": "Employee", "role": role, "permlevel": PERSONNUMMER_PERMLEVEL}
 		):
 			add_permission("Employee", role, PERSONNUMMER_PERMLEVEL)
-		update_permission_property("Employee", role, PERSONNUMMER_PERMLEVEL, "write", 1)
+			update_permission_property("Employee", role, PERSONNUMMER_PERMLEVEL, "write", 1)

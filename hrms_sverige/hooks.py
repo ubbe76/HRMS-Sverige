@@ -152,6 +152,9 @@ doc_events = {
 	"Leave Allocation": {
 		"before_insert": "hrms_sverige.hr.leave_allocation.justera_for_deltid",
 	},
+	"Version": {
+		"before_insert": "hrms_sverige.hr.personnummer.strip_from_version",
+	},
 }
 
 # Scheduled Tasks

@@ -56,3 +56,23 @@ class TestLeaveSetup(IntegrationTestCase):
 			}
 		).insert()
 		self.assertEqual(application.total_leave_days, 2)
+
+	def test_admin_edits_survive_setup(self):
+		frappe.db.set_value("Leave Type", SEMESTER, "maximum_carry_forwarded_leaves", 3)
+		try:
+			ensure_leave_types()
+			self.assertEqual(frappe.db.get_value("Leave Type", SEMESTER, "maximum_carry_forwarded_leaves"), 3)
+		finally:
+			frappe.db.set_value("Leave Type", SEMESTER, "maximum_carry_forwarded_leaves", 5)
+
+	def test_overlapping_leave_period_is_respected(self):
+		own = frappe.get_doc(
+			{
+				"doctype": "Leave Period",
+				"company": COMPANY,
+				"from_date": "2037-04-01",
+				"to_date": "2038-03-31",
+				"is_active": 1,
+			}
+		).insert()
+		self.assertEqual(ensure_leave_period(2037, COMPANY), own.name)

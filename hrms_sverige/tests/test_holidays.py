@@ -93,3 +93,39 @@ class TestHolidayList(IntegrationTestCase):
 			pluck="holiday_list",
 		)
 		self.assertEqual(assigned, [own.name])
+
+	def test_existing_list_is_not_overwritten(self):
+		ensure_test_company()
+		name = create_holiday_list(2033, COMPANY)
+		doc = frappe.get_doc("Holiday List", name)
+		doc.append("holidays", {"holiday_date": date(2033, 5, 27), "description": "Klämdag"})
+		doc.save()
+		create_holiday_list(2033, COMPANY)
+		dates = frappe.get_all("Holiday", {"parent": name}, pluck="holiday_date")
+		self.assertIn(date(2033, 5, 27), dates)
+
+	def test_multi_year_assignment_covering_new_year_is_respected(self):
+		ensure_test_company()
+		own = frappe.get_doc(
+			{
+				"doctype": "Holiday List",
+				"holiday_list_name": "_Test Flerårig lista",
+				"from_date": "2034-07-01",
+				"to_date": "2036-06-30",
+			}
+		).insert()
+		frappe.get_doc(
+			{
+				"doctype": "Holiday List Assignment",
+				"applicable_for": "Company",
+				"assigned_to": COMPANY,
+				"holiday_list": own.name,
+				"from_date": "2034-07-01",
+			}
+		).submit()
+		create_holiday_list(2035, COMPANY)
+		self.assertFalse(
+			frappe.db.exists(
+				"Holiday List Assignment", {"assigned_to": COMPANY, "from_date": "2035-01-01", "docstatus": 1}
+			)
+		)

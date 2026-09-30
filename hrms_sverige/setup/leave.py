@@ -29,20 +29,24 @@ LEAVE_TYPES = {
 
 
 def ensure_leave_types():
+	"""Skapa saknade frånvarotyper. Befintliga rörs inte, så HR:s ändringar ligger kvar."""
 	for name, settings in LEAVE_TYPES.items():
 		if frappe.db.exists("Leave Type", name):
-			doc = frappe.get_doc("Leave Type", name)
-		else:
-			doc = frappe.new_doc("Leave Type")
-			doc.leave_type_name = name
+			continue
+		doc = frappe.new_doc("Leave Type")
+		doc.leave_type_name = name
 		doc.update(settings)
-		doc.save(ignore_permissions=True)
+		doc.insert(ignore_permissions=True)
 
 
 def ensure_leave_period(year: int, company: str) -> str:
+	"""Kalenderårets frånvaroperiod. Finns redan en period som överlappar året (t.ex. en egen
+	brytning 1 april) returneras den i stället; HRMS tillåter inte överlappande perioder."""
 	from_date, to_date = date(year, 1, 1), date(year, 12, 31)
 	existing = frappe.db.get_value(
-		"Leave Period", {"company": company, "from_date": from_date, "to_date": to_date}
+		"Leave Period",
+		{"company": company, "from_date": ("<=", to_date), "to_date": (">=", from_date)},
+		order_by="from_date asc",
 	)
 	if existing:
 		return existing

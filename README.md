@@ -31,11 +31,23 @@ bench --site <site> clear-cache
 bench --site <site> execute hrms_sverige.setup.install.setup_all
 ```
 
+Uppsättningen skapar bara det som saknas: befintliga frånvarotyper, helglistor och frånvaroperioder (även en
+egen brytning, t.ex. 1 april–31 mars) rörs inte, och en helglista som redan gäller företaget vid årsskiftet
+behålls. Vill du bygga om en helglista från grunden:
+`bench --site <site> execute hrms_sverige.setup.holidays.create_holiday_list --kwargs "{'year': 2027, 'overwrite': True}"`.
+
 Skapa sedan årets semestertilldelning: öppna frånvaropolicyn "Semester 25 dagar" och använd masskopplingen till
 frånvaropolicy med årets frånvaroperiod.
 
 Ändras en anställds arbetsdagar per vecka mitt i året räknas redan skapade tilldelningar inte om – justera
 tilldelningen för hand.
+
+### Personnummer och behörigheter
+
+Personnummer ligger på behörighetsnivå 1 och kan bara läsas av HR Manager och HR User. Det sparas inte i den
+anställdes ändringshistorik. Vid installationen kopieras Employees standardbehörigheter till anpassade
+behörigheter (Custom DocPerm); senare ändringar av standardbehörigheterna i HRMS/ERPNext slår därför inte igenom
+automatiskt för Employee. `migrate` ändrar inte behörigheterna.
 
 ### Översättning
 

@@ -20,5 +20,11 @@ def justera_for_deltid(doc, method=None):
 	"""Leave Allocation.before_insert: bara semester som skapas från en policykoppling."""
 	if doc.leave_type != SEMESTER or not doc.leave_policy_assignment:
 		return
+	# Ändrad eller kopierad tilldelning: originalet finns redan och är redan omräknat.
+	if frappe.db.exists(
+		"Leave Allocation",
+		{"leave_policy_assignment": doc.leave_policy_assignment, "leave_type": doc.leave_type},
+	):
+		return
 	arbetsdagar = frappe.db.get_value("Employee", doc.employee, "arbetsdagar_per_vecka")
 	doc.new_leaves_allocated = semesterdagar(doc.new_leaves_allocated, arbetsdagar)

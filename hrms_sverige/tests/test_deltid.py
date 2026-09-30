@@ -98,3 +98,17 @@ class TestDeltidAllocation(IntegrationTestCase):
 			}
 		).insert()
 		self.assertEqual(allocation.new_leaves_allocated, 10)
+
+	def test_amended_allocation_not_scaled_twice(self):
+		employee = make_test_employee("Ändrad", arbetsdagar_per_vecka=3)
+		self._assign(employee)
+		original = frappe.get_doc(
+			"Leave Allocation",
+			frappe.db.get_value("Leave Allocation", {"employee": employee, "leave_type": SEMESTER}),
+		)
+		original.cancel()
+		amended = frappe.copy_doc(original)
+		amended.amended_from = original.name
+		amended.docstatus = 0
+		amended.insert()
+		self.assertEqual(amended.new_leaves_allocated, 15)

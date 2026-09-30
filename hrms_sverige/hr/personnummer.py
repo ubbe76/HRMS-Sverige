@@ -1,5 +1,6 @@
 """Svenska personnummer och samordningsnummer (dag + 60), med kontrollsiffra enligt Luhn."""
 
+import json
 import re
 from datetime import date
 
@@ -73,3 +74,16 @@ def validate_employee(doc, method=None):
 			frappe.throw(_("Ogiltigt personnummer: {0}").format(doc.personnummer))
 	if doc.get("arbetsdagar_per_vecka") and not 1 <= doc.arbetsdagar_per_vecka <= HELTID_DAGAR:
 		frappe.throw(_("Arbetsdagar per vecka ska vara mellan 1 och {0}.").format(HELTID_DAGAR))
+
+
+def strip_from_version(doc, method=None):
+	"""Version.before_insert: ändringshistoriken skickas till alla som kan öppna den anställde,
+	även utan HR-roll, så personnummer får inte lagras där."""
+	if doc.ref_doctype != "Employee" or not doc.data:
+		return
+	data = json.loads(doc.data)
+	changed = data.get("changed") or []
+	kept = [row for row in changed if row[0] != "personnummer"]
+	if len(kept) != len(changed):
+		data["changed"] = kept
+		doc.data = frappe.as_json(data)

@@ -20,14 +20,23 @@ def holiday_list_name(year: int) -> str:
 	return f"Sverige {year}"
 
 
-def create_holiday_list(year: int, company: str | None = None, aftnar: bool = True) -> str:
-	"""Skapa eller uppdatera "Sverige ÅÅÅÅ" och tilldela den företaget från 1 januari.
+def create_holiday_list(
+	year: int, company: str | None = None, aftnar: bool = True, overwrite: bool = False
+) -> str:
+	"""Skapa "Sverige ÅÅÅÅ" och tilldela den företaget från 1 januari.
+
+	En befintlig lista lämnas orörd (HR kan ha lagt till klämdagar) om inte overwrite=True.
 
 	bench --site <site> execute hrms_sverige.setup.holidays.create_holiday_list --kwargs "{'year': 2027}"
 	"""
 	year = int(year)
 	name = holiday_list_name(year)
+	company = company or erpnext.get_default_company()
 	if frappe.db.exists("Holiday List", name):
+		if not overwrite:
+			if company:
+				_assign_to_company(name, company, date(year, 1, 1))
+			return name
 		doc = frappe.get_doc("Holiday List", name)
 		doc.set("holidays", [])
 	else:
@@ -53,16 +62,24 @@ def create_holiday_list(year: int, company: str | None = None, aftnar: bool = Tr
 		day += timedelta(days=1)
 	doc.save(ignore_permissions=True)
 
-	company = company or erpnext.get_default_company()
 	if company:
 		_assign_to_company(doc.name, company, doc.from_date)
 	return doc.name
 
 
 def _assign_to_company(holiday_list: str, company: str, from_date: date):
-	"""Rör inte en befintlig tilldelning för samma startdatum; HR kan ha valt en egen lista."""
-	if frappe.db.exists(
-		"Holiday List Assignment", {"assigned_to": company, "from_date": from_date, "docstatus": 1}
+	"""Tilldela bara om ingen annan lista redan gäller företaget på from_date; HR kan ha valt en
+	egen (även flerårig) lista."""
+	current = frappe.db.get_value(
+		"Holiday List Assignment",
+		{"assigned_to": company, "from_date": ("<=", from_date), "docstatus": 1},
+		["holiday_list", "from_date"],
+		order_by="from_date desc",
+		as_dict=True,
+	)
+	if current and (
+		current.from_date == from_date
+		or frappe.db.get_value("Holiday List", current.holiday_list, "to_date") >= from_date
 	):
 		return
 	frappe.get_doc(

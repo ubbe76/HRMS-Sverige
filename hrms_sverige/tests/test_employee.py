@@ -1,7 +1,7 @@
 import frappe
 from frappe.tests import IntegrationTestCase
 
-from hrms_sverige.setup.custom_fields import create_custom_fields
+from hrms_sverige.setup.custom_fields import create_custom_fields, ensure_personnummer_permissions
 from hrms_sverige.setup.employment_types import EMPLOYMENT_TYPES, ensure_employment_types
 from hrms_sverige.tests.utils import make_test_employee
 
@@ -14,6 +14,7 @@ class TestEmployeeFields(IntegrationTestCase):
 	def setUpClass(cls):
 		super().setUpClass()
 		create_custom_fields()
+		ensure_personnummer_permissions()
 		ensure_employment_types()
 
 	def test_personnummer_is_normalized(self):
@@ -64,3 +65,28 @@ class TestEmployeeFields(IntegrationTestCase):
 
 	def test_personnummer_visible_for_hr_user(self):
 		self.assertEqual(self._personnummer_as(HR_READER, "HR User"), "19811218-9876")
+
+	def test_personnummer_not_in_version_history(self):
+		doc = frappe.get_doc("Employee", make_test_employee("Historik"))
+		doc.personnummer = "811218-9876"
+		doc.cell_number = "0701234567"
+		doc.save(ignore_version=False)  # Frappe sparar ingen historik i tester annars
+		data = frappe.get_all(
+			"Version",
+			{"ref_doctype": "Employee", "docname": doc.name},
+			pluck="data",
+			order_by="creation desc",
+			limit=1,
+		)[0]
+		self.assertNotIn("9876", data)
+		self.assertIn("0701234567", data)
+
+	def test_migrate_keeps_admin_permission_changes(self):
+		from hrms_sverige.setup.install import after_migrate
+
+		perm = frappe.db.get_value(
+			"Custom DocPerm", {"parent": "Employee", "role": "HR User", "permlevel": 1}
+		)
+		frappe.db.set_value("Custom DocPerm", perm, "write", 0)
+		after_migrate()
+		self.assertEqual(frappe.db.get_value("Custom DocPerm", perm, "write"), 0)
