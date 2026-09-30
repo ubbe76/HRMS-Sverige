@@ -1,0 +1,606 @@
+# Swedish translations for HRMS Sverige.
+# This file is distributed under the same license as the HRMS Sverige project.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HRMS Sverige\n"
+"Report-Msgid-Bugs-To: https://github.com/ubbe76/HRMS-Sverige/issues\n"
+"Language: sv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "<h5>Employees on Half Day</h5>"
+msgstr "<h5>Anställda på halvdag</h5>"
+
+msgid "Advance Paid (Company Currency)"
+msgstr "Förskott betalt (bolagsvaluta)"
+
+msgid "Allocate Based On Leave Policy"
+msgstr "Tilldela enligt frånvaropolicy"
+
+msgid "Allocate Leave"
+msgstr "Tilldela frånvaro"
+
+msgid "Allocated Leaves"
+msgstr "Tilldelad frånvaro"
+
+msgid "Allocating Leave"
+msgstr "Tilldelar frånvaro"
+
+msgid "Allow Leave Application After (Working Days)"
+msgstr "Tillåt ledighetsansökan efter (arbetsdagar)"
+
+msgid "Apply / Approve Leaves"
+msgstr "Ansök om / godkänn ledighet"
+
+msgid "Assign Shift"
+msgstr "Tilldela skift"
+
+msgid "Assign Shift Schedule"
+msgstr "Tilldela skiftschema"
+
+msgid "Attendance Date"
+msgstr "Närvarodatum"
+
+msgid "Attendance From Date"
+msgstr "Närvaro från datum"
+
+msgid "Attendance Marked"
+msgstr "Närvaro registrerad"
+
+msgid "Attendance Request"
+msgstr "Närvarobegäran"
+
+msgid "Attendance Request History"
+msgstr "Historik för närvarobegäran"
+
+msgid "Attendance Settings"
+msgstr "Närvaroinställningar"
+
+msgid "Attendance To Date"
+msgstr "Närvaro till datum"
+
+msgid "Attendance Updated"
+msgstr "Närvaro uppdaterad"
+
+msgid "Attendance Warnings"
+msgstr "Närvarovarningar"
+
+msgid "AttendanceRequestListView"
+msgstr "Närvarobegäran, listvy"
+
+msgid "Auto Attendance Settings"
+msgstr "Inställningar för automatisk närvaro"
+
+msgid "Auto Leave Encashment"
+msgstr "Automatisk utbetalning av ledighet"
+
+msgid "Available Leave(s)"
+msgstr "Tillgänglig ledighet"
+
+msgid "Available Leaves"
+msgstr "Tillgänglig ledighet"
+
+msgid "Bulk Leave Policy Assignment"
+msgstr "Masskoppling till frånvaropolicy"
+
+msgid "Carry Forwarded Leaves"
+msgstr "Sparade dagar"
+
+msgid "Casual Leave"
+msgstr "Tillfällig ledighet"
+
+msgid "Check In"
+msgstr "Stämpla in"
+
+msgid "Check Out"
+msgstr "Stämpla ut"
+
+msgid "Check-in"
+msgstr "Instämpling"
+
+msgid "Check-in Date"
+msgstr "Instämplingsdatum"
+
+msgid "Check-out"
+msgstr "Utstämpling"
+
+msgid "Check-out Date"
+msgstr "Utstämplingsdatum"
+
+msgid "Checkin Radius"
+msgstr "Stämplingsradie"
+
+msgid "Compensatory Leave Request"
+msgstr "Ansökan om kompledighet"
+
+msgid "Compensatory Off"
+msgstr "Kompledighet"
+
+msgid "Consolidate Leave Types"
+msgstr "Slå ihop frånvarotyper"
+
+msgid "Create Shifts After"
+msgstr "Skapa skift efter"
+
+msgid "Default Shift"
+msgstr "Standardskift"
+
+msgid "Duplicate Attendance"
+msgstr "Dubblerad närvaro"
+
+msgid "Duplicate Leave Adjustment"
+msgstr "Dubblerad frånvarojustering"
+
+msgid "Earned Leave"
+msgstr "Intjänad ledighet"
+
+msgid "Earned Leave Frequency"
+msgstr "Intervall för intjänad ledighet"
+
+msgid "Earned Leave Schedule"
+msgstr "Schema för intjänad ledighet"
+
+msgid "Earned Leaves"
+msgstr "Intjänad ledighet"
+
+msgid "Employee Attendance Tool"
+msgstr "Närvaroverktyg"
+
+msgid "Employee Checkin History"
+msgstr "Stämplingshistorik"
+
+msgid "Employee Leave Balance"
+msgstr "Frånvarosaldo"
+
+msgid "Employee Leave Balance Summary"
+msgstr "Sammanställning av frånvarosaldo"
+
+msgid "Employees on Half Day HTML"
+msgstr "Anställda på halvdag, HTML"
+
+msgid "Employees Working on a Holiday"
+msgstr "Anställda som arbetar på en helgdag"
+
+msgid "Employment Type"
+msgstr "Anställningsform"
+
+msgid "Enable Auto Attendance"
+msgstr "Aktivera automatisk närvaro"
+
+msgid "Every Valid Check-in and Check-out"
+msgstr "Varje giltig in- och utstämpling"
+
+msgid "Exclude Holidays"
+msgstr "Exkludera helgdagar"
+
+msgid "Existing Shift Assignments"
+msgstr "Befintliga skifttilldelningar"
+
+msgid "Expire Leaves"
+msgstr "Låt ledighet förfalla"
+
+msgid "Expired Leave(s)"
+msgstr "Förfallen ledighet"
+
+msgid "Expired Leaves"
+msgstr "Förfallen ledighet"
+
+msgid "Fetch Shift"
+msgstr "Hämta skift"
+
+msgid "Fetch Shifts"
+msgstr "Hämta skift"
+
+msgid "Fetching Shift"
+msgstr "Hämtar skift"
+
+msgid "Half Day"
+msgstr "Halvdag"
+
+msgid "Half Day Date"
+msgstr "Datum för halvdag"
+
+msgid "Half Day Marked Employee Header"
+msgstr "Rubrik för anställda med halvdag"
+
+msgid "Half Day Records"
+msgstr "Halvdagar"
+
+msgid "Import Attendance"
+msgstr "Importera närvaro"
+
+msgid "Include Holidays"
+msgstr "Inkludera helgdagar"
+
+msgid "Invalid Leave Ledger Entry"
+msgstr "Ogiltig post i frånvaroreskontran"
+
+msgid "Invalid Shift Times"
+msgstr "Ogiltiga skifttider"
+
+msgid "Is Compensatory"
+msgstr "Är kompledighet"
+
+msgid "Is Compensatory Leave"
+msgstr "Är kompledighet"
+
+msgid "Is Earned Leave"
+msgstr "Är intjänad ledighet"
+
+msgid "Is Leave Without Pay"
+msgstr "Är obetald ledighet"
+
+msgid "Is Optional Leave"
+msgstr "Är valfri ledighet"
+
+msgid "Is Partially Paid Leave"
+msgstr "Är delvis betald ledighet"
+
+msgid "Leave Adjustment"
+msgstr "Frånvarojustering"
+
+msgid "Leave Allocation"
+msgstr "Frånvarotilldelning"
+
+msgid "Leave Allocation Exists"
+msgstr "Frånvarotilldelning finns redan"
+
+msgid "Leave Allocations"
+msgstr "Frånvarotilldelningar"
+
+msgid "Leave Application"
+msgstr "Ledighetsansökan"
+
+msgid "Leave Approval Notification"
+msgstr "Avisering om godkänd ledighet"
+
+msgid "Leave Approval Notification Template"
+msgstr "Mall för avisering om godkänd ledighet"
+
+msgid "Leave Approver"
+msgstr "Ledighetsgodkännare"
+
+msgid "Leave Approver Name"
+msgstr "Ledighetsgodkännarens namn"
+
+msgid "Leave Balance"
+msgstr "Frånvarosaldo"
+
+msgid "Leave Balance Before Application"
+msgstr "Frånvarosaldo före ansökan"
+
+msgid "Leave Block List"
+msgstr "Spärrlista för ledighet"
+
+msgid "Leave Block List Allow"
+msgstr "Tillåtna på spärrlistan"
+
+msgid "Leave Block List Allowed"
+msgstr "Tillåtna användare på spärrlistan"
+
+msgid "Leave Block List Date"
+msgstr "Spärrdatum för ledighet"
+
+msgid "Leave Block List Dates"
+msgstr "Spärrdatum för ledighet"
+
+msgid "Leave Block List Name"
+msgstr "Spärrlistans namn"
+
+msgid "Leave Blocked"
+msgstr "Ledighet spärrad"
+
+msgid "Leave Control Panel"
+msgstr "Frånvaropanel"
+
+msgid "Leave Details"
+msgstr "Frånvarodetaljer"
+
+msgid "Leave Encashment"
+msgstr "Utbetalning av ledighet"
+
+msgid "Leave History"
+msgstr "Frånvarohistorik"
+
+msgid "Leave Ledger"
+msgstr "Frånvaroreskontra"
+
+msgid "Leave Ledger Entry"
+msgstr "Post i frånvaroreskontran"
+
+msgid "Leave Period"
+msgstr "Frånvaroperiod"
+
+msgid "Leave Policy"
+msgstr "Frånvaropolicy"
+
+msgid "Leave Policy Assignment"
+msgstr "Koppling till frånvaropolicy"
+
+msgid "Leave Policy Assignment Overlap"
+msgstr "Överlappande koppling till frånvaropolicy"
+
+msgid "Leave Policy Detail"
+msgstr "Frånvaropolicydetalj"
+
+msgid "Leave Policy Details"
+msgstr "Frånvaropolicydetaljer"
+
+msgid "Leave Status Notification"
+msgstr "Avisering om ledighetsstatus"
+
+msgid "Leave Status Notification Template"
+msgstr "Mall för avisering om ledighetsstatus"
+
+msgid "Leave Type"
+msgstr "Frånvarotyp"
+
+msgid "Leave Type Name"
+msgstr "Frånvarotypens namn"
+
+msgid "Leave Without Pay"
+msgstr "Obetald ledighet"
+
+msgid "Leave(s) Taken"
+msgstr "Uttagen ledighet"
+
+msgid "Leaves & Holidays"
+msgstr "Frånvaro och helgdagar"
+
+msgid "Leaves After Adjustment"
+msgstr "Ledighet efter justering"
+
+msgid "Leaves Allocated"
+msgstr "Tilldelad ledighet"
+
+msgid "Leaves Expired"
+msgstr "Förfallen ledighet"
+
+msgid "Mark Attendance"
+msgstr "Registrera närvaro"
+
+msgid "Marked Attendance"
+msgstr "Registrerad närvaro"
+
+msgid "Marked Attendance HTML"
+msgstr "Registrerad närvaro, HTML"
+
+msgid "Marking Attendance"
+msgstr "Registrerar närvaro"
+
+msgid "Maximum Carry Forwarded Leaves"
+msgstr "Max antal sparade dagar"
+
+msgid "Maximum Consecutive Leaves Exceeded"
+msgstr "Max antal dagar i följd överskridet"
+
+msgid "Maximum Encashable Leaves"
+msgstr "Max antal dagar för utbetalning"
+
+msgid "Multiple Shift Assignments"
+msgstr "Flera skifttilldelningar"
+
+msgid "My Leaves"
+msgstr "Min frånvaro"
+
+msgid "New Leave(s) Allocated"
+msgstr "Nya tilldelade dagar"
+
+msgid "New Leaves Allocated"
+msgstr "Nya tilldelade dagar"
+
+msgid "No Leave Period Found"
+msgstr "Ingen frånvaroperiod hittades"
+
+msgid "Non-Encashable Leaves"
+msgstr "Dagar som inte kan betalas ut"
+
+msgid "Number of Leaves"
+msgstr "Antal dagar"
+
+msgid "Off-Shift"
+msgstr "Utanför skift"
+
+msgid "Overlapping Attendance Request"
+msgstr "Överlappande närvarobegäran"
+
+msgid "Overlapping Shift Attendance"
+msgstr "Överlappande skiftnärvaro"
+
+msgid "Overlapping Shift Requests"
+msgstr "Överlappande skiftbegäranden"
+
+msgid "Overlapping Shifts"
+msgstr "Överlappande skift"
+
+msgid "Please set the Holiday List."
+msgstr "Ange helglistan."
+
+msgid "Privilege Leave"
+msgstr "Förmånsledighet"
+
+msgid "Process Attendance After"
+msgstr "Bearbeta närvaro efter"
+
+msgid "Process Shift Requests"
+msgstr "Behandla skiftbegäranden"
+
+msgid "Public Holiday Multiplier"
+msgstr "Faktor för helgdagar"
+
+msgid "Re-allocate Leaves"
+msgstr "Omfördela ledighet"
+
+msgid "Recent Attendance Requests"
+msgstr "Senaste närvarobegäranden"
+
+msgid "Recent Leaves"
+msgstr "Senaste frånvaro"
+
+msgid "Recent Shift Requests"
+msgstr "Senaste skiftbegäranden"
+
+msgid "Request a Leave"
+msgstr "Ansök om ledighet"
+
+msgid "Request a Shift"
+msgstr "Begär skift"
+
+msgid "Request Attendance"
+msgstr "Begär närvaro"
+
+msgid "Request Leave"
+msgstr "Ansök om ledighet"
+
+msgid "Restrict Backdated Leave Application"
+msgstr "Begränsa bakåtdaterade ledighetsansökningar"
+
+msgid "Salary Slip Leave"
+msgstr "Frånvaro på lönespecifikation"
+
+msgid "Select Shift Requests"
+msgstr "Välj skiftbegäranden"
+
+msgid "Send Leave Notification"
+msgstr "Skicka frånvaroavisering"
+
+msgid "Set Leave Details"
+msgstr "Ange frånvarodetaljer"
+
+msgid "Shift & Attendance"
+msgstr "Skift och närvaro"
+
+msgid "Shift Actual End"
+msgstr "Faktiskt skiftslut"
+
+msgid "Shift Actual End Time"
+msgstr "Faktisk sluttid för skift"
+
+msgid "Shift Actual Start"
+msgstr "Faktisk skiftstart"
+
+msgid "Shift Actual Start Time"
+msgstr "Faktisk starttid för skift"
+
+msgid "Shift Assignment"
+msgstr "Skifttilldelning"
+
+msgid "Shift Assignment Details"
+msgstr "Skifttilldelningsdetaljer"
+
+msgid "Shift Assignment History"
+msgstr "Skifttilldelningshistorik"
+
+msgid "Shift Assignment Tool"
+msgstr "Verktyg för skifttilldelning"
+
+msgid "Shift Attendance"
+msgstr "Skiftnärvaro"
+
+msgid "Shift Details"
+msgstr "Skiftdetaljer"
+
+msgid "Shift End"
+msgstr "Skiftslut"
+
+msgid "Shift End Time"
+msgstr "Sluttid för skift"
+
+msgid "Shift Location"
+msgstr "Skiftplats"
+
+msgid "Shift Request"
+msgstr "Skiftbegäran"
+
+msgid "Shift Request Approver"
+msgstr "Godkännare av skiftbegäran"
+
+msgid "Shift Request Filters"
+msgstr "Filter för skiftbegäran"
+
+msgid "Shift Schedule"
+msgstr "Skiftschema"
+
+msgid "Shift Schedule Assignment"
+msgstr "Tilldelning av skiftschema"
+
+msgid "Shift Settings"
+msgstr "Skiftinställningar"
+
+msgid "Shift Start"
+msgstr "Skiftstart"
+
+msgid "Shift Start Time"
+msgstr "Starttid för skift"
+
+msgid "Shift Timings"
+msgstr "Skifttider"
+
+msgid "Shift Tools"
+msgstr "Skiftverktyg"
+
+msgid "Shift Type"
+msgstr "Skifttyp"
+
+msgid "Sick Leave"
+msgstr "Sjukfrånvaro"
+
+msgid "Team Leaves"
+msgstr "Teamets frånvaro"
+
+msgid "Total Allocated Leave(s)"
+msgstr "Totalt tilldelad ledighet"
+
+msgid "Total Allocated Leaves"
+msgstr "Totalt tilldelad ledighet"
+
+msgid "Total Leave Days"
+msgstr "Totalt antal frånvarodagar"
+
+msgid "Total Leaves"
+msgstr "Total frånvaro"
+
+msgid "Total Leaves ({0})"
+msgstr "Total frånvaro ({0})"
+
+msgid "Total Leaves Allocated"
+msgstr "Totalt tilldelad ledighet"
+
+msgid "Total Leaves Encashed"
+msgstr "Totalt utbetald ledighet"
+
+msgid "Upcoming Holidays"
+msgstr "Kommande helgdagar"
+
+msgid "Upcoming Holidays Reminder"
+msgstr "Påminnelse om kommande helgdagar"
+
+msgid "Upcoming Shifts"
+msgstr "Kommande skift"
+
+msgid "Upload Attendance"
+msgstr "Ladda upp närvaro"
+
+msgid "Uploading..."
+msgstr "Ladda upp..."
+
+msgid "Used Leave(s)"
+msgstr "Använd ledighet"
+
+msgid "Used Leaves"
+msgstr "Använd ledighet"
+
+msgid "Validate Attendance"
+msgstr "Validera närvaro"
+
+msgid "Validating Employee Attendance..."
+msgstr "Validerar närvaro..."
+
+msgid "View Leave History"
+msgstr "Visa frånvarohistorik"
+
+msgid "Worked On Holiday"
+msgstr "Arbetat på helgdag"
