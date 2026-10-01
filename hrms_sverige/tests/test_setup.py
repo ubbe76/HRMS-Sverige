@@ -45,3 +45,22 @@ class TestSetupAll(IntegrationTestCase):
 			if frappe.db.exists("Desktop Icon", name):
 				self.assertEqual(frappe.db.get_value("Desktop Icon", name, "hidden"), 1, name)
 		self.assertEqual(frappe.db.get_value("Workspace", "Leaves", "is_hidden"), 0)
+
+
+class TestAfterSetupWizard(IntegrationTestCase):
+	"""Vid installation finns inget företag än; helgdagslistor och ledighetsperioder skapas efter wizarden."""
+
+	def test_hook_registered(self):
+		self.assertIn(
+			"hrms_sverige.setup.install.after_setup_wizard",
+			frappe.get_hooks("setup_wizard_complete", app_name="hrms_sverige"),
+		)
+
+	def test_runs_setup_all_for_wizard_company(self):
+		from unittest.mock import patch
+
+		from hrms_sverige.setup import install
+
+		with patch.object(install, "setup_all") as setup_all:
+			install.after_setup_wizard({"company_name": COMPANY})
+		setup_all.assert_called_once_with(COMPANY)

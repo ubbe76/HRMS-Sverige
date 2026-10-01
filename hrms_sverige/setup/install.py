@@ -37,6 +37,11 @@ def after_install():
 	setup_all()
 
 
+def after_setup_wizard(args: dict | None = None):
+	# Vid installation finns inget företag än, så helgdagslistor och ledighetsperioder skapas här.
+	setup_all((args or {}).get("company_name"))
+
+
 def after_migrate():
 	# Migrate synkar om arbetsytor och ikoner från HRMS och kan visa dem igen.
 	create_custom_fields()
