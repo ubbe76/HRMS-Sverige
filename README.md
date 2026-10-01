@@ -27,6 +27,10 @@ bench compile-po-to-mo --app hrms_sverige --locale sv --force
 bench --site <site> clear-cache
 ```
 
+Helglistor ("Sverige ÅÅÅÅ") och frånvaroperioder för i år och nästa år kräver ett företag. På en ny site skapas
+de automatiskt när installationsguiden är klar. Fanns företaget redan när appen installerades skapas de direkt;
+annars (t.ex. om företaget lades upp på annat sätt) kör `setup_all` enligt nedan.
+
 ### Varje år
 
 ```bash
