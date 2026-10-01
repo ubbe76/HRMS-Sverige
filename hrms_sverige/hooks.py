@@ -88,6 +88,7 @@ required_apps = ["hrms"]
 # before_install = "hrms_sverige.install.before_install"
 after_install = "hrms_sverige.setup.install.after_install"
 after_migrate = "hrms_sverige.setup.install.after_migrate"
+setup_wizard_complete = "hrms_sverige.setup.install.after_setup_wizard"
 
 # Uninstallation
 # ------------
