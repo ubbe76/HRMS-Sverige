@@ -1,0 +1,23 @@
+{% extends "templates/base.html" %}
+{% block title %}Stämpling{% endblock %}
+{% block content %}
+<style>
+	body { background: #f4f5f6; }
+	.st { max-width: 420px; margin: 4vh auto; padding: 16px; font-family: system-ui, sans-serif; text-align: center; }
+	.st h1 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+	.st .falt { font-size: 2rem; letter-spacing: 0.3rem; min-height: 3rem; border-bottom: 2px solid #888; margin: 1rem 0; }
+	.st .knappar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+	.st button { font-size: 1.6rem; padding: 18px 0; border-radius: 10px; border: 1px solid #ccc; background: #fff; }
+	.st button.stor { grid-column: span 3; font-size: 1.8rem; background: #1f7a45; color: #fff; border: none; }
+	.st button.andra { grid-column: span 3; font-size: 1.1rem; }
+	.st .fel { color: #b00020; min-height: 1.5rem; }
+	.st .val button.vald { outline: 4px solid #1f7a45; }
+</style>
+<div class="st">
+	<h1 id="rubrik">Stämpling</h1>
+	<p id="text"></p>
+	<div class="falt" id="falt"></div>
+	<div class="fel" id="fel"></div>
+	<div id="yta"></div>
+</div>
+{% endblock %}
