@@ -1,6 +1,6 @@
 """Arbetad tid och planerade skift för timavlönade i löneunderlaget."""
 
-from datetime import date
+from datetime import date, timedelta
 
 import frappe
 from erpnext.setup.doctype.employee.employee import is_holiday
@@ -75,25 +75,44 @@ def arbetad_tid(company: str, from_date, to_date) -> list[dict]:
 
 
 def stamplingar_utan_narvaro(company: str, from_date, to_date) -> dict[str, list[date]]:
-	"""Timavlönades dagar med stämplingar men utan godkänd närvaro."""
+	"""Timavlönades dagar med stämplingar men utan godkänd närvaro.
+
+	En stämpling hör till skiftets startdag (som HRMS närvaro), så nattskiftets utstämpling dagen efter räknas
+	till rätt dag. Stämplingar som redan är kopplade till en närvaro hoppas över.
+	"""
 	anstallda = timavlonade(company)
 	if not anstallda:
 		return {}
 	from_date, to_date = getdate(from_date), getdate(to_date)
+	# en dag extra åt båda hållen: nattskift kan börja dagen före eller sluta dagen efter perioden
+	fran, till = from_date - timedelta(days=1), to_date + timedelta(days=1)
 	loggar = frappe.get_all(
 		"Employee Checkin",
 		filters={
 			"employee": ("in", anstallda),
 			"skip_auto_attendance": 0,
-			"time": ("between", [f"{from_date} 00:00:00", f"{to_date} 23:59:59"]),
+			"time": ("between", [f"{fran} 00:00:00", f"{till} 23:59:59"]),
 		},
-		fields=["employee", "time"],
+		fields=["employee", "time", "attendance", "shift_start"],
 	)
+	narvaro = {
+		(anstalld, getdate(datum))
+		for anstalld, datum in frappe.get_all(
+			"Attendance",
+			filters={
+				"employee": ("in", anstallda),
+				"docstatus": 1,
+				"attendance_date": ("between", [fran, till]),
+			},
+			fields=["employee", "attendance_date"],
+			as_list=True,
+		)
+	}
 	luckor: dict[str, set[date]] = {}
 	for logg in loggar:
-		datum = getdate(logg.time)
-		if not frappe.db.exists(
-			"Attendance", {"employee": logg.employee, "attendance_date": datum, "docstatus": 1}
-		):
+		if logg.attendance:
+			continue
+		datum = getdate(logg.shift_start or logg.time)
+		if from_date <= datum <= to_date and (logg.employee, datum) not in narvaro:
 			luckor.setdefault(logg.employee, set()).add(datum)
 	return {anstalld: sorted(dagar) for anstalld, dagar in luckor.items()}

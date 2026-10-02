@@ -6,7 +6,7 @@ import frappe
 from frappe import _
 from frappe.utils import getdate
 
-from hrms_sverige.lon.tid import arbetad_tid, planerade_timmar, timavlonade
+from hrms_sverige.lon.tid import TIMLON, arbetad_tid, planerade_timmar, timavlonade
 
 HEL = 100
 HALV = 50
@@ -98,6 +98,11 @@ def varna_om_exporterad(doc, method=None):
 	"""Varna när en ledighet ändras i en period som redan finns i ett godkänt löneunderlag."""
 	if not frappe.db.table_exists("Loneunderlag"):
 		return  # koden kan vara driftsatt innan migrate har skapat tabellen
+	if doc.doctype == "Attendance" and (
+		doc.get("leave_application")  # ledighetsansökan varnar redan, en gång för hela ledigheten
+		or frappe.db.get_value("Employee", doc.employee, "loneform") != TIMLON  # exporteras inte
+	):
+		return
 	from_date = doc.get("from_date") or doc.get("attendance_date")
 	to_date = doc.get("to_date") or from_date
 	underlag = frappe.get_all(

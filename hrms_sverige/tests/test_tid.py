@@ -119,3 +119,20 @@ class TestTid(IntegrationTestCase):
 		anstalld = self.timanstalld("Tid Hoppa", "T-11")
 		make_checkin(anstalld, "2026-09-16 08:01:00", skip_auto_attendance=1)
 		self.assertNotIn(anstalld, stamplingar_utan_narvaro(COMPANY, *SEPT))
+
+	def test_nattskift_med_utstampling_nasta_dag(self):
+		# HRMS daterar närvaron efter skiftets startdag; utstämplingen 06:00 ligger dagen efter
+		anstalld = self.timanstalld("Tid Nattpass", "T-12")
+		frappe.db.set_value("Employee", anstalld, "default_shift", self.natt)
+		make_checkin(anstalld, "2026-09-18 22:01:00", "IN")
+		make_checkin(anstalld, "2026-09-19 06:02:00", "OUT")
+		make_attendance(anstalld, "2026-09-18", 8)
+		self.assertNotIn(anstalld, stamplingar_utan_narvaro(COMPANY, *SEPT))
+
+	def test_nattskift_over_manadsskifte(self):
+		anstalld = self.timanstalld("Tid Nattskifte", "T-13")
+		frappe.db.set_value("Employee", anstalld, "default_shift", self.natt)
+		make_checkin(anstalld, "2026-08-31 22:01:00", "IN")
+		make_checkin(anstalld, "2026-09-01 06:02:00", "OUT")
+		make_attendance(anstalld, "2026-08-31", 8)
+		self.assertNotIn(anstalld, stamplingar_utan_narvaro(COMPANY, *SEPT))

@@ -276,3 +276,19 @@ class TestLoneunderlagTid(IntegrationTestCase):
 		with patch("frappe.msgprint") as msgprint:
 			make_attendance(self.tim, "2026-09-21", 8)
 		self.assertTrue(any("redan exporterad" in str(c) for c in msgprint.call_args_list))
+
+	def antal_varningar(self, msgprint):
+		return sum("redan exporterad" in str(c) for c in msgprint.call_args_list)
+
+	def test_godkand_ledighet_ger_en_varning(self):
+		self.godkant_underlag()
+		with patch("frappe.msgprint") as msgprint:
+			make_leave_application(self.tim, "Sjukfrånvaro", "2026-09-22", "2026-09-24")
+		self.assertEqual(self.antal_varningar(msgprint), 1)
+
+	def test_manadsavlonads_narvaro_varnar_inte(self):
+		self.godkant_underlag()
+		manad = make_test_employee("Lön Månad Närvaro", employee_number="LM-1")
+		with patch("frappe.msgprint") as msgprint:
+			make_attendance(manad, "2026-09-21", 8)
+		self.assertEqual(self.antal_varningar(msgprint), 0)
