@@ -37,7 +37,8 @@ class Tidtransaktion:
 	tidkod: str
 	from_date: date
 	to_date: date
-	omfattning: float
+	omfattning: float | None = None
+	timmar: float | None = None
 
 
 def orgnr_fran_tax_id(tax_id: str | None) -> str | None:
@@ -72,6 +73,13 @@ def bygg_paxml(huvud: Huvud, transaktioner: list[Tidtransaktion]) -> bytes:
 	for t in transaktioner:
 		tidtrans = ET.SubElement(tidtransaktioner, "tidtrans", {"anstid": t.anstid, "postid": str(t.postid)})
 		ET.SubElement(tidtrans, "tidkod").text = t.tidkod
+		if t.timmar is not None:
+			# PAXml: timmar får bara anges på ett enskilt datum
+			if t.from_date != t.to_date:
+				raise ValueError(f"Postid {t.postid}: timmar kan bara gälla en dag")
+			ET.SubElement(tidtrans, "datum").text = t.from_date.isoformat()
+			ET.SubElement(tidtrans, "timmar").text = f"{t.timmar:.2f}"
+			continue
 		if t.from_date == t.to_date:
 			ET.SubElement(tidtrans, "datum").text = t.from_date.isoformat()
 		else:
