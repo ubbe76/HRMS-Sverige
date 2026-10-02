@@ -60,7 +60,7 @@ Knappen heter **Hämta frånvaro och tid**. Dokumentmetoden `hamta_franvaro` beh
 
 En dag kan ha både en ARB-rad och en frånvarorad, till exempel sjuk halva passet. Crona räknar ihop dem.
 
-Raderna sorteras på anställningsnummer, anställd, från-datum och tidkod.
+Raderna sorteras på anställningsnummer, anställd och från-datum. Samma dag kommer frånvaro före arbetad tid.
 
 ### Planerat skift
 
