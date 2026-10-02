@@ -20,9 +20,11 @@ Svensk anpassning av Frappe HRMS: personalregister, frånvaro/ledighet och närv
   Taket för sparade dagar räknas om på samma sätt (3 dagar/vecka → högst 3 sparade dagar).
 - Lön, rekrytering, utlägg och medarbetarsamtal är dolda.
 - Rättade svenska översättningar för frånvaro, närvaro och skift.
-- Löneunderlag till lönesystemet: dokumentet **Löneunderlag** samlar månadens godkända frånvaro och laddar ner den
-  som PAXml 2.0-fil, byggd för Crona Lön. Frånvarotypens **PAXml-tidkod** (SEM, SJK, VAB, FPE, TJL, KOM) kopplas
-  till lönearter i lönesystemet. Anställningsnumret måste vara samma som i lönesystemet.
+- Löneunderlag till lönesystemet: dokumentet **Löneunderlag** samlar månadens godkända frånvaro och, för
+  timavlönade, arbetad tid från stämpling och närvaro, och laddar ner det som PAXml 2.0-fil, byggd för Crona Lön.
+  Frånvarotypens **PAXml-tidkod** (SEM, SJK, VAB, FPE, TJL, KOM) och ARB kopplas till lönearter i lönesystemet.
+  **Löneform** på den anställde (Månadslön/Timlön) styr om tid och frånvaro skickas i procent eller timmar.
+  Anställningsnumret måste vara samma som i lönesystemet.
 
 ### Installation
 

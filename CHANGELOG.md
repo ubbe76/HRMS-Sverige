@@ -3,7 +3,10 @@
 ## Ej släppt
 
 - **Löneunderlag till Crona Lön:** godkänd frånvaro per bolag och månad som PAXml 2.0-fil, med PAXml-tidkod på
-  frånvarotypen och varning när en redan exporterad månad ändras. Arbetad tid och tillägg kommer senare.
+  frånvarotypen och varning när en redan exporterad månad ändras.
+- **Arbetad tid för timavlönade:** fältet Löneform på den anställde. Timavlönade får ARB-timmar per dag från
+  godkänd närvaro och frånvaro i timmar per planerat skift. Stämplingar utan närvaro stoppar godkännandet.
+  Övertid och OB kommer senare.
 
 ## v0.1.0 – 2026-10-02 (pre-release)
 
