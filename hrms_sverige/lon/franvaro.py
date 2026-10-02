@@ -6,6 +6,8 @@ import frappe
 from frappe import _
 from frappe.utils import getdate
 
+from hrms_sverige.lon.tid import arbetad_tid, planerade_timmar, timavlonade
+
 HEL = 100
 HALV = 50
 
@@ -34,8 +36,13 @@ def dela_upp(
 
 
 def rader_for_period(company: str, from_date, to_date) -> list[dict]:
-	"""Rader för bolagets godkända ledighetsansökningar som överlappar perioden."""
+	"""Rader för bolagets godkända ledighetsansökningar och timavlönades arbetade tid i perioden.
+
+	Månadsavlönades frånvaro blir intervall med omfattning; timavlönades frånvaro blir timmar per dag med
+	planerat skift.
+	"""
 	from_date, to_date = getdate(from_date), getdate(to_date)
+	timlon = set(timavlonade(company))
 	ansokningar = frappe.get_all(
 		"Leave Application",
 		filters={
@@ -55,16 +62,24 @@ def rader_for_period(company: str, from_date, to_date) -> list[dict]:
 		for start, slut, omfattning in dela_upp(
 			getdate(a.from_date), getdate(a.to_date), halvdag, from_date, to_date
 		):
-			rader.append(
-				{
-					"employee": a.employee,
-					"leave_type": a.leave_type,
-					"from_date": start,
-					"to_date": slut,
-					"omfattning": omfattning,
-					"leave_application": a.name,
-				}
-			)
+			gemensamt = {"employee": a.employee, "leave_type": a.leave_type, "leave_application": a.name}
+			if a.employee not in timlon:
+				rader.append({**gemensamt, "from_date": start, "to_date": slut, "omfattning": omfattning})
+				continue
+			dag = start
+			while dag <= slut:
+				timmar = planerade_timmar(a.employee, dag)
+				if timmar > 0:
+					rader.append(
+						{
+							**gemensamt,
+							"from_date": dag,
+							"to_date": dag,
+							"timmar": round(timmar * omfattning / 100, 2),
+						}
+					)
+				dag += timedelta(days=1)
+	rader.extend(arbetad_tid(company, from_date, to_date))
 	nummer = dict(
 		frappe.get_all(
 			"Employee",
@@ -73,7 +88,9 @@ def rader_for_period(company: str, from_date, to_date) -> list[dict]:
 			as_list=True,
 		)
 	)
-	rader.sort(key=lambda r: (nummer.get(r["employee"]) or "", r["employee"], r["from_date"]))
+	rader.sort(
+		key=lambda r: (nummer.get(r["employee"]) or "", r["employee"], r["from_date"], "attendance" in r)
+	)
 	return rader
 
 
