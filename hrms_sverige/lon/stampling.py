@@ -7,9 +7,11 @@ from functools import wraps
 import frappe
 from frappe import _
 from frappe.rate_limiter import rate_limit
-from frappe.utils import get_datetime, now_datetime
+from frappe.utils import cint, get_datetime, now_datetime
 
 from hrms_sverige.lon.pin import hasha_pin, kontrollera_pin_regler, pin_stammer
+from hrms_sverige.lon.regler import extra_tid, timmar
+from hrms_sverige.lon.tid import planerat_skift
 
 HR_ROLLER = ("HR Manager", "HR User")
 
@@ -121,8 +123,29 @@ def _senaste(employee: str, nu) -> frappe._dict | None:
 	return rader[0] if rader else None
 
 
+DUBBELTRYCK = timedelta(seconds=60)
+RIKTNINGAR = ("IN", "OUT")
+ERSATTNINGAR = ("Pengar", "Komptid")
+
+
 def _fraga_overtid(employee: str, nu) -> tuple[bool, int]:
-	return False, 0
+	"""Fråga om pengar eller komptid när passet har mer extra tid än gränsen utanför skiftet."""
+	instampling = frappe.get_all(
+		"Employee Checkin",
+		filters={"employee": employee, "log_type": "IN", "time": ("between", [nu - timedelta(hours=24), nu])},
+		pluck="time",
+		order_by="time desc",
+		limit=1,
+	)
+	if not instampling:
+		return False, 0
+	start = get_datetime(instampling[0])
+	skift = planerat_skift(employee, start.date())
+	if not skift:
+		return False, 0
+	minuter = round(timmar(extra_tid((start, nu), skift)) * 60)
+	grans = cint(frappe.db.get_single_value("Loneinstallningar", "overtid_fraga_minuter") or 15)
+	return minuter > grans, minuter
 
 
 @frappe.whitelist(allow_guest=True, methods=["POST"])
@@ -131,6 +154,8 @@ def _fraga_overtid(employee: str, nu) -> tuple[bool, int]:
 def identifiera(enhet: str, anstallningsnummer: str, pin: str) -> dict:
 	_enhet(enhet)
 	rad = _anstalld(anstallningsnummer, pin)
+	if rad.stampel_pin_maste_bytas:
+		return {"fornamn": rad.first_name, "maste_byta_pin": True}
 	nu = now_datetime()
 	senaste = _senaste(rad.name, nu)
 	riktning = "OUT" if senaste and senaste.log_type == "IN" else "IN"
@@ -138,7 +163,7 @@ def identifiera(enhet: str, anstallningsnummer: str, pin: str) -> dict:
 	return {
 		"fornamn": rad.first_name,
 		"riktning": riktning,
-		"maste_byta_pin": bool(rad.stampel_pin_maste_bytas),
+		"maste_byta_pin": False,
 		"fraga_overtid": fraga,
 		"forval": rad.overtid_som or "Pengar",
 		"extra_minuter": minuter,
@@ -159,3 +184,32 @@ def byt_pin(enhet: str, anstallningsnummer: str, pin: str, ny_pin: str) -> dict:
 		update_modified=False,
 	)
 	return {"ok": True}
+
+
+@frappe.whitelist(allow_guest=True, methods=["POST"])
+@rate_limit(key="enhet", limit=30, seconds=60)
+@_svar
+def stampla(
+	enhet: str, anstallningsnummer: str, pin: str, log_type: str, overtidsersattning: str | None = None
+) -> dict:
+	namn = _enhet(enhet)
+	rad = _anstalld(anstallningsnummer, pin)
+	if rad.stampel_pin_maste_bytas:
+		raise Nekad(FEL_BYT_PIN)
+	if log_type not in RIKTNINGAR or (overtidsersattning and overtidsersattning not in ERSATTNINGAR):
+		raise Nekad("Ogiltig stämpling.")
+	nu = now_datetime()
+	senaste = _senaste(rad.name, nu)
+	if senaste and nu - get_datetime(senaste.time) < DUBBELTRYCK:
+		raise Nekad("Du stämplade nyss.")
+	frappe.get_doc(
+		{
+			"doctype": "Employee Checkin",
+			"employee": rad.name,
+			"log_type": log_type,
+			"time": nu,
+			"device_id": namn,
+			"overtidsersattning": overtidsersattning if log_type == "OUT" else None,
+		}
+	).insert(ignore_permissions=True)
+	return {"fornamn": rad.first_name, "log_type": log_type, "tid": nu.strftime("%H:%M")}
