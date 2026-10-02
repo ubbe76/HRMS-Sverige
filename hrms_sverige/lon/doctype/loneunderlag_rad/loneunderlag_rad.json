@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "creation": "2026-10-02 15:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "employee",
+  "anstallningsnummer",
+  "leave_type",
+  "tidkod",
+  "from_date",
+  "to_date",
+  "omfattning",
+  "leave_application"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Anställd",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "anstallningsnummer",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Anställningsnummer",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "leave_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Frånvarotyp",
+   "options": "Leave Type",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "tidkod",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Tidkod",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Från",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Till",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "default": "100",
+   "fieldname": "omfattning",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Omfattning",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "leave_application",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Ledighetsansökan",
+   "options": "Leave Application",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-10-02 15:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Lon",
+ "name": "Loneunderlag Rad",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": []
+}

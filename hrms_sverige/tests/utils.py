@@ -71,3 +71,33 @@ def make_test_employee(first_name: str, **fields) -> str:
 	doc.update(fields)
 	doc.insert()
 	return doc.name
+
+
+def make_leave_application(
+	employee: str,
+	leave_type: str,
+	from_date: str,
+	to_date: str,
+	half_day: int = 0,
+	half_day_date: str | None = None,
+	submit: bool = True,
+) -> str:
+	"""Godkänd (och inskickad) ledighetsansökan i testbolaget."""
+	frappe.db.set_single_value("HR Settings", "leave_approver_mandatory_in_leave_application", 0)
+	doc = frappe.get_doc(
+		{
+			"doctype": "Leave Application",
+			"employee": employee,
+			"company": COMPANY,
+			"leave_type": leave_type,
+			"from_date": from_date,
+			"to_date": to_date,
+			"half_day": half_day,
+			"half_day_date": half_day_date,
+			"posting_date": from_date,
+			"status": "Approved" if submit else "Open",
+		}
+	).insert()
+	if submit:
+		doc.submit()
+	return doc.name

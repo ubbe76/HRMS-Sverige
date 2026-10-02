@@ -157,6 +157,11 @@ doc_events = {
 	"Version": {
 		"before_insert": "hrms_sverige.hr.personnummer.strip_from_version",
 	},
+	"Leave Application": {
+		"on_submit": "hrms_sverige.lon.franvaro.varna_om_exporterad",
+		"before_cancel": "hrms_sverige.lon.franvaro.tillat_makulering",
+		"on_cancel": "hrms_sverige.lon.franvaro.varna_om_exporterad",
+	},
 }
 
 # Scheduled Tasks

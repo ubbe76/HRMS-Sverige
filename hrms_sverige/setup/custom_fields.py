@@ -33,6 +33,18 @@ def get_custom_fields():
 				"insert_after": "arbetsdagar_per_vecka",
 			},
 		],
+		"Leave Type": [
+			{
+				"fieldname": "paxml_tidkod",
+				"label": _("PAXml-tidkod"),
+				"fieldtype": "Data",
+				"insert_after": "leave_type_name",
+				"description": _(
+					"Kod i löneunderlaget till lönesystemet, t.ex. SEM, SJK eller VAB. "
+					"Lönesystemet kopplar koden till rätt löneart."
+				),
+			},
+		],
 	}
 
 
