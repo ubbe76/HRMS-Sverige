@@ -79,6 +79,8 @@ def rader_for_period(company: str, from_date, to_date) -> list[dict]:
 
 def varna_om_exporterad(doc, method=None):
 	"""Varna när en ledighet ändras i en period som redan finns i ett godkänt löneunderlag."""
+	if not frappe.db.table_exists("Loneunderlag"):
+		return  # koden kan vara driftsatt innan migrate har skapat tabellen
 	underlag = frappe.get_all(
 		"Loneunderlag",
 		filters={
@@ -98,3 +100,12 @@ def varna_om_exporterad(doc, method=None):
 			title=_("Perioden är redan exporterad"),
 			indicator="orange",
 		)
+
+
+def tillat_makulering(doc, method=None):
+	"""Ett godkänt löneunderlag ska inte hindra att ledigheten makuleras; varna_om_exporterad varnar i stället."""
+	doc.ignore_linked_doctypes = [
+		*(doc.get("ignore_linked_doctypes") or []),
+		"Loneunderlag",
+		"Loneunderlag Rad",
+	]

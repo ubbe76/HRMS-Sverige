@@ -12,6 +12,15 @@ from xml.etree import ElementTree as ET
 XSI = "http://www.w3.org/2001/XMLSchema-instance"
 SCHEMA = "http://www.paxml.se/2.0/paxml.xsd"
 
+# Tidkoder som schemat tillåter (tidkodTYPE i paxml.xsd)
+TIDKODER = frozenset(
+	"SJK SJK_KAR SJK_LÖN SJK_ERS SJK_PEN ASK HAV FPE VAB SMB UTB MIL SVE NÄR TJL SEM SEM_BET SEM_SPA SEM_OBE "
+	"SEM_FÖR KOM PEM PER FAC ATK KON PAP ATF FR1 FR2 FR3 FR4 FR5 FR6 FR7 FR8 FR9 FLX SCH TS1 TS2 TS3 TS4 TS5 "
+	"TS6 TS7 TS8 TS9 TID ARB MER ÖT1 ÖT2 ÖT3 ÖT4 ÖT5 ÖK1 ÖK2 ÖK3 ÖK4 ÖK5 OB1 OB2 OB3 OB4 OB5 OS1 OS2 OS3 "
+	"OS4 OS5 JR1 JR2 JR3 JS1 JS2 JS3 BE1 BE2 BE3 BS1 BS2 BS3 RE1 RE2 RE3 HLG SKI LT1 LT2 LT3 LT4 LT5 LT6 "
+	"LT7 LT8 LT9 NV1 NV2 NV3 NV4 NV5 NV6 NV7 NV8 NV9".split()
+)
+
 
 @dataclass(frozen=True)
 class Huvud:

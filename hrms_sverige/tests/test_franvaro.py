@@ -4,7 +4,7 @@ from unittest.mock import patch
 import frappe
 from frappe.tests import IntegrationTestCase, UnitTestCase
 
-from hrms_sverige.lon.franvaro import dela_upp, rader_for_period
+from hrms_sverige.lon.franvaro import dela_upp, rader_for_period, varna_om_exporterad
 from hrms_sverige.setup.holidays import create_holiday_list
 from hrms_sverige.setup.leave import ensure_leave_types
 from hrms_sverige.tests.utils import COMPANY, ensure_test_company, make_leave_application, make_test_employee
@@ -167,3 +167,26 @@ class TestVarningExporteradPeriod(IntegrationTestCase):
 		with patch("frappe.msgprint") as msgprint:
 			make_leave_application(self.anstalld, "Sjukfrånvaro", "2032-10-05", "2032-10-05")
 		self.assertFalse(self.varnade(msgprint))
+
+	def test_makulering_av_exporterad_ansokan_tillats_med_varning(self):
+		ansokan = make_leave_application(self.anstalld, "Sjukfrånvaro", "2032-09-06", "2032-09-06")
+		underlag = frappe.get_doc(
+			{"doctype": "Loneunderlag", "company": COMPANY, "ar": 2032, "manad": "September"}
+		)
+		underlag.hamta_franvaro()
+		self.assertIn(ansokan, [r.leave_application for r in underlag.rader])
+		underlag.submit()
+		with patch("frappe.msgprint") as msgprint:
+			frappe.get_doc("Leave Application", ansokan).cancel()
+		self.assertEqual(frappe.db.get_value("Leave Application", ansokan, "docstatus"), 2)
+		self.assertTrue(self.varnade(msgprint))
+		self.assertEqual(frappe.db.get_value("Loneunderlag", underlag.name, "docstatus"), 1)
+
+	def test_utan_tabell_gor_hooken_ingenting(self):
+		# Koden kan vara driftsatt innan migrate har skapat tabellen
+		ansokan = frappe._dict(company=COMPANY, from_date="2032-08-10", to_date="2032-08-10")
+		with (
+			patch("frappe.db.table_exists", return_value=False),
+			patch("frappe.get_all", side_effect=AssertionError("tabellen frågades")),
+		):
+			varna_om_exporterad(ansokan)

@@ -128,3 +128,31 @@ class TestLoneunderlag(IntegrationTestCase):
 		ny.insert()
 		ny.submit()
 		self.assertEqual(ny.docstatus, 1)
+
+	def test_ogiltig_tidkod_stoppar(self):
+		frappe.db.set_value("Leave Type", "Sjukfrånvaro", "paxml_tidkod", "SJUK")
+		doc = nytt_underlag("Augusti", 2031)
+		doc.append("rader", rad(self.anstalld, "Sjukfrånvaro", "2031-08-04", "2031-08-04"))
+		doc.save()
+		self.assertRaisesRegex(frappe.ValidationError, "SJUK", doc.submit)
+
+	def test_ogiltig_omfattning_stoppar(self):
+		for omfattning in (0, 150):
+			doc = nytt_underlag("September", 2031)
+			doc.append("rader", rad(self.anstalld, "Sjukfrånvaro", "2031-09-01", "2031-09-01", omfattning))
+			doc.save()
+			self.assertRaisesRegex(frappe.ValidationError, "Omfattning", doc.submit)
+
+	def test_datum_utanfor_manaden_eller_omvanda_stoppar(self):
+		for from_date, to_date in (("2031-11-28", "2031-12-02"), ("2031-11-10", "2031-11-05")):
+			doc = nytt_underlag("November", 2031)
+			doc.append("rader", rad(self.anstalld, "Sjukfrånvaro", from_date, to_date))
+			doc.save()
+			self.assertRaisesRegex(frappe.ValidationError, "datum", doc.submit)
+
+	def test_delat_anstallningsnummer_stoppar(self):
+		make_test_employee("Lön Dubblett", employee_number="L-1")
+		doc = nytt_underlag("December", 2031)
+		doc.append("rader", rad(self.anstalld, "Sjukfrånvaro", "2031-12-01", "2031-12-01"))
+		doc.save()
+		self.assertRaisesRegex(frappe.ValidationError, "L-1", doc.submit)

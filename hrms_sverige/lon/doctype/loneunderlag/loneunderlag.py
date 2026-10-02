@@ -10,7 +10,7 @@ from frappe.utils import getdate, now_datetime
 
 import hrms_sverige
 from hrms_sverige.lon.franvaro import rader_for_period
-from hrms_sverige.lon.paxml import Huvud, Tidtransaktion, bygg_paxml, orgnr_fran_tax_id
+from hrms_sverige.lon.paxml import TIDKODER, Huvud, Tidtransaktion, bygg_paxml, orgnr_fran_tax_id
 
 MANADER = [
 	"Januari",
@@ -64,6 +64,35 @@ class Loneunderlag(Document):
 				_("Frånvarotyper utan PAXml-tidkod: {0}. Ange koden på frånvarotypen.").format(
 					", ".join(utan_kod)
 				)
+			)
+		ogiltiga = sorted({r.tidkod for r in self.rader if r.tidkod not in TIDKODER})
+		if ogiltiga:
+			frappe.throw(
+				_(
+					"Okända PAXml-tidkoder: {0}. Använd en kod från PAXml-standarden, t.ex. SEM, SJK eller VAB."
+				).format(", ".join(ogiltiga))
+			)
+		for r in self.rader:
+			if not 0 < (r.omfattning or 0) <= 100:
+				frappe.throw(_("Rad {0}: Omfattning måste vara större än 0 och högst 100 %.").format(r.idx))
+			if not (
+				getdate(self.from_date) <= getdate(r.from_date) <= getdate(r.to_date) <= getdate(self.to_date)
+			):
+				frappe.throw(
+					_("Rad {0}: från- och till-datum måste ligga i {1} {2}, med från-datum först.").format(
+						r.idx, self.manad, self.ar
+					)
+				)
+		delade = sorted(
+			n
+			for n in {r.anstallningsnummer for r in self.rader}
+			if frappe.db.count("Employee", {"employee_number": n}) > 1
+		)
+		if delade:
+			frappe.throw(
+				_(
+					"Anställningsnummer som finns på flera anställda: {0}. Varje anställd måste ha ett eget nummer."
+				).format(", ".join(delade))
 			)
 		befintligt = frappe.db.get_value(
 			"Loneunderlag",
