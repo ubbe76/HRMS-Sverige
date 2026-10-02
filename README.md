@@ -28,6 +28,9 @@ Svensk anpassning av Frappe HRMS: personalregister, frånvaro/ledighet och närv
 - Övertid, mertid och OB: egna tidsregler i **Löneinställningar** (veckodagar, helgdagar och klockslag per nivå).
   Närvarons in- och utstämplingstid jämförs med planerat skift och ger MER, ÖT1–ÖT5 eller ÖK1–ÖK5 och OB1–OB5 i
   löneunderlaget. Valet pengar eller komptid tas från utstämplingen eller den anställdes förval.
+- Stämplingssida `/stampla` för en gemensam surfplatta eller dator: anställningsnummer och PIN-kod, in- och
+  utstämpling och val av pengar eller komptid vid övertid. Enheter registreras som **Stämplingsenhet** med en
+  hemlig länk; HR sätter PIN-koder med **Sätt PIN** på den anställde.
 
 ### Installation
 

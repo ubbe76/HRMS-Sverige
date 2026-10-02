@@ -8,6 +8,8 @@
   godkänd närvaro och frånvaro i timmar per planerat skift. Stämplingar utan närvaro stoppar godkännandet.
 - **Övertid, mertid och OB:** Löneinställningar med tidsregler, fälten Övertid som (anställd) och
   Övertidsersättning (stämpling). Tilläggsrader per närvaro; timavlönades ARB minskas med MER och ÖT/ÖK.
+- **Stämplingssida:** `/stampla` med anställningsnummer och PIN-kod, registrerade enheter, låsning efter fem
+  felaktiga försök och fråga om pengar eller komptid vid övertid.
 
 ## v0.1.0 – 2026-10-02 (pre-release)
 
