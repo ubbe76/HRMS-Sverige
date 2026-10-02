@@ -13,8 +13,8 @@
 ## Global Constraints
 
 - Appen `hrms_sverige` i `apps/hrms_sverige`, gren `feat/stampling`. Byt tillbaka till `version-16` när du lämnar arbetet; benchen delas med produktionssiten.
-- `bench`-kommandon från `/home/ubbe/ERPNext/my-frappe-bench`. Tester bara på `test-erp.local`. Aldrig `migrate` på `svensk-erp.local`.
-- Efter ändringar i doctype-JSON, custom fields eller `hooks.py`: `bench --site test-erp.local clear-cache && bench --site test-erp.local migrate`.
+- `bench`-kommandon från `~/frappe-bench`. Tester bara på `<testsite>`. Aldrig `migrate` på `<site>`.
+- Efter ändringar i doctype-JSON, custom fields eller `hooks.py`: `bench --site <testsite> clear-cache && bench --site <testsite> migrate`.
 - Tabbar, radlängd 110, ruff via pre-commit; inga tvetydiga tecken som `–` i kommentarer. Kör `pre-commit run --files <filer>` före commit och `git add` igen.
 - PIN: 4–6 siffror, inte bara samma siffra, ny skild från gammal. Lagras bara som hash (`passlibctx`).
 - Enhetsnyckel: `secrets.token_urlsafe(32)`, lagras bara som SHA-256-hex i `nyckel_hash`.
@@ -103,7 +103,7 @@ class TestPin(UnitTestCase):
 
 - [ ] **Step 3: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_pin`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_pin`
 Expected: ERROR, `ModuleNotFoundError: No module named 'hrms_sverige.lon.pin'`.
 
 - [ ] **Step 4: Implementera** – `hrms_sverige/lon/pin.py`:
@@ -142,7 +142,7 @@ def pin_stammer(pin: str, pin_hash: str | None) -> bool:
 
 - [ ] **Step 5: Kör testerna**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_pin`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_pin`
 Expected: OK (5 tester).
 
 - [ ] **Step 6: Commit**
@@ -379,7 +379,7 @@ class TestEnhetOchPin(StamplingTestCase):
 
 - [ ] **Step 5: Migrera och se dem fallera**
 
-Run: `bench --site test-erp.local clear-cache && bench --site test-erp.local migrate && bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
+Run: `bench --site <testsite> clear-cache && bench --site <testsite> migrate && bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
 Expected: ERROR, `ModuleNotFoundError: No module named 'hrms_sverige.lon.stampling'`.
 
 - [ ] **Step 6: Implementera** – `hrms_sverige/lon/stampling.py`:
@@ -475,7 +475,7 @@ och kompilera: `bench compile-po-to-mo --app hrms_sverige --locale sv --force`.
 
 - [ ] **Step 7: Migrera och kör testerna**
 
-Run: `bench --site test-erp.local clear-cache && bench --site test-erp.local migrate && bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
+Run: `bench --site <testsite> clear-cache && bench --site <testsite> migrate && bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
 Expected: OK (6 tester).
 
 - [ ] **Step 8: Commit**
@@ -589,7 +589,7 @@ class TestIdentifiera(StamplingTestCase):
 
 - [ ] **Step 2: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
 Expected: ERROR, `ImportError: cannot import name 'FEL_BYT_PIN'`.
 
 - [ ] **Step 3: Implementera** – lägg till i `hrms_sverige/lon/stampling.py` (utöka importerna: `from datetime import timedelta`, `from functools import wraps`, `from frappe import _`, `from frappe.rate_limiter import rate_limit`, `from frappe.utils import get_datetime, now_datetime`, `from hrms_sverige.lon.pin import hasha_pin, kontrollera_pin_regler, pin_stammer`):
@@ -719,7 +719,7 @@ def byt_pin(enhet: str, anstallningsnummer: str, pin: str, ny_pin: str) -> dict:
 
 - [ ] **Step 4: Kör testerna**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
 Expected: OK (17 tester).
 
 - [ ] **Step 5: Commit**
@@ -865,7 +865,7 @@ class TestStampla(StamplingTestCase):
 
 - [ ] **Step 2: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
 Expected: ERROR, `ImportError: cannot import name 'stampla'`.
 
 - [ ] **Step 3: Implementera** – i `hrms_sverige/lon/stampling.py`, importera `from frappe.utils import cint, get_datetime, now_datetime`, `from hrms_sverige.lon.regler import extra_tid, timmar` och `from hrms_sverige.lon.tid import planerat_skift`, ersätt `_fraga_overtid` och lägg till `stampla`:
@@ -936,12 +936,12 @@ och i `identifiera`, lägg efter `rad = _anstalld(...)`:
 
 - [ ] **Step 4: Kör testerna**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_stampling`
 Expected: OK (28 tester). `test_maste_byta_pin` i Task 3 förväntar `True`; svaret `{"fornamn":..., "maste_byta_pin": True}` uppfyller det.
 
 - [ ] **Step 5: Hela sviten**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige`
+Run: `bench --site <testsite> run-tests --app hrms_sverige`
 Expected: OK.
 
 - [ ] **Step 6: Commit**
@@ -1160,7 +1160,7 @@ def get_context(context):
 })();
 ```
 
-- [ ] **Step 4: Prova i webbläsaren** – på `test-erp.local` (`bench --site test-erp.local serve --port 8001` i bakgrunden):
+- [ ] **Step 4: Prova i webbläsaren** – på `<testsite>` (`bench --site <testsite> serve --port 8001` i bakgrunden):
   1. Skapa en Stämplingsenhet och en testanställd med anställningsnummer och skift; sätt PIN med Sätt PIN.
   2. Öppna länken från **Skapa länk**: anställningsnummer → PIN → byt PIN → "Hej …" → Stämpla in → kvittens.
   3. Ändra klockan går inte; kontrollera i stället att en checkin skapats med rätt enhet, och att fel PIN ger felmeddelandet.
@@ -1245,12 +1245,12 @@ Bygg: `.venv/bin/mkdocs build --strict -q` – Expected: exit 0.
 - [ ] **Step 4: Commit i båda repona, push, PR och CI**
 
 ```bash
-cd /home/ubbe/ERPNext/ERPNext-Sverige-docs
+cd <docs-repo>
 git add docs/personal/stampling.md mkdocs.yml
 git commit -m "docs: time clock" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_016yYYj5agMiCoxsTCe4usfY"
 git push; git checkout main
-cd /home/ubbe/ERPNext/my-frappe-bench/apps/hrms_sverige
+cd ~/frappe-bench/apps/hrms_sverige
 git add README.md CHANGELOG.md
 git commit -m "docs: document the time clock" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_016yYYj5agMiCoxsTCe4usfY"
@@ -1267,10 +1267,10 @@ Expected: CI grön.
 - [ ] **Step 5: Demo-siten och tillbaka till version-16**
 
 ```bash
-cd /home/ubbe/ERPNext/my-frappe-bench
-bench --site demo-erp.local clear-cache && bench --site demo-erp.local migrate
+cd ~/frappe-bench
+bench --site <demosite> clear-cache && bench --site <demosite> migrate
 git -C apps/hrms_sverige checkout version-16
-bench --site test-erp.local clear-cache && bench --site demo-erp.local clear-cache
+bench --site <testsite> clear-cache && bench --site <demosite> clear-cache
 ```
 
 Merge och produktion görs först efter användarens godkännande.

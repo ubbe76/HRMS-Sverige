@@ -89,7 +89,7 @@ Raderna `KONFLIKT` visar strängar där HRMS skriver över en rättelse i `erpne
 ### Tester
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige
+bench --site <testsite> run-tests --app hrms_sverige
 ```
 
 ### Licens

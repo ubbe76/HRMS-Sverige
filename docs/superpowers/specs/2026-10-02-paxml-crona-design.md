@@ -161,7 +161,7 @@ Behörigheter: HR Manager skapar, godkänner och makulerar; HR User skapar och l
 
 ## Tester
 
-Skrivs före koden (TDD), körs på `test-erp.local` och i CI.
+Skrivs före koden (TDD), körs på `<testsite>` och i CI.
 
 - **paxml.py:** filen valideras mot PAXml 2.0-schemat (`paxml.xsd`), som läggs in bland testfilerna så att CI inte
   beror på paxml.se. Huvudet, `<datum>` för endagsrader, intervall och omfattning, organisationsnumret.
@@ -181,6 +181,6 @@ provimportera med en anställd först. README och CHANGELOG uppdateras.
 ## Utrullning
 
 1. PR i HRMS-Sverige; CI ska gå igenom.
-2. `migrate` på test-erp.local och demo-erp.local, provkörning i webbläsaren.
+2. `migrate` på <testsite> och <demosite>, provkörning i webbläsaren.
 3. Provimport i Crona med en anställd (användaren). Avvikelser (t.ex. teckenkodning) rättas innan produktion.
-4. `migrate` på svensk-erp.local.
+4. `migrate` på <site>.

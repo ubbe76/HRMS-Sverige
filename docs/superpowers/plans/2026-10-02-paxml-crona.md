@@ -13,8 +13,8 @@
 ## Global Constraints
 
 - Appen är `hrms_sverige` i `apps/hrms_sverige` (eget git-repo, gren `version-16`). Arbeta på grenen `feat/paxml-crona`.
-- Alla `bench`-kommandon körs från `/home/ubbe/ERPNext/my-frappe-bench`. Tester körs **endast** på `test-erp.local`, aldrig på `svensk-erp.local` (produktion).
-- Benchen delas med produktionssiten: byt tillbaka till `version-16` (`git -C apps/hrms_sverige checkout version-16`) när du lämnar arbetet, och kör aldrig `migrate` på `svensk-erp.local` från grenen.
+- Alla `bench`-kommandon körs från `~/frappe-bench`. Tester körs **endast** på `<testsite>`, aldrig på `<site>` (produktion).
+- Benchen delas med produktionssiten: byt tillbaka till `version-16` (`git -C apps/hrms_sverige checkout version-16`) när du lämnar arbetet, och kör aldrig `migrate` på `<site>` från grenen.
 - Kodstil: tabbar, radlängd 110, ruff (pre-commit körs vid commit; om den formaterar om en fil, `git add` igen och committa på nytt).
 - Etiketter, meddelanden och kommentarer på svenska. Dokumentnamn i ASCII (`Loneunderlag`), svenska visningsnamn i `hrms_sverige/locale/sv.po`.
 - PAXml: version `2.0`, schema `http://www.paxml.se/2.0/paxml.xsd`, teckenkodning UTF-8, `<format>LÖNIN</format>`.
@@ -72,7 +72,7 @@
 - [ ] **Step 1: Skapa grenen**
 
 ```bash
-cd /home/ubbe/ERPNext/my-frappe-bench/apps/hrms_sverige
+cd ~/frappe-bench/apps/hrms_sverige
 git fetch -q && git checkout feat/paxml-crona && git merge -q --ff-only origin/version-16 || git rebase origin/version-16
 ```
 
@@ -113,7 +113,7 @@ class TestPaxmlTidkoder(IntegrationTestCase):
 
 - [ ] **Step 3: Kör och se det fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_leave`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_leave`
 Expected: FAIL/ERROR i `TestPaxmlTidkoder` (`ImportError: cannot import name 'PAXML_TIDKODER'`, eller okänd kolumn `paxml_tidkod`).
 
 - [ ] **Step 4: Lägg till fältet** – i `get_custom_fields()` i `hrms_sverige/setup/custom_fields.py`, lägg till nyckeln `"Leave Type"` i den returnerade dict:en (efter `"Employee": [...]`):
@@ -171,7 +171,7 @@ def after_migrate():
 
 - [ ] **Step 7: Kör testerna**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_leave`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_leave`
 Expected: OK, alla tester i modulen.
 
 - [ ] **Step 8: Commit**
@@ -288,7 +288,7 @@ class TestPaxml(UnitTestCase):
 
 - [ ] **Step 3: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_paxml`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_paxml`
 Expected: ERROR, `ModuleNotFoundError: No module named 'hrms_sverige.lon'`.
 
 - [ ] **Step 4: Implementera** – skapa tom `hrms_sverige/lon/__init__.py` och `hrms_sverige/lon/paxml.py`:
@@ -372,7 +372,7 @@ def bygg_paxml(huvud: Huvud, transaktioner: list[Tidtransaktion]) -> bytes:
 
 - [ ] **Step 5: Kör testerna**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_paxml`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_paxml`
 Expected: OK (7 tester).
 
 - [ ] **Step 6: Commit**
@@ -543,7 +543,7 @@ class TestRaderForPeriod(IntegrationTestCase):
 
 - [ ] **Step 3: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_franvaro`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_franvaro`
 Expected: ERROR, `ModuleNotFoundError: No module named 'hrms_sverige.lon.franvaro'`.
 
 - [ ] **Step 4: Implementera** – `hrms_sverige/lon/franvaro.py`:
@@ -629,7 +629,7 @@ def rader_for_period(company: str, from_date, to_date) -> list[dict]:
 
 - [ ] **Step 5: Kör testerna**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_franvaro`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_franvaro`
 Expected: OK (12 tester). Om HRMS stoppar en ledighetsansökan (t.ex. "Leave Approver" eller saknad helglista), läs felet och justera **testdata** i `make_leave_application`, inte logiken i `franvaro.py`.
 
 - [ ] **Step 6: Commit**
@@ -888,7 +888,7 @@ class TestLoneunderlag(IntegrationTestCase):
 
 - [ ] **Step 5: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local migrate && bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_loneunderlag`
+Run: `bench --site <testsite> migrate && bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_loneunderlag`
 Expected: ERROR, `ImportError` för `loneunderlag` (controllern finns inte än). `migrate` behövs för att skapa tabellerna och modulen `Lön`.
 
 - [ ] **Step 6: Controllern** – `hrms_sverige/lon/doctype/loneunderlag/loneunderlag.py`:
@@ -1075,15 +1075,15 @@ Kompilera: `bench compile-po-to-mo --app hrms_sverige --locale sv --force`
 
 - [ ] **Step 9: Migrera och kör testerna**
 
-Run: `bench --site test-erp.local migrate && bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_loneunderlag`
+Run: `bench --site <testsite> migrate && bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_loneunderlag`
 Expected: OK (11 tester).
 
 - [ ] **Step 10: Hela sviten**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige`
+Run: `bench --site <testsite> run-tests --app hrms_sverige`
 Expected: OK. `test_translations` får inte gå sönder (den kontrollerar bara HRMS etiketter, men kör den ändå).
 
-- [ ] **Step 11: Prova i webbläsaren** – starta testsiten (`bench --site test-erp.local serve --port 8001`, Administrator/admin), skapa ett Löneunderlag för en månad med frånvaro, klicka **Hämta frånvaro**, godkänn och **Ladda ner PAXml**. Kontrollera att filen öppnas och att knapparna visas på svenska.
+- [ ] **Step 11: Prova i webbläsaren** – starta testsiten (`bench --site <testsite> serve --port 8001`, Administrator/admin), skapa ett Löneunderlag för en månad med frånvaro, klicka **Hämta frånvaro**, godkänn och **Ladda ner PAXml**. Kontrollera att filen öppnas och att knapparna visas på svenska.
 
 - [ ] **Step 12: Commit**
 
@@ -1147,7 +1147,7 @@ class TestVarningExporteradPeriod(IntegrationTestCase):
 
 - [ ] **Step 2: Kör och se det fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_franvaro`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_franvaro`
 Expected: FAIL i `test_varning_vid_godkannande_i_exporterad_manad` och `test_varning_vid_makulering` (ingen varning).
 
 - [ ] **Step 3: Implementera** – lägg sist i `hrms_sverige/lon/franvaro.py` (och `from frappe import _` överst):
@@ -1187,7 +1187,7 @@ och i `hrms_sverige/hooks.py`, lägg till i `doc_events`:
 
 - [ ] **Step 4: Kör testerna**
 
-Run: `bench --site test-erp.local clear-cache && bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_franvaro`
+Run: `bench --site <testsite> clear-cache && bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_franvaro`
 Expected: OK (15 tester). `clear-cache` behövs för att hooks.py ska läsas om.
 
 - [ ] **Step 5: Commit**
@@ -1204,8 +1204,8 @@ Claude-Session: https://claude.ai/code/session_016yYYj5agMiCoxsTCe4usfY"
 
 **Files:**
 - Modify: `README.md`, `CHANGELOG.md` (i `apps/hrms_sverige`)
-- Create: `/home/ubbe/ERPNext/ERPNext-Sverige-docs/docs/personal/loneunderlag.md`
-- Modify: `/home/ubbe/ERPNext/ERPNext-Sverige-docs/mkdocs.yml` (nav)
+- Create: `<docs-repo>/docs/personal/loneunderlag.md`
+- Modify: `<docs-repo>/mkdocs.yml` (nav)
 
 - [ ] **Step 1: README** – lägg till en punkt sist i listan under "## HRMS Sverige":
 
@@ -1283,16 +1283,16 @@ och i `mkdocs.yml`, ändra raden `  - Personal: personal/index.md` till:
       - Löneunderlag till Crona: personal/loneunderlag.md
 ```
 
-Bygg: `cd /home/ubbe/ERPNext/ERPNext-Sverige-docs && .venv/bin/mkdocs build --strict -q` – Expected: inga fel.
+Bygg: `cd <docs-repo> && .venv/bin/mkdocs build --strict -q` – Expected: inga fel.
 
 - [ ] **Step 4: Commit i båda repona** (docs-repot på en egen gren `personal/loneunderlag`, publiceras först när appens PR är mergad):
 
 ```bash
-cd /home/ubbe/ERPNext/my-frappe-bench/apps/hrms_sverige
+cd ~/frappe-bench/apps/hrms_sverige
 git add README.md CHANGELOG.md
 git commit -m "docs: document the Löneunderlag export" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_016yYYj5agMiCoxsTCe4usfY"
-cd /home/ubbe/ERPNext/ERPNext-Sverige-docs
+cd <docs-repo>
 git checkout -b personal/loneunderlag
 git add docs/personal/loneunderlag.md mkdocs.yml
 git commit -m "docs: payroll export to Crona Lön" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
@@ -1302,7 +1302,7 @@ Claude-Session: https://claude.ai/code/session_016yYYj5agMiCoxsTCe4usfY"
 - [ ] **Step 5: Push, PR och CI**
 
 ```bash
-cd /home/ubbe/ERPNext/my-frappe-bench/apps/hrms_sverige
+cd ~/frappe-bench/apps/hrms_sverige
 git push -u origin feat/paxml-crona
 gh pr create --base version-16 --title "Löneunderlag till Crona Lön (PAXml), del A" --body-file <(printf '%s\n' "Godkänd frånvaro per bolag och månad som PAXml 2.0-fil till Crona Lön. Spec: docs/superpowers/specs/2026-10-02-paxml-crona-design.md" "" "🤖 Generated with [Claude Code](https://claude.com/claude-code)" "" "https://claude.ai/code/session_016yYYj5agMiCoxsTCe4usfY")
 gh run watch --exit-status $(gh run list --branch feat/paxml-crona --limit 1 --json databaseId -q '.[0].databaseId')
@@ -1312,9 +1312,9 @@ Expected: CI grön.
 - [ ] **Step 6: Demo-siten och tillbaka till version-16**
 
 ```bash
-cd /home/ubbe/ERPNext/my-frappe-bench
-bench --site demo-erp.local migrate
+cd ~/frappe-bench
+bench --site <demosite> migrate
 git -C apps/hrms_sverige checkout version-16
 ```
 
-Merge, `migrate` på `svensk-erp.local` och publicering av manualen görs först efter användarens godkännande och provimport i Crona (spec, avsnitt Utrullning).
+Merge, `migrate` på `<site>` och publicering av manualen görs först efter användarens godkännande och provimport i Crona (spec, avsnitt Utrullning).

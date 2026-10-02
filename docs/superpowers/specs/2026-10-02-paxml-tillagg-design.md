@@ -124,7 +124,7 @@ ARB, eftersom OB är ett tillägg. Blir ARB 0 eller mindre tas raden inte med. M
 
 ## Tester
 
-Skrivs före koden (TDD) och körs på `test-erp.local` och i CI.
+Skrivs före koden (TDD) och körs på `<testsite>` och i CI.
 
 - **regler.py:**
   - period över midnatt;
@@ -167,7 +167,7 @@ README och CHANGELOG uppdateras.
 Utrullningen görs tillsammans med del A och B, efter provimporten i Crona:
 
 1. PR i HRMS-Sverige. CI ska gå igenom.
-2. `clear-cache` och `migrate` på test-erp.local och demo-erp.local. Provkörning med tidsregler och en anställd med
+2. `clear-cache` och `migrate` på <testsite> och <demosite>. Provkörning med tidsregler och en anställd med
    övertid och OB.
 3. Provimport i Crona (användaren).
-4. `clear-cache` och `migrate` på svensk-erp.local.
+4. `clear-cache` och `migrate` på <site>.
