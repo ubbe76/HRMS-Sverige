@@ -2,7 +2,7 @@ app_name = "hrms_sverige"
 app_title = "HRMS Sverige"
 app_publisher = "Urban Källefors"
 app_description = "Swedish localization of Frappe HRMS"
-app_email = "18618863+ubbe76@users.noreply.github.com"
+app_email = "erpnext@kallefors.se"
 app_license = "gpl-3.0"
 
 # Apps
