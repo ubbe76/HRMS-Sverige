@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/images/hrms-sverige-dark.svg">
+    <img alt="HRMS Sverige" src=".github/images/hrms-sverige.svg" width="420">
+  </picture>
+</p>
+
 ## HRMS Sverige
 
 Svensk anpassning av Frappe HRMS: personalregister, frånvaro/ledighet och närvaro.
