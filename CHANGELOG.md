@@ -1,5 +1,10 @@
 # Ändringslogg
 
+## Ej släppt
+
+- **Löneunderlag till Crona Lön:** godkänd frånvaro per bolag och månad som PAXml 2.0-fil, med PAXml-tidkod på
+  frånvarotypen och varning när en redan exporterad månad ändras. Arbetad tid och tillägg kommer senare.
+
 ## v0.1.0 – 2026-10-02 (pre-release)
 
 Första versionen. Kräver Frappe, ERPNext och Frappe HR version 16. Detaljer finns i [README](README.md) och i
