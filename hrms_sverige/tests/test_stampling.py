@@ -8,6 +8,7 @@ from hrms_sverige.lon.pin import pin_stammer
 from hrms_sverige.lon.stampling import (
 	FEL_BYT_PIN,
 	FEL_ENHET,
+	FEL_ENHET_SPARRAD,
 	FEL_INLOGGNING,
 	FEL_LAST,
 	byt_pin,
@@ -40,6 +41,7 @@ class StamplingTestCase(IntegrationTestCase):
 
 	def setUp(self):
 		frappe.db.savepoint("stampling_test")
+		frappe.cache.delete_keys("stampla:")
 
 	def tearDown(self):
 		frappe.set_user("Administrator")
@@ -170,6 +172,12 @@ class TestIdentifiera(StamplingTestCase):
 		self.assertIn("fel", byt_pin(self.nyckel, "ID-1", "4821", "4821"))
 		self.assertIn("fel", byt_pin(self.nyckel, "ID-1", "4821", "12"))
 
+	def test_enheten_sparras_efter_tio_fel(self):
+		# Gissningar mot många anställningsnummer från samma enhet
+		for i in range(10):
+			identifiera(self.nyckel, f"GISSA-{i}", "2468")
+		self.assertEqual(identifiera(self.nyckel, "ID-1", "4821"), {"fel": FEL_ENHET_SPARRAD})
+
 	def test_byt_pin_med_fel_gammal_pin(self):
 		self.assertEqual(byt_pin(self.nyckel, "ID-1", "0000", "8264"), {"fel": FEL_INLOGGNING})
 		self.assertEqual(frappe.db.get_value("Employee", self.anstalld, "stampel_fel_forsok"), 1)
@@ -224,6 +232,14 @@ class TestStampla(StamplingTestCase):
 			stampla(self.nyckel, "ST-1", "4821", "IN")
 		with klockan(8, 0):
 			self.assertEqual(stampla(self.nyckel, "ST-1", "4821", "OUT"), {"fel": "Du stämplade nyss."})
+		self.assertEqual(len(self.checkins()), 1)
+
+	def test_samtidiga_tryck_stoppas(self):
+		# Två samtidiga anrop: den andra ser ännu inte den första stämplingen i databasen
+		with klockan(8):
+			stampla(self.nyckel, "ST-1", "4821", "IN")
+			with patch("hrms_sverige.lon.stampling._senaste", return_value=None):
+				self.assertEqual(stampla(self.nyckel, "ST-1", "4821", "IN"), {"fel": "Du stämplade nyss."})
 		self.assertEqual(len(self.checkins()), 1)
 
 	def test_ogiltig_riktning_och_val(self):

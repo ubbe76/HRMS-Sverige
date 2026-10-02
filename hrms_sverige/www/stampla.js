@@ -14,14 +14,15 @@
 	}
 	let lage = {};
 	let timer;
+	let upptagen = false;
 
-	function visa(rubrik, text, falt) {
+	function visa(rubrik, text, falt, sekunder = 30) {
 		$("rubrik").textContent = rubrik;
 		$("text").textContent = text || "";
 		$("falt").textContent = falt || "";
 		$("fel").textContent = "";
 		clearTimeout(timer);
-		timer = setTimeout(start, 30000);
+		timer = setTimeout(start, sekunder * 1000);
 	}
 
 	function fel(meddelande) {
@@ -29,9 +30,15 @@
 	}
 
 	function anropa(funktion, args) {
+		// Dubbeltryck på pekskärmen: ignorera nya tryck medan ett anrop pågår
+		if (upptagen) return new Promise(() => {});
+		upptagen = true;
 		return frappe
 			.call({ method: METOD + funktion, type: "POST", args: { enhet, ...args } })
-			.then((r) => r.message || {});
+			.then((r) => r.message || {})
+			.finally(() => {
+				upptagen = false;
+			});
 	}
 
 	function knappsats(etikett, dold, klar) {
@@ -119,7 +126,7 @@
 		rutnat.appendChild(knapp(text[s.riktning], "stor", () => fortsatt(s.riktning)));
 		rutnat.appendChild(knapp(text[andra], "andra", () => fortsatt(andra)));
 		yta.appendChild(rutnat);
-		visa(`Hej ${s.fornamn}!`, "");
+		visa(`Hej ${s.fornamn}!`, "", "", 10);
 	}
 
 	function fortsatt(riktning) {
@@ -139,7 +146,9 @@
 		yta.appendChild(rutnat);
 		visa(
 			"Övertid",
-			`Du har ${lage.svar.extra_minuter} minuter utanför ditt skift. Vill du ha pengar eller komptid?`
+			`Du har ${lage.svar.extra_minuter} minuter utanför ditt skift. Vill du ha pengar eller komptid?`,
+			"",
+			10
 		);
 	}
 

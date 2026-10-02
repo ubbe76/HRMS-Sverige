@@ -41,8 +41,11 @@ FEL_ENHET = "Enheten är inte registrerad. Be HR om en ny länk."
 FEL_INLOGGNING = "Fel anställningsnummer eller PIN-kod"
 FEL_LAST = "För många felaktiga försök. Försök igen senare."
 FEL_BYT_PIN = "Byt PIN-kod först."
+FEL_ENHET_SPARRAD = "Enheten är tillfälligt spärrad efter för många felaktiga försök. Kontakta HR."
 MAX_FORSOK = 5
 LASTID = timedelta(minutes=15)
+MAX_FEL_PER_ENHET = 10
+ENHET_SPARRTID = 15 * 60  # sekunder
 
 
 class Nekad(Exception):
@@ -69,11 +72,24 @@ def _enhet(nyckel: str) -> str:
 	namn = frappe.db.get_value("Stamplingsenhet", {"nyckel_hash": nyckel_hash(nyckel), "aktiv": 1})
 	if not nyckel or not namn:
 		raise Nekad(FEL_ENHET)
+	if int(frappe.cache.get(_enhet_fel_nyckel(namn)) or 0) >= MAX_FEL_PER_ENHET:
+		raise Nekad(FEL_ENHET_SPARRAD)
 	frappe.db.set_value("Stamplingsenhet", namn, "senast_anvand", now_datetime(), update_modified=False)
 	return namn
 
 
-def _anstalld(anstallningsnummer: str, pin: str) -> frappe._dict:
+def _enhet_fel_nyckel(namn: str) -> str:
+	return frappe.cache.make_key(f"stampla:fel:{namn}")
+
+
+def _rakna_enhetsfel(namn: str) -> None:
+	"""Felaktiga försök per enhet, oavsett anställningsnummer: stoppar gissning mot många anställda."""
+	nyckel = _enhet_fel_nyckel(namn)
+	if frappe.cache.incr(nyckel) == 1:
+		frappe.cache.expire(nyckel, ENHET_SPARRTID)
+
+
+def _anstalld(anstallningsnummer: str, pin: str, enhet: str) -> frappe._dict:
 	rad = frappe.db.get_value(
 		"Employee",
 		{"employee_number": (anstallningsnummer or "").strip(), "status": "Active"},
@@ -89,12 +105,19 @@ def _anstalld(anstallningsnummer: str, pin: str) -> frappe._dict:
 		as_dict=True,
 	)
 	if not rad:
+		_rakna_enhetsfel(enhet)
 		raise Nekad(FEL_INLOGGNING)
 	nu = now_datetime()
 	if rad.stampel_last_till and get_datetime(rad.stampel_last_till) > nu:
 		raise Nekad(FEL_LAST)
 	if not pin_stammer(pin, rad.stampel_pin_hash):
-		forsok = (rad.stampel_fel_forsok or 0) + 1
+		_rakna_enhetsfel(enhet)
+		# Räknas upp i databasen, så att samtidiga felaktiga försök inte skriver över varandra
+		frappe.db.sql(
+			"update `tabEmployee` set stampel_fel_forsok = ifnull(stampel_fel_forsok, 0) + 1 where name = %s",
+			rad.name,
+		)
+		forsok = frappe.db.get_value("Employee", rad.name, "stampel_fel_forsok")
 		if forsok >= MAX_FORSOK:
 			frappe.db.set_value(
 				"Employee",
@@ -102,8 +125,6 @@ def _anstalld(anstallningsnummer: str, pin: str) -> frappe._dict:
 				{"stampel_fel_forsok": 0, "stampel_last_till": nu + LASTID},
 				update_modified=False,
 			)
-		else:
-			frappe.db.set_value("Employee", rad.name, "stampel_fel_forsok", forsok, update_modified=False)
 		raise Nekad(FEL_INLOGGNING)
 	if rad.stampel_fel_forsok or rad.stampel_last_till:
 		frappe.db.set_value(
@@ -152,8 +173,8 @@ def _fraga_overtid(employee: str, nu) -> tuple[bool, int]:
 @rate_limit(key="enhet", limit=30, seconds=60)
 @_svar
 def identifiera(enhet: str, anstallningsnummer: str, pin: str) -> dict:
-	_enhet(enhet)
-	rad = _anstalld(anstallningsnummer, pin)
+	namn = _enhet(enhet)
+	rad = _anstalld(anstallningsnummer, pin, namn)
 	if rad.stampel_pin_maste_bytas:
 		return {"fornamn": rad.first_name, "maste_byta_pin": True}
 	nu = now_datetime()
@@ -174,8 +195,8 @@ def identifiera(enhet: str, anstallningsnummer: str, pin: str) -> dict:
 @rate_limit(key="enhet", limit=30, seconds=60)
 @_svar
 def byt_pin(enhet: str, anstallningsnummer: str, pin: str, ny_pin: str) -> dict:
-	_enhet(enhet)
-	rad = _anstalld(anstallningsnummer, pin)
+	namn = _enhet(enhet)
+	rad = _anstalld(anstallningsnummer, pin, namn)
 	kontrollera_pin_regler(ny_pin, gammal=pin)
 	frappe.db.set_value(
 		"Employee",
@@ -193,14 +214,18 @@ def stampla(
 	enhet: str, anstallningsnummer: str, pin: str, log_type: str, overtidsersattning: str | None = None
 ) -> dict:
 	namn = _enhet(enhet)
-	rad = _anstalld(anstallningsnummer, pin)
+	rad = _anstalld(anstallningsnummer, pin, namn)
 	if rad.stampel_pin_maste_bytas:
 		raise Nekad(FEL_BYT_PIN)
 	if log_type not in RIKTNINGAR or (overtidsersattning and overtidsersattning not in ERSATTNINGAR):
 		raise Nekad("Ogiltig stämpling.")
 	nu = now_datetime()
 	senaste = _senaste(rad.name, nu)
-	if senaste and nu - get_datetime(senaste.time) < DUBBELTRYCK:
+	# Låset i Redis stoppar även samtidiga tryck, som ännu inte syns i databasen
+	las = frappe.cache.make_key(f"stampla:tryck:{rad.name}:{int(nu.timestamp()) // 60}")
+	if (senaste and nu - get_datetime(senaste.time) < DUBBELTRYCK) or not frappe.cache.set(
+		las, 1, nx=True, ex=120
+	):
 		raise Nekad("Du stämplade nyss.")
 	frappe.get_doc(
 		{

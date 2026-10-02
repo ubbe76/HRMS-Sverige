@@ -25,3 +25,7 @@ class TestPin(UnitTestCase):
 
 	def test_ny_maste_skilja_sig_fran_gammal(self):
 		self.assertRaisesRegex(frappe.ValidationError, "skilja sig", kontrollera_pin_regler, "4821", "4821")
+
+	def test_vanliga_pin_koder_stoppas(self):
+		for pin in ("1234", "4321", "12345", "123456", "654321", "2580", "1212", "0852"):
+			self.assertRaises(frappe.ValidationError, kontrollera_pin_regler, pin)
