@@ -38,6 +38,16 @@ HRMS_DEFAULT_LEAVE_TYPES = (
 	"Leave Without Pay",
 )
 
+# Standardkoder för frånvaro i PAXml 2.0. Lönesystemet (t.ex. Crona Lön) kopplar dem till lönearter.
+PAXML_TIDKODER = {
+	SEMESTER: "SEM",
+	"Sjukfrånvaro": "SJK",
+	"VAB": "VAB",
+	"Föräldraledighet": "FPE",
+	"Tjänstledighet": "TJL",
+	KOMPLEDIGHET: "KOM",
+}
+
 
 def remove_unused_hrms_leave_types():
 	"""Ta bort HRMS engelska standardtyper som inte används; de som är länkade behålls."""
@@ -98,3 +108,12 @@ def ensure_semester_policy() -> str:
 	doc.insert(ignore_permissions=True)
 	doc.submit()
 	return doc.name
+
+
+def ensure_paxml_tidkoder():
+	"""Sätt PAXml-tidkod på appens frånvarotyper där den saknas. Ändrade koder lämnas orörda."""
+	for leave_type, kod in PAXML_TIDKODER.items():
+		if frappe.db.exists("Leave Type", leave_type) and not frappe.db.get_value(
+			"Leave Type", leave_type, "paxml_tidkod"
+		):
+			frappe.db.set_value("Leave Type", leave_type, "paxml_tidkod", kod)

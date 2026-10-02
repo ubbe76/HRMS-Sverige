@@ -7,6 +7,7 @@ from hrms_sverige.setup.holidays import create_holiday_list
 from hrms_sverige.setup.leave import (
 	ensure_leave_period,
 	ensure_leave_types,
+	ensure_paxml_tidkoder,
 	ensure_semester_policy,
 	remove_unused_hrms_leave_types,
 )
@@ -23,6 +24,7 @@ def setup_all(company: str | None = None):
 	ensure_personnummer_permissions()
 	ensure_employment_types()
 	ensure_leave_types()
+	ensure_paxml_tidkoder()
 	remove_unused_hrms_leave_types()
 	ensure_semester_policy()
 	if company:
@@ -45,4 +47,5 @@ def after_setup_wizard(args: dict | None = None):
 def after_migrate():
 	# Migrate synkar om arbetsytor och ikoner från HRMS och kan visa dem igen.
 	create_custom_fields()
+	ensure_paxml_tidkoder()
 	hide_unused()

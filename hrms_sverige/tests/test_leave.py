@@ -102,3 +102,38 @@ class TestLeaveSetup(IntegrationTestCase):
 			self.assertFalse(frappe.db.exists("Leave Type", name), name)
 		for name in LEAVE_TYPES:
 			self.assertTrue(frappe.db.exists("Leave Type", name), name)
+
+
+class TestPaxmlTidkoder(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		from hrms_sverige.setup.custom_fields import create_custom_fields
+
+		create_custom_fields()
+		ensure_leave_types()
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def test_koder_forifylls(self):
+		from hrms_sverige.setup.leave import PAXML_TIDKODER, ensure_paxml_tidkoder
+
+		frappe.db.set_value("Leave Type", "VAB", "paxml_tidkod", None)
+		ensure_paxml_tidkoder()
+		for leave_type, kod in PAXML_TIDKODER.items():
+			self.assertEqual(frappe.db.get_value("Leave Type", leave_type, "paxml_tidkod"), kod, leave_type)
+
+	def test_andrad_kod_behalls(self):
+		from hrms_sverige.setup.leave import ensure_paxml_tidkoder
+
+		frappe.db.set_value("Leave Type", "Tjänstledighet", "paxml_tidkod", "FR1")
+		ensure_paxml_tidkoder()
+		self.assertEqual(frappe.db.get_value("Leave Type", "Tjänstledighet", "paxml_tidkod"), "FR1")
+
+	def test_after_migrate_fyller_i(self):
+		from hrms_sverige.setup.install import after_migrate
+
+		frappe.db.set_value("Leave Type", "Semester", "paxml_tidkod", None)
+		after_migrate()
+		self.assertEqual(frappe.db.get_value("Leave Type", "Semester", "paxml_tidkod"), "SEM")
