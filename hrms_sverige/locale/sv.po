@@ -7052,3 +7052,12 @@ msgstr "{} ej begärda"
 
 msgid "{} {} open for this position."
 msgstr "{} {} öppna för denna tjänst."
+
+msgid "Loneunderlag"
+msgstr "Löneunderlag"
+
+msgid "Loneunderlag Rad"
+msgstr "Löneunderlagsrad"
+
+msgid "Lon"
+msgstr "Lön"

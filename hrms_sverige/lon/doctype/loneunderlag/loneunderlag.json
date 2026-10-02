@@ -1,0 +1,119 @@
+{
+ "actions": [],
+ "autoname": "format:LU-{YYYY}-{#####}",
+ "creation": "2026-10-02 15:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "ar",
+  "manad",
+  "column_break_1",
+  "from_date",
+  "to_date",
+  "amended_from",
+  "section_rader",
+  "rader"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Bolag",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "ar",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "År",
+   "reqd": 1
+  },
+  {
+   "fieldname": "manad",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Månad",
+   "options": "Januari\nFebruari\nMars\nApril\nMaj\nJuni\nJuli\nAugusti\nSeptember\nOktober\nNovember\nDecember",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "Från",
+   "read_only": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "Till",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Ändrad från",
+   "no_copy": 1,
+   "options": "Loneunderlag",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_rader",
+   "fieldtype": "Section Break",
+   "label": "Frånvaro"
+  },
+  {
+   "fieldname": "rader",
+   "fieldtype": "Table",
+   "label": "Rader",
+   "options": "Loneunderlag Rad"
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-10-02 15:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Lon",
+ "name": "Loneunderlag",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR User",
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "company",
+ "track_changes": 1
+}
