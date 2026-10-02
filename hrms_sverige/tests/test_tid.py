@@ -147,6 +147,29 @@ class TestTid(IntegrationTestCase):
 		assign_shift(anstalld, self.dag, "2026-09-01")
 		self.assertIsNone(planerat_skift(anstalld, "2026-09-12"))
 
+	def test_helgdag_enligt_lista_for_datumet_inte_idag(self):
+		# Lönekörning i efterskott: idag gäller en annan helglista än för dagen som räknas
+		anstalld = self.timanstalld("Tid Lista", "T-23")
+		assign_shift(anstalld, self.dag, "2026-09-01")
+		frappe.get_doc(
+			{
+				"doctype": "Holiday List",
+				"holiday_list_name": "_Test Lista från oktober",
+				"from_date": "2026-10-01",
+				"to_date": "2027-09-30",
+			}
+		).insert()
+		frappe.get_doc(
+			{
+				"doctype": "Holiday List Assignment",
+				"applicable_for": "Employee",
+				"assigned_to": anstalld,
+				"holiday_list": "_Test Lista från oktober",
+				"from_date": "2026-10-01",
+			}
+		).submit()
+		self.assertIsNone(planerat_skift(anstalld, "2026-09-12"))  # lördag i 2026 års lista
+
 	def test_nattskift_med_utstampling_nasta_dag(self):
 		# HRMS daterar närvaron efter skiftets startdag; utstämplingen 06:00 ligger dagen efter
 		anstalld = self.timanstalld("Tid Nattpass", "T-12")

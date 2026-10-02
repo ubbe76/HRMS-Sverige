@@ -159,8 +159,17 @@ class Loneunderlag(Document):
 			frappe.throw(_("Frånvaro kan bara hämtas till ett utkast."))
 		self.check_permission("write")
 		self.satt_period()
+		# HR:s val av komptid eller pengar (ÖK/ÖT) per närvaro och nivå behålls när raderna hämtas igen
+		valt = {
+			(r.attendance, r.tidkod[2:]): r.tidkod[:2]
+			for r in self.rader
+			if r.attendance and (r.tidkod or "")[:2] in ("ÖT", "ÖK")
+		}
 		self.set("rader", [])
 		for rad in rader_for_period(self.company, self.from_date, self.to_date):
+			kod = rad.get("tidkod") or ""
+			if rad.get("attendance") and kod[:2] in ("ÖT", "ÖK"):
+				rad["tidkod"] = valt.get((rad["attendance"], kod[2:]), kod[:2]) + kod[2:]
 			self.append("rader", rad)
 		self.save()
 

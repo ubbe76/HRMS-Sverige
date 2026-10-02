@@ -371,3 +371,12 @@ class TestLoneunderlagTillagg(IntegrationTestCase):
 			doc.submit()
 		self.assertTrue(any("utan in- eller utstämplingstid" in str(c) for c in msgprint.call_args_list))
 		self.assertEqual(doc.docstatus, 1)
+
+	def test_hamta_igen_behaller_komptidsval(self):
+		doc = nytt_underlag()
+		doc.hamta_franvaro()
+		next(r for r in doc.rader if r.employee == self.tim and r.tidkod == "ÖT1").tidkod = "ÖK1"
+		doc.save()
+		doc.hamta_franvaro()
+		self.assertIn(("ÖK1", "2026-09-14", 2.5), self.egna(doc))
+		self.assertNotIn(("ÖT1", "2026-09-14", 2.5), self.egna(doc))

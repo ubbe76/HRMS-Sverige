@@ -1,13 +1,12 @@
 """Övertid, mertid och OB för löneunderlaget, räknat ur närvarons klockslag."""
 
-from datetime import date
+from datetime import date, timedelta
 
 import frappe
 from frappe.utils import flt, get_datetime, getdate, to_timedelta
-from hrms.utils.holiday_list import get_holiday_list_for_employee
 
 from hrms_sverige.lon.regler import OB, OVERTID, Tidsregel, dela_mertid, extra_tid, fordela, timmar
-from hrms_sverige.lon.tid import planerat_skift
+from hrms_sverige.lon.tid import ar_helgdag, planerat_skift
 
 DAGFALT = ("man", "tis", "ons", "tor", "fre", "lor", "son")
 NARVARO_STATUS = ("Present", "Half Day")
@@ -38,22 +37,35 @@ def heltid_per_dag() -> float:
 
 
 def helgdagar(employee: str, from_date, to_date) -> set[date]:
-	"""Röda dagar (inte vanliga veckoledigheter) i den anställdes helglista under perioden."""
-	lista = get_holiday_list_for_employee(employee, raise_exception=False, as_on=from_date)
-	if not lista:
-		return set()
-	return {
-		getdate(d)
-		for d in frappe.get_all(
-			"Holiday",
-			filters={
-				"parent": lista,
-				"weekly_off": 0,
-				"holiday_date": ("between", [getdate(from_date), getdate(to_date)]),
-			},
-			pluck="holiday_date",
-		)
-	}
+	"""Röda dagar (inte vanliga veckoledigheter) från dagen före till dagen efter perioden.
+
+	Varje dag slås upp i den helglista som gäller för just den dagen, så att en körning i efterskott eller
+	ett pass över årsskiftet får rätt år.
+	"""
+	dag, sista = getdate(from_date) - timedelta(days=1), getdate(to_date) + timedelta(days=1)
+	roda = set()
+	while dag <= sista:
+		if ar_helgdag(employee, dag, bara_roda=True):
+			roda.add(dag)
+		dag += timedelta(days=1)
+	return roda
+
+
+def arbetspass(attendance: str) -> list[tuple]:
+	"""In- och utstämplingspar kopplade till närvaron, så att raster inte räknas som arbetad tid."""
+	pass_, start = [], None
+	for logg in frappe.get_all(
+		"Employee Checkin",
+		filters={"attendance": attendance},
+		fields=["log_type", "time"],
+		order_by="time asc",
+	):
+		if logg.log_type == "IN" and start is None:
+			start = get_datetime(logg.time)
+		elif logg.log_type == "OUT" and start is not None:
+			pass_.append((start, get_datetime(logg.time)))
+			start = None
+	return [p for p in pass_ if p[1] > p[0]]
 
 
 def overtidsval(attendance: str, employee: str) -> str:
@@ -101,17 +113,19 @@ def tillaggsrader(company: str, from_date, to_date) -> list[dict]:
 		if n.employee not in helg_cache:
 			helg_cache[n.employee] = helgdagar(n.employee, from_date, to_date)
 		helg = helg_cache[n.employee]
-		extra = extra_tid(arbetat, planerat_skift(n.employee, dag))
+		arbetat_pass = arbetspass(n.name) or [arbetat]
+		skift = planerat_skift(n.employee, dag)
+		extra = [e for p in arbetat_pass for e in extra_tid(p, skift)]
 		grad = flt(frappe.db.get_value("Employee", n.employee, "sysselsattningsgrad"))
 		if 0 < grad < 100:
-			inom = timmar([arbetat]) - timmar(extra)
+			inom = timmar(arbetat_pass) - timmar(extra)
 			mertid, overtid = dela_mertid(extra, inom, tak)
 		else:
 			mertid, overtid = [], extra
 		prefix = "ÖK" if overtidsval(n.name, n.employee) == KOMPTID else "ÖT"
 		koder = [("MER", timmar(mertid))]
 		koder += [(f"{prefix}{niva}", h) for niva, h in sorted(fordela(overtid, ot_regler, helg, 1).items())]
-		koder += [(f"OB{niva}", h) for niva, h in sorted(fordela([arbetat], ob_regler, helg).items())]
+		koder += [(f"OB{niva}", h) for niva, h in sorted(fordela(arbetat_pass, ob_regler, helg).items())]
 		for tidkod, h in koder:
 			if round(h, 2) > 0:
 				rader.append(

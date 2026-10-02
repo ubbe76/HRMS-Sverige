@@ -3,8 +3,8 @@
 from datetime import date, datetime, timedelta
 
 import frappe
-from erpnext.setup.doctype.employee.employee import is_holiday
 from frappe.utils import flt, getdate, to_timedelta
+from hrms.utils.holiday_list import get_holiday_list_for_employee
 
 TIMLON = "Timlön"
 ARB = "ARB"
@@ -22,10 +22,25 @@ def skiftlangd(start, slut) -> float:
 	return sekunder / 3600
 
 
+def ar_helgdag(employee: str, datum, bara_roda: bool = False) -> bool:
+	"""Helgdag enligt den helglista som gäller för datumet (inte för idag).
+
+	`bara_roda` räknar bara röda dagar, inte vanliga veckoledigheter.
+	"""
+	datum = getdate(datum)
+	lista = get_holiday_list_for_employee(employee, raise_exception=False, as_on=datum)
+	if not lista:
+		return False
+	filters = {"parent": lista, "holiday_date": datum}
+	if bara_roda:
+		filters["weekly_off"] = 0
+	return bool(frappe.db.exists("Holiday", filters))
+
+
 def planerat_skift(employee: str, datum) -> tuple[datetime, datetime] | None:
 	"""Det planerade skiftets start och slut den dagen; None på helgdagar och utan skift."""
 	datum = getdate(datum)
-	if is_holiday(employee, datum, raise_exception=False):
+	if ar_helgdag(employee, datum):
 		return None
 	tilldelningar = frappe.get_all(
 		"Shift Assignment",

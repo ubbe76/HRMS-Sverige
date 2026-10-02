@@ -192,3 +192,26 @@ class TestTillaggsrader(IntegrationTestCase):
 		make_attendance(a, "2026-09-17", 10)
 		self.assertEqual(self.egna(a), [])
 		self.assertEqual(narvaro_utan_klockslag(COMPANY, *SEPT).get(a), [date(2026, 9, 17)])
+
+	def test_rod_dag_dagen_efter_manaden(self):
+		# Nattpass 30 april till 1 maj (fredag, röd dag): timmarna efter midnatt ger helgdags-OB
+		natt = make_shift_type("_Test Natt", "22:00:00", "06:00:00")
+		a = self.anstalld("Till Valborg", "TL-11", natt)
+		make_attendance(a, "2026-04-30", 8, in_time="2026-04-30 22:00:00", out_time="2026-05-01 06:00:00")
+		rader = [
+			(r["tidkod"], r["timmar"])
+			for r in tillaggsrader(COMPANY, date(2026, 4, 1), date(2026, 4, 30))
+			if r["employee"] == a
+		]
+		self.assertEqual(rader, [("OB2", 2.0), ("OB3", 6.0)])
+
+	def test_rast_raknas_inte_som_extra_tid(self):
+		# Deltid 50 %, skift 08 till 12, stämplat 08-12 och 13-17: 4 h extra, allt mertid (rasten räknas inte)
+		a = self.anstalld("Till Rast", "TL-12", self.halv, sysselsattningsgrad=50)
+		narvaro = make_attendance(
+			a, "2026-09-18", 8, in_time="2026-09-18 08:00:00", out_time="2026-09-18 17:00:00"
+		)
+		for tid, typ in (("08:00", "IN"), ("12:00", "OUT"), ("13:00", "IN"), ("17:00", "OUT")):
+			stampling = make_checkin(a, f"2026-09-18 {tid}:00", typ)
+			frappe.db.set_value("Employee Checkin", stampling, "attendance", narvaro)
+		self.assertEqual(self.egna(a), [("MER", "2026-09-18", 4.0)])
