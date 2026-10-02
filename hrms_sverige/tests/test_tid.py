@@ -1,9 +1,15 @@
-from datetime import date
+from datetime import date, datetime
 
 import frappe
 from frappe.tests import IntegrationTestCase
 
-from hrms_sverige.lon.tid import arbetad_tid, planerade_timmar, skiftlangd, stamplingar_utan_narvaro
+from hrms_sverige.lon.tid import (
+	arbetad_tid,
+	planerade_timmar,
+	planerat_skift,
+	skiftlangd,
+	stamplingar_utan_narvaro,
+)
 from hrms_sverige.setup.custom_fields import create_custom_fields
 from hrms_sverige.setup.holidays import create_holiday_list
 from hrms_sverige.tests.utils import (
@@ -119,6 +125,27 @@ class TestTid(IntegrationTestCase):
 		anstalld = self.timanstalld("Tid Hoppa", "T-11")
 		make_checkin(anstalld, "2026-09-16 08:01:00", skip_auto_attendance=1)
 		self.assertNotIn(anstalld, stamplingar_utan_narvaro(COMPANY, *SEPT))
+
+	def test_planerat_skift_med_klockslag(self):
+		anstalld = self.timanstalld("Tid Klockslag", "T-20")
+		assign_shift(anstalld, self.dag, "2026-09-01")
+		self.assertEqual(
+			planerat_skift(anstalld, "2026-09-14"),
+			(datetime(2026, 9, 14, 8, 0), datetime(2026, 9, 14, 16, 30)),
+		)
+
+	def test_planerat_nattskift_slutar_nasta_dag(self):
+		anstalld = self.timanstalld("Tid Klockslag Natt", "T-21")
+		frappe.db.set_value("Employee", anstalld, "default_shift", self.natt)
+		self.assertEqual(
+			planerat_skift(anstalld, "2026-09-14"),
+			(datetime(2026, 9, 14, 22, 0), datetime(2026, 9, 15, 6, 0)),
+		)
+
+	def test_inget_planerat_skift_pa_helgdag(self):
+		anstalld = self.timanstalld("Tid Klockslag Helg", "T-22")
+		assign_shift(anstalld, self.dag, "2026-09-01")
+		self.assertIsNone(planerat_skift(anstalld, "2026-09-12"))
 
 	def test_nattskift_med_utstampling_nasta_dag(self):
 		# HRMS daterar närvaron efter skiftets startdag; utstämplingen 06:00 ligger dagen efter

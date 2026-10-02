@@ -1,6 +1,6 @@
 """Arbetad tid och planerade skift för timavlönade i löneunderlaget."""
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 import frappe
 from erpnext.setup.doctype.employee.employee import is_holiday
@@ -22,11 +22,11 @@ def skiftlangd(start, slut) -> float:
 	return sekunder / 3600
 
 
-def planerade_timmar(employee: str, datum) -> float:
-	"""Timmar enligt planerat skift den dagen; 0 på helgdagar och utan skift."""
+def planerat_skift(employee: str, datum) -> tuple[datetime, datetime] | None:
+	"""Det planerade skiftets start och slut den dagen; None på helgdagar och utan skift."""
 	datum = getdate(datum)
 	if is_holiday(employee, datum, raise_exception=False):
-		return 0.0
+		return None
 	tilldelningar = frappe.get_all(
 		"Shift Assignment",
 		filters={"employee": employee, "docstatus": 1, "status": "Active", "start_date": ("<=", datum)},
@@ -38,9 +38,16 @@ def planerade_timmar(employee: str, datum) -> float:
 	)
 	skift = skift or frappe.db.get_value("Employee", employee, "default_shift")
 	if not skift:
-		return 0.0
+		return None
 	start, slut = frappe.db.get_value("Shift Type", skift, ["start_time", "end_time"])
-	return skiftlangd(start, slut)
+	borjan = datetime.combine(datum, datetime.min.time()) + to_timedelta(start)
+	return borjan, borjan + timedelta(hours=skiftlangd(start, slut))
+
+
+def planerade_timmar(employee: str, datum) -> float:
+	"""Timmar enligt planerat skift den dagen; 0 på helgdagar och utan skift."""
+	skift = planerat_skift(employee, datum)
+	return (skift[1] - skift[0]).total_seconds() / 3600 if skift else 0.0
 
 
 def arbetad_tid(company: str, from_date, to_date) -> list[dict]:
