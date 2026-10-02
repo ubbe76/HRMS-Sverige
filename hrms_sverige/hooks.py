@@ -162,6 +162,11 @@ doc_events = {
 		"before_cancel": "hrms_sverige.lon.franvaro.tillat_makulering",
 		"on_cancel": "hrms_sverige.lon.franvaro.varna_om_exporterad",
 	},
+	"Attendance": {
+		"on_submit": "hrms_sverige.lon.franvaro.varna_om_exporterad",
+		"before_cancel": "hrms_sverige.lon.franvaro.tillat_makulering",
+		"on_cancel": "hrms_sverige.lon.franvaro.varna_om_exporterad",
+	},
 }
 
 # Scheduled Tasks

@@ -98,13 +98,15 @@ def varna_om_exporterad(doc, method=None):
 	"""Varna när en ledighet ändras i en period som redan finns i ett godkänt löneunderlag."""
 	if not frappe.db.table_exists("Loneunderlag"):
 		return  # koden kan vara driftsatt innan migrate har skapat tabellen
+	from_date = doc.get("from_date") or doc.get("attendance_date")
+	to_date = doc.get("to_date") or from_date
 	underlag = frappe.get_all(
 		"Loneunderlag",
 		filters={
 			"company": doc.company,
 			"docstatus": 1,
-			"from_date": ("<=", doc.to_date),
-			"to_date": (">=", doc.from_date),
+			"from_date": ("<=", to_date),
+			"to_date": (">=", from_date),
 		},
 		pluck="name",
 	)
