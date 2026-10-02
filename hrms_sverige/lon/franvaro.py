@@ -3,6 +3,7 @@
 from datetime import date, timedelta
 
 import frappe
+from frappe import _
 from frappe.utils import getdate
 
 HEL = 100
@@ -74,3 +75,26 @@ def rader_for_period(company: str, from_date, to_date) -> list[dict]:
 	)
 	rader.sort(key=lambda r: (nummer.get(r["employee"]) or "", r["employee"], r["from_date"]))
 	return rader
+
+
+def varna_om_exporterad(doc, method=None):
+	"""Varna när en ledighet ändras i en period som redan finns i ett godkänt löneunderlag."""
+	underlag = frappe.get_all(
+		"Loneunderlag",
+		filters={
+			"company": doc.company,
+			"docstatus": 1,
+			"from_date": ("<=", doc.to_date),
+			"to_date": (">=", doc.from_date),
+		},
+		pluck="name",
+	)
+	if underlag:
+		frappe.msgprint(
+			_(
+				"Perioden finns redan i godkänt löneunderlag {0}. Rätta frånvaron för hand i lönesystemet, "
+				"eller makulera löneunderlaget och gör om det."
+			).format(", ".join(underlag)),
+			title=_("Perioden är redan exporterad"),
+			indicator="orange",
+		)

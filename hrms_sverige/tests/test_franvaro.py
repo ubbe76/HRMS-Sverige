@@ -1,4 +1,5 @@
 from datetime import date
+from unittest.mock import patch
 
 import frappe
 from frappe.tests import IntegrationTestCase, UnitTestCase
@@ -117,3 +118,52 @@ class TestRaderForPeriod(IntegrationTestCase):
 		make_leave_application(b, "Sjukfrånvaro", "2026-09-01", "2026-09-01")
 		make_leave_application(a, "Sjukfrånvaro", "2026-09-02", "2026-09-02")
 		self.assertEqual([r["employee"] for r in self.egna([a, b])], [a, b])
+
+
+class TestVarningExporteradPeriod(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		from hrms_sverige.setup.custom_fields import create_custom_fields
+		from hrms_sverige.setup.leave import ensure_paxml_tidkoder
+
+		ensure_test_company()
+		create_custom_fields()
+		ensure_leave_types()
+		ensure_paxml_tidkoder()
+		create_holiday_list(2032, COMPANY)
+		cls.anstalld = make_test_employee("Varning", employee_number="V-1")
+		underlag = frappe.get_doc(
+			{"doctype": "Loneunderlag", "company": COMPANY, "ar": 2032, "manad": "Augusti"}
+		)
+		underlag.append(
+			"rader",
+			{
+				"employee": cls.anstalld,
+				"leave_type": "Sjukfrånvaro",
+				"from_date": "2032-08-03",
+				"to_date": "2032-08-03",
+				"omfattning": 100,
+			},
+		)
+		underlag.insert()
+		underlag.submit()
+
+	def varnade(self, msgprint):
+		return any("redan exporterad" in str(c) for c in msgprint.call_args_list)
+
+	def test_varning_vid_godkannande_i_exporterad_manad(self):
+		with patch("frappe.msgprint") as msgprint:
+			make_leave_application(self.anstalld, "Sjukfrånvaro", "2032-08-10", "2032-08-10")
+		self.assertTrue(self.varnade(msgprint))
+
+	def test_varning_vid_makulering(self):
+		ansokan = make_leave_application(self.anstalld, "Sjukfrånvaro", "2032-08-12", "2032-08-12")
+		with patch("frappe.msgprint") as msgprint:
+			frappe.get_doc("Leave Application", ansokan).cancel()
+		self.assertTrue(self.varnade(msgprint))
+
+	def test_ingen_varning_i_annan_manad(self):
+		with patch("frappe.msgprint") as msgprint:
+			make_leave_application(self.anstalld, "Sjukfrånvaro", "2032-10-05", "2032-10-05")
+		self.assertFalse(self.varnade(msgprint))
