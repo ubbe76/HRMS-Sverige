@@ -180,3 +180,10 @@ def satt_tidsregler(regler: list[dict], heltid: float = 8) -> None:
 			rad[dag] = 1
 		inst.append("tidsregler", rad)
 	inst.save()
+
+
+def make_enhet(namn: str = "_Test Surfplatta") -> tuple[str, str]:
+	"""Stämplingsenhet med ny nyckel; returnerar (namn, nyckel)."""
+	if not frappe.db.exists("Stamplingsenhet", namn):
+		frappe.get_doc({"doctype": "Stamplingsenhet", "enhetsnamn": namn}).insert()
+	return namn, frappe.get_doc("Stamplingsenhet", namn).skapa_nyckel()["nyckel"]

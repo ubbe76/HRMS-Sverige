@@ -7067,3 +7067,6 @@ msgstr "Löneinställningar"
 
 msgid "Tidsregel"
 msgstr "Tidsregel"
+
+msgid "Stamplingsenhet"
+msgstr "Stämplingsenhet"

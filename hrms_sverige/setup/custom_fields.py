@@ -53,6 +53,43 @@ def get_custom_fields():
 					"Förval när utstämplingen inte anger något: övertid som pengar (ÖT) eller komptid (ÖK)."
 				),
 			},
+			{
+				"fieldname": "stampel_pin_maste_bytas",
+				"label": _("PIN måste bytas"),
+				"fieldtype": "Check",
+				"read_only": 1,
+				"permlevel": PERSONNUMMER_PERMLEVEL,
+				"insert_after": "overtid_som",
+				"description": _(
+					"Sätts när HR sätter en PIN-kod; den anställde byter vid första stämplingen."
+				),
+			},
+			{
+				"fieldname": "stampel_last_till",
+				"label": _("Stämpling låst till"),
+				"fieldtype": "Datetime",
+				"read_only": 1,
+				"permlevel": PERSONNUMMER_PERMLEVEL,
+				"insert_after": "stampel_pin_maste_bytas",
+			},
+			{
+				"fieldname": "stampel_pin_hash",
+				"label": _("PIN-hash"),
+				"fieldtype": "Data",
+				"hidden": 1,
+				"read_only": 1,
+				"permlevel": PERSONNUMMER_PERMLEVEL,
+				"insert_after": "stampel_last_till",
+			},
+			{
+				"fieldname": "stampel_fel_forsok",
+				"label": _("Felaktiga PIN-försök"),
+				"fieldtype": "Int",
+				"hidden": 1,
+				"read_only": 1,
+				"permlevel": PERSONNUMMER_PERMLEVEL,
+				"insert_after": "stampel_pin_hash",
+			},
 		],
 		"Employee Checkin": [
 			{
