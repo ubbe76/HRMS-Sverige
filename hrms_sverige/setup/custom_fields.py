@@ -42,6 +42,29 @@ def get_custom_fields():
 					"Timlön: arbetad tid och frånvaro skickas i timmar i löneunderlaget. Tomt räknas som månadslön."
 				),
 			},
+			{
+				"fieldname": "overtid_som",
+				"label": _("Övertid som"),
+				"fieldtype": "Select",
+				"options": "Pengar\nKomptid",
+				"default": "Pengar",
+				"insert_after": "loneform",
+				"description": _(
+					"Förval när utstämplingen inte anger något: övertid som pengar (ÖT) eller komptid (ÖK)."
+				),
+			},
+		],
+		"Employee Checkin": [
+			{
+				"fieldname": "overtidsersattning",
+				"label": _("Övertidsersättning"),
+				"fieldtype": "Select",
+				"options": "\nPengar\nKomptid",
+				"insert_after": "log_type",
+				"description": _(
+					"Väljs vid utstämpling utanför skiftet. Tomt: den anställdes förval gäller."
+				),
+			},
 		],
 		"Leave Type": [
 			{

@@ -12,6 +12,7 @@ import hrms_sverige
 from hrms_sverige.lon.franvaro import rader_for_period
 from hrms_sverige.lon.paxml import TIDKODER, Huvud, Tidtransaktion, bygg_paxml, orgnr_fran_tax_id
 from hrms_sverige.lon.tid import stamplingar_utan_narvaro
+from hrms_sverige.lon.tillagg import narvaro_utan_klockslag
 
 MANADER = [
 	"Januari",
@@ -137,6 +138,20 @@ class Loneunderlag(Document):
 					self.manad, self.ar, befintligt
 				)
 			)
+		utan_tid = narvaro_utan_klockslag(self.company, self.from_date, self.to_date)
+		if utan_tid:
+			frappe.msgprint(
+				_(
+					"Närvaro utan in- eller utstämplingstid: {0}. För de dagarna räknas varken övertid eller OB."
+				).format(
+					"; ".join(
+						f"{anstalld} ({', '.join(str(d) for d in dagar)})"
+						for anstalld, dagar in sorted(utan_tid.items())
+					)
+				),
+				title=_("Övertid och OB saknas"),
+				indicator="orange",
+			)
 
 	@frappe.whitelist()
 	def hamta_franvaro(self):
@@ -144,8 +159,17 @@ class Loneunderlag(Document):
 			frappe.throw(_("Frånvaro kan bara hämtas till ett utkast."))
 		self.check_permission("write")
 		self.satt_period()
+		# HR:s val av komptid eller pengar (ÖK/ÖT) per närvaro och nivå behålls när raderna hämtas igen
+		valt = {
+			(r.attendance, r.tidkod[2:]): r.tidkod[:2]
+			for r in self.rader
+			if r.attendance and (r.tidkod or "")[:2] in ("ÖT", "ÖK")
+		}
 		self.set("rader", [])
 		for rad in rader_for_period(self.company, self.from_date, self.to_date):
+			kod = rad.get("tidkod") or ""
+			if rad.get("attendance") and kod[:2] in ("ÖT", "ÖK"):
+				rad["tidkod"] = valt.get((rad["attendance"], kod[2:]), kod[:2]) + kod[2:]
 			self.append("rader", rad)
 		self.save()
 

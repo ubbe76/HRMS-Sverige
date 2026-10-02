@@ -25,6 +25,9 @@ Svensk anpassning av Frappe HRMS: personalregister, frånvaro/ledighet och närv
   Frånvarotypens **PAXml-tidkod** (SEM, SJK, VAB, FPE, TJL, KOM) och ARB kopplas till lönearter i lönesystemet.
   **Löneform** på den anställde (Månadslön/Timlön) styr om tid och frånvaro skickas i procent eller timmar.
   Anställningsnumret måste vara samma som i lönesystemet.
+- Övertid, mertid och OB: egna tidsregler i **Löneinställningar** (veckodagar, helgdagar och klockslag per nivå).
+  Närvarons in- och utstämplingstid jämförs med planerat skift och ger MER, ÖT1–ÖT5 eller ÖK1–ÖK5 och OB1–OB5 i
+  löneunderlaget. Valet pengar eller komptid tas från utstämplingen eller den anställdes förval.
 
 ### Installation
 

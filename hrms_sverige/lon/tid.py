@@ -1,10 +1,10 @@
 """Arbetad tid och planerade skift för timavlönade i löneunderlaget."""
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 import frappe
-from erpnext.setup.doctype.employee.employee import is_holiday
 from frappe.utils import flt, getdate, to_timedelta
+from hrms.utils.holiday_list import get_holiday_list_for_employee
 
 TIMLON = "Timlön"
 ARB = "ARB"
@@ -22,11 +22,26 @@ def skiftlangd(start, slut) -> float:
 	return sekunder / 3600
 
 
-def planerade_timmar(employee: str, datum) -> float:
-	"""Timmar enligt planerat skift den dagen; 0 på helgdagar och utan skift."""
+def ar_helgdag(employee: str, datum, bara_roda: bool = False) -> bool:
+	"""Helgdag enligt den helglista som gäller för datumet (inte för idag).
+
+	`bara_roda` räknar bara röda dagar, inte vanliga veckoledigheter.
+	"""
 	datum = getdate(datum)
-	if is_holiday(employee, datum, raise_exception=False):
-		return 0.0
+	lista = get_holiday_list_for_employee(employee, raise_exception=False, as_on=datum)
+	if not lista:
+		return False
+	filters = {"parent": lista, "holiday_date": datum}
+	if bara_roda:
+		filters["weekly_off"] = 0
+	return bool(frappe.db.exists("Holiday", filters))
+
+
+def planerat_skift(employee: str, datum) -> tuple[datetime, datetime] | None:
+	"""Det planerade skiftets start och slut den dagen; None på helgdagar och utan skift."""
+	datum = getdate(datum)
+	if ar_helgdag(employee, datum):
+		return None
 	tilldelningar = frappe.get_all(
 		"Shift Assignment",
 		filters={"employee": employee, "docstatus": 1, "status": "Active", "start_date": ("<=", datum)},
@@ -38,13 +53,23 @@ def planerade_timmar(employee: str, datum) -> float:
 	)
 	skift = skift or frappe.db.get_value("Employee", employee, "default_shift")
 	if not skift:
-		return 0.0
+		return None
 	start, slut = frappe.db.get_value("Shift Type", skift, ["start_time", "end_time"])
-	return skiftlangd(start, slut)
+	borjan = datetime.combine(datum, datetime.min.time()) + to_timedelta(start)
+	return borjan, borjan + timedelta(hours=skiftlangd(start, slut))
 
 
-def arbetad_tid(company: str, from_date, to_date) -> list[dict]:
-	"""ARB-rader från timavlönades godkända närvaro i perioden."""
+def planerade_timmar(employee: str, datum) -> float:
+	"""Timmar enligt planerat skift den dagen; 0 på helgdagar och utan skift."""
+	skift = planerat_skift(employee, datum)
+	return (skift[1] - skift[0]).total_seconds() / 3600 if skift else 0.0
+
+
+def arbetad_tid(company: str, from_date, to_date, avdrag: dict[str, float] | None = None) -> list[dict]:
+	"""ARB-rader från timavlönades godkända närvaro i perioden.
+
+	`avdrag` är timmar per närvaro som skickas som MER eller ÖT/ÖK och därför inte ska räknas som ARB.
+	"""
 	anstallda = timavlonade(company)
 	if not anstallda:
 		return []
@@ -61,17 +86,22 @@ def arbetad_tid(company: str, from_date, to_date) -> list[dict]:
 		fields=["name", "employee", "attendance_date", "working_hours"],
 		order_by="attendance_date asc",
 	)
-	return [
-		{
-			"employee": n.employee,
-			"tidkod": ARB,
-			"from_date": getdate(n.attendance_date),
-			"to_date": getdate(n.attendance_date),
-			"timmar": round(flt(n.working_hours), 2),
-			"attendance": n.name,
-		}
-		for n in narvaro
-	]
+	avdrag = avdrag or {}
+	rader = []
+	for n in narvaro:
+		timmar_arb = round(flt(n.working_hours) - avdrag.get(n.name, 0.0), 2)
+		if timmar_arb > 0:
+			rader.append(
+				{
+					"employee": n.employee,
+					"tidkod": ARB,
+					"from_date": getdate(n.attendance_date),
+					"to_date": getdate(n.attendance_date),
+					"timmar": timmar_arb,
+					"attendance": n.name,
+				}
+			)
+	return rader
 
 
 def stamplingar_utan_narvaro(company: str, from_date, to_date) -> dict[str, list[date]]:

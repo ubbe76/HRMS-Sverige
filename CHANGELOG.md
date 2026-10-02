@@ -6,7 +6,8 @@
   frånvarotypen och varning när en redan exporterad månad ändras.
 - **Arbetad tid för timavlönade:** fältet Löneform på den anställde. Timavlönade får ARB-timmar per dag från
   godkänd närvaro och frånvaro i timmar per planerat skift. Stämplingar utan närvaro stoppar godkännandet.
-  Övertid och OB kommer senare.
+- **Övertid, mertid och OB:** Löneinställningar med tidsregler, fälten Övertid som (anställd) och
+  Övertidsersättning (stämpling). Tilläggsrader per närvaro; timavlönades ARB minskas med MER och ÖT/ÖK.
 
 ## v0.1.0 – 2026-10-02 (pre-release)
 

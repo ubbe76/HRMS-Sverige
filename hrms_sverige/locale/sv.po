@@ -7061,3 +7061,9 @@ msgstr "Löneunderlagsrad"
 
 msgid "Lon"
 msgstr "Lön"
+
+msgid "Loneinstallningar"
+msgstr "Löneinställningar"
+
+msgid "Tidsregel"
+msgstr "Tidsregel"

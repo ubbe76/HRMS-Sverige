@@ -128,7 +128,13 @@ def assign_shift(employee: str, shift_type: str, start_date: str, end_date: str 
 
 
 def make_attendance(
-	employee: str, datum: str, working_hours: float, status: str = "Present", submit: bool = True
+	employee: str,
+	datum: str,
+	working_hours: float,
+	status: str = "Present",
+	submit: bool = True,
+	in_time: str | None = None,
+	out_time: str | None = None,
 ) -> str:
 	doc = frappe.get_doc(
 		{
@@ -138,6 +144,8 @@ def make_attendance(
 			"attendance_date": datum,
 			"status": status,
 			"working_hours": working_hours,
+			"in_time": in_time,
+			"out_time": out_time,
 		}
 	).insert()
 	if submit:
@@ -159,3 +167,16 @@ def make_checkin(employee: str, tid: str, log_type: str = "IN", skip_auto_attend
 		.insert()
 		.name
 	)
+
+
+def satt_tidsregler(regler: list[dict], heltid: float = 8) -> None:
+	"""Ersätt tidsreglerna i Löneinställningar. Varje regel: typ, niva, dagar (t.ex. "man tis"), fran, till."""
+	inst = frappe.get_single("Loneinstallningar")
+	inst.heltid_per_dag = heltid
+	inst.set("tidsregler", [])
+	for regel in regler:
+		rad = {"typ": regel["typ"], "niva": regel["niva"], "fran": regel["fran"], "till": regel["till"]}
+		for dag in regel["dagar"].split():
+			rad[dag] = 1
+		inst.append("tidsregler", rad)
+	inst.save()
