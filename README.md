@@ -81,6 +81,8 @@ Raderna `KONFLIKT` visar strängar där HRMS skriver över en rättelse i `erpne
 bench --site test-erp.local run-tests --app hrms_sverige
 ```
 
-### License
+### Licens
 
-gpl-3.0
+Copyright (C) 2026 Urban Källefors
+
+GPL-3.0, samma licens som Frappe HR. Se [license.txt](license.txt).
