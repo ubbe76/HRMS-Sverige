@@ -5,6 +5,7 @@
  "engine": "InnoDB",
  "field_order": [
   "heltid_per_dag",
+  "overtid_fraga_minuter",
   "section_regler",
   "tidsregler"
  ],
@@ -16,6 +17,13 @@
    "fieldtype": "Float",
    "label": "Heltid per dag (timmar)",
    "reqd": 1
+  },
+  {
+   "default": "15",
+   "description": "Stämplingssidan frågar om pengar eller komptid när passet har mer extra tid än så här utanför skiftet.",
+   "fieldname": "overtid_fraga_minuter",
+   "fieldtype": "Int",
+   "label": "Fråga om övertid efter (minuter)"
   },
   {
    "description": "OB och övertidsnivåer. Till före eller lika med Från går över midnatt; Från = Till är hela dygnet. Helgdag är röda dagar i helglistan. Där regler överlappar gäller högsta nivån.",
@@ -31,7 +39,7 @@
   }
  ],
  "issingle": 1,
- "modified": "2026-10-02 22:00:00.000000",
+ "modified": "2026-10-03 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Lon",
  "name": "Loneinstallningar",
