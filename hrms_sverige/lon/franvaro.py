@@ -7,6 +7,7 @@ from frappe import _
 from frappe.utils import getdate
 
 from hrms_sverige.lon.tid import TIMLON, arbetad_tid, planerade_timmar, timavlonade
+from hrms_sverige.lon.tillagg import tillaggsrader
 
 HEL = 100
 HALV = 50
@@ -79,7 +80,13 @@ def rader_for_period(company: str, from_date, to_date) -> list[dict]:
 						}
 					)
 				dag += timedelta(days=1)
-	rader.extend(arbetad_tid(company, from_date, to_date))
+	tillagg = tillaggsrader(company, from_date, to_date)
+	avdrag: dict[str, float] = {}
+	for r in tillagg:
+		if r["tidkod"] == "MER" or r["tidkod"][:2] in ("ÖT", "ÖK"):
+			avdrag[r["attendance"]] = avdrag.get(r["attendance"], 0.0) + r["timmar"]
+	rader.extend(arbetad_tid(company, from_date, to_date, avdrag))
+	rader.extend(tillagg)
 	nummer = dict(
 		frappe.get_all(
 			"Employee",

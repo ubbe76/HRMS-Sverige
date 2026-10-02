@@ -50,8 +50,11 @@ def planerade_timmar(employee: str, datum) -> float:
 	return (skift[1] - skift[0]).total_seconds() / 3600 if skift else 0.0
 
 
-def arbetad_tid(company: str, from_date, to_date) -> list[dict]:
-	"""ARB-rader från timavlönades godkända närvaro i perioden."""
+def arbetad_tid(company: str, from_date, to_date, avdrag: dict[str, float] | None = None) -> list[dict]:
+	"""ARB-rader från timavlönades godkända närvaro i perioden.
+
+	`avdrag` är timmar per närvaro som skickas som MER eller ÖT/ÖK och därför inte ska räknas som ARB.
+	"""
 	anstallda = timavlonade(company)
 	if not anstallda:
 		return []
@@ -68,17 +71,22 @@ def arbetad_tid(company: str, from_date, to_date) -> list[dict]:
 		fields=["name", "employee", "attendance_date", "working_hours"],
 		order_by="attendance_date asc",
 	)
-	return [
-		{
-			"employee": n.employee,
-			"tidkod": ARB,
-			"from_date": getdate(n.attendance_date),
-			"to_date": getdate(n.attendance_date),
-			"timmar": round(flt(n.working_hours), 2),
-			"attendance": n.name,
-		}
-		for n in narvaro
-	]
+	avdrag = avdrag or {}
+	rader = []
+	for n in narvaro:
+		timmar_arb = round(flt(n.working_hours) - avdrag.get(n.name, 0.0), 2)
+		if timmar_arb > 0:
+			rader.append(
+				{
+					"employee": n.employee,
+					"tidkod": ARB,
+					"from_date": getdate(n.attendance_date),
+					"to_date": getdate(n.attendance_date),
+					"timmar": timmar_arb,
+					"attendance": n.name,
+				}
+			)
+	return rader
 
 
 def stamplingar_utan_narvaro(company: str, from_date, to_date) -> dict[str, list[date]]:

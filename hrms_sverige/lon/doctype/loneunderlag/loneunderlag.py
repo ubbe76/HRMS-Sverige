@@ -12,6 +12,7 @@ import hrms_sverige
 from hrms_sverige.lon.franvaro import rader_for_period
 from hrms_sverige.lon.paxml import TIDKODER, Huvud, Tidtransaktion, bygg_paxml, orgnr_fran_tax_id
 from hrms_sverige.lon.tid import stamplingar_utan_narvaro
+from hrms_sverige.lon.tillagg import narvaro_utan_klockslag
 
 MANADER = [
 	"Januari",
@@ -136,6 +137,20 @@ class Loneunderlag(Document):
 				_("Det finns redan ett godkänt löneunderlag för {0} {1}: {2}.").format(
 					self.manad, self.ar, befintligt
 				)
+			)
+		utan_tid = narvaro_utan_klockslag(self.company, self.from_date, self.to_date)
+		if utan_tid:
+			frappe.msgprint(
+				_(
+					"Närvaro utan in- eller utstämplingstid: {0}. För de dagarna räknas varken övertid eller OB."
+				).format(
+					"; ".join(
+						f"{anstalld} ({', '.join(str(d) for d in dagar)})"
+						for anstalld, dagar in sorted(utan_tid.items())
+					)
+				),
+				title=_("Övertid och OB saknas"),
+				indicator="orange",
 			)
 
 	@frappe.whitelist()

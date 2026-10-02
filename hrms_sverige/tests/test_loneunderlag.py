@@ -18,6 +18,7 @@ from hrms_sverige.tests.utils import (
 	make_leave_application,
 	make_shift_type,
 	make_test_employee,
+	satt_tidsregler,
 )
 
 
@@ -292,3 +293,81 @@ class TestLoneunderlagTid(IntegrationTestCase):
 		with patch("frappe.msgprint") as msgprint:
 			make_attendance(manad, "2026-09-21", 8)
 		self.assertEqual(self.antal_varningar(msgprint), 0)
+
+
+class TestLoneunderlagTillagg(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		ensure_test_company()
+		create_custom_fields()
+		ensure_leave_types()
+		ensure_paxml_tidkoder()
+		create_holiday_list(2026, COMPANY)
+		cls.dag = make_shift_type("_Test Dag", "08:00:00", "16:30:00")
+		cls.tim = make_test_employee("Lön Tillägg", employee_number="LTT-1", loneform="Timlön")
+		assign_shift(cls.tim, cls.dag, "2026-08-01")
+		cls.narvaro = make_attendance(
+			cls.tim, "2026-09-14", 11, in_time="2026-09-14 08:00:00", out_time="2026-09-14 19:00:00"
+		)
+
+	def setUp(self):
+		frappe.db.savepoint("lu_tillagg_test")
+		satt_tidsregler(
+			[
+				{
+					"typ": "OB",
+					"niva": 1,
+					"dagar": "man tis ons tor fre",
+					"fran": "18:00:00",
+					"till": "22:00:00",
+				},
+				{
+					"typ": "Övertid",
+					"niva": 1,
+					"dagar": "man tis ons tor fre",
+					"fran": "06:00:00",
+					"till": "20:00:00",
+				},
+			]
+		)
+
+	def tearDown(self):
+		frappe.db.rollback(save_point="lu_tillagg_test")
+
+	def egna(self, doc):
+		return [(r.tidkod, str(r.from_date), r.timmar) for r in doc.rader if r.employee == self.tim]
+
+	def test_arb_minskas_med_overtid_men_inte_ob(self):
+		doc = nytt_underlag()
+		doc.hamta_franvaro()
+		self.assertEqual(
+			self.egna(doc),
+			[("ARB", "2026-09-14", 8.5), ("ÖT1", "2026-09-14", 2.5), ("OB1", "2026-09-14", 1.0)],
+		)
+
+	def test_hr_andrar_kod(self):
+		doc = nytt_underlag()
+		doc.hamta_franvaro()
+		doc.set("rader", [r for r in doc.rader if r.employee == self.tim])
+		next(r for r in doc.rader if r.tidkod == "ÖT1").tidkod = "ök1"
+		doc.save()
+		doc.submit()
+		self.assertIn("ÖK1", [r.tidkod for r in doc.rader])
+		ladda_ner(doc.name)
+		rot = etree.fromstring(frappe.response.filecontent)
+		xsd = os.path.join(os.path.dirname(__file__), "fixtures", "paxml-2.0.xsd")
+		schema = etree.XMLSchema(etree.parse(xsd))
+		self.assertTrue(schema.validate(rot), schema.error_log)
+		self.assertEqual([t.findtext("tidkod") for t in rot.iter("tidtrans")], ["ARB", "ÖK1", "OB1"])
+
+	def test_varning_for_narvaro_utan_klockslag(self):
+		make_attendance(self.tim, "2026-09-15", 8.5)
+		doc = nytt_underlag()
+		doc.hamta_franvaro()
+		doc.set("rader", [r for r in doc.rader if r.employee == self.tim])
+		doc.save()
+		with patch("frappe.msgprint") as msgprint:
+			doc.submit()
+		self.assertTrue(any("utan in- eller utstämplingstid" in str(c) for c in msgprint.call_args_list))
+		self.assertEqual(doc.docstatus, 1)
