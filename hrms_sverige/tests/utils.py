@@ -128,7 +128,13 @@ def assign_shift(employee: str, shift_type: str, start_date: str, end_date: str 
 
 
 def make_attendance(
-	employee: str, datum: str, working_hours: float, status: str = "Present", submit: bool = True
+	employee: str,
+	datum: str,
+	working_hours: float,
+	status: str = "Present",
+	submit: bool = True,
+	in_time: str | None = None,
+	out_time: str | None = None,
 ) -> str:
 	doc = frappe.get_doc(
 		{
@@ -138,6 +144,8 @@ def make_attendance(
 			"attendance_date": datum,
 			"status": status,
 			"working_hours": working_hours,
+			"in_time": in_time,
+			"out_time": out_time,
 		}
 	).insert()
 	if submit:
