@@ -159,3 +159,16 @@ def make_checkin(employee: str, tid: str, log_type: str = "IN", skip_auto_attend
 		.insert()
 		.name
 	)
+
+
+def satt_tidsregler(regler: list[dict], heltid: float = 8) -> None:
+	"""Ersätt tidsreglerna i Löneinställningar. Varje regel: typ, niva, dagar (t.ex. "man tis"), fran, till."""
+	inst = frappe.get_single("Loneinstallningar")
+	inst.heltid_per_dag = heltid
+	inst.set("tidsregler", [])
+	for regel in regler:
+		rad = {"typ": regel["typ"], "niva": regel["niva"], "fran": regel["fran"], "till": regel["till"]}
+		for dag in regel["dagar"].split():
+			rad[dag] = 1
+		inst.append("tidsregler", rad)
+	inst.save()

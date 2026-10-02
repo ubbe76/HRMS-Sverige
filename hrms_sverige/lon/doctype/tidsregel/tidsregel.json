@@ -1,0 +1,120 @@
+{
+ "actions": [],
+ "creation": "2026-10-02 22:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "typ",
+  "niva",
+  "man",
+  "tis",
+  "ons",
+  "tor",
+  "fre",
+  "lor",
+  "son",
+  "helgdag",
+  "fran",
+  "till"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "fieldname": "typ",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Typ",
+   "options": "OB\nÖvertid",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "default": "1",
+   "fieldname": "niva",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Nivå",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "man",
+   "fieldtype": "Check",
+   "label": "Mån",
+   "in_list_view": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "tis",
+   "fieldtype": "Check",
+   "label": "Tis",
+   "in_list_view": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "ons",
+   "fieldtype": "Check",
+   "label": "Ons",
+   "in_list_view": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "tor",
+   "fieldtype": "Check",
+   "label": "Tor",
+   "in_list_view": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "fre",
+   "fieldtype": "Check",
+   "label": "Fre",
+   "in_list_view": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "lor",
+   "fieldtype": "Check",
+   "label": "Lör"
+  },
+  {
+   "columns": 1,
+   "fieldname": "son",
+   "fieldtype": "Check",
+   "label": "Sön"
+  },
+  {
+   "columns": 1,
+   "fieldname": "helgdag",
+   "fieldtype": "Check",
+   "label": "Helgdag"
+  },
+  {
+   "columns": 1,
+   "fieldname": "fran",
+   "fieldtype": "Time",
+   "in_list_view": 1,
+   "label": "Från",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "till",
+   "fieldtype": "Time",
+   "in_list_view": 1,
+   "label": "Till",
+   "reqd": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-10-02 22:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Lon",
+ "name": "Tidsregel",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": []
+}
