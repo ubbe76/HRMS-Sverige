@@ -183,7 +183,7 @@ doc_events = {
 # Testing
 # -------
 
-# before_tests = "hrms_sverige.install.before_tests"
+before_tests = "hrms_sverige.tests.utils.before_tests"
 
 # Extend DocType Class
 # ------------------------------

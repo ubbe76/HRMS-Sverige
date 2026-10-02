@@ -6,6 +6,33 @@ COMPANY = "_Test HR Sverige AB"
 COMPANY_ABBR = "_THRS"
 
 
+def before_tests():
+	"""Kör installationsguiden med testbolaget på en ny site (t.ex. i CI). Befintliga siter lämnas orörda."""
+	from frappe.desk.page.setup_wizard.setup_wizard import setup_complete
+	from frappe.utils import now_datetime
+
+	frappe.clear_cache()
+	if not frappe.get_list("Company"):
+		year = now_datetime().year
+		setup_complete(
+			{
+				"currency": "SEK",
+				"full_name": "Test User",
+				"company_name": COMPANY,
+				"company_abbr": COMPANY_ABBR,
+				"timezone": "Europe/Stockholm",
+				"country": "Sweden",
+				"fy_start_date": f"{year}-01-01",
+				"fy_end_date": f"{year}-12-31",
+				"language": "english",
+				"email": "test@example.com",
+				"password": "test",
+				"chart_of_accounts": "Standard",
+			}
+		)
+	frappe.db.commit()  # nosemgrep
+
+
 def ensure_test_company() -> str:
 	if not frappe.db.exists("Company", COMPANY):
 		frappe.get_doc(
