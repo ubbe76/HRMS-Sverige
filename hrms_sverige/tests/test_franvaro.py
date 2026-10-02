@@ -7,7 +7,15 @@ from frappe.tests import IntegrationTestCase, UnitTestCase
 from hrms_sverige.lon.franvaro import dela_upp, rader_for_period, varna_om_exporterad
 from hrms_sverige.setup.holidays import create_holiday_list
 from hrms_sverige.setup.leave import ensure_leave_types
-from hrms_sverige.tests.utils import COMPANY, ensure_test_company, make_leave_application, make_test_employee
+from hrms_sverige.tests.utils import (
+	COMPANY,
+	assign_shift,
+	ensure_test_company,
+	make_attendance,
+	make_leave_application,
+	make_shift_type,
+	make_test_employee,
+)
 
 SEPT = (date(2026, 9, 1), date(2026, 9, 30))
 
@@ -190,3 +198,80 @@ class TestVarningExporteradPeriod(IntegrationTestCase):
 			patch("frappe.get_all", side_effect=AssertionError("tabellen frågades")),
 		):
 			varna_om_exporterad(ansokan)
+
+
+class TestTimavlonadeRader(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		from hrms_sverige.setup.custom_fields import create_custom_fields
+
+		ensure_test_company()
+		create_custom_fields()
+		ensure_leave_types()
+		create_holiday_list(2026, COMPANY)
+		cls.dag = make_shift_type("_Test Dag", "08:00:00", "16:30:00")
+
+	def setUp(self):
+		frappe.db.savepoint("timrader_test")
+
+	def tearDown(self):
+		frappe.db.rollback(save_point="timrader_test")
+
+	def timanstalld(self, namn, nummer, skift=True):
+		anstalld = make_test_employee(namn, employee_number=nummer, loneform="Timlön")
+		if skift:
+			assign_shift(anstalld, self.dag, "2026-08-01")
+		return anstalld
+
+	def egna(self, anstalld):
+		return [
+			(r["from_date"], r["to_date"], r.get("timmar"), r.get("omfattning"), "attendance" in r)
+			for r in rader_for_period(COMPANY, *SEPT)
+			if r["employee"] == anstalld
+		]
+
+	def test_franvaro_per_skiftdag_utan_helg(self):
+		anstalld = self.timanstalld("Tim Sjuk", "TR-1")
+		make_leave_application(anstalld, "Sjukfrånvaro", "2026-09-11", "2026-09-14")  # fredag till måndag
+		self.assertEqual(
+			self.egna(anstalld),
+			[
+				(date(2026, 9, 11), date(2026, 9, 11), 8.5, None, False),
+				(date(2026, 9, 14), date(2026, 9, 14), 8.5, None, False),
+			],
+		)
+
+	def test_halvdag_ger_halva_skiftet(self):
+		anstalld = self.timanstalld("Tim Halv", "TR-2")
+		make_leave_application(
+			anstalld, "VAB", "2026-09-16", "2026-09-17", half_day=1, half_day_date="2026-09-17"
+		)
+		self.assertEqual(
+			[(r[0], r[2]) for r in self.egna(anstalld)],
+			[(date(2026, 9, 16), 8.5), (date(2026, 9, 17), 4.25)],
+		)
+
+	def test_utan_skift_ingen_franvaro(self):
+		anstalld = self.timanstalld("Tim Utan", "TR-3", skift=False)
+		make_leave_application(anstalld, "Sjukfrånvaro", "2026-09-21", "2026-09-21")
+		self.assertEqual(self.egna(anstalld), [])
+
+	def test_manadsskifte(self):
+		anstalld = self.timanstalld("Tim Skifte", "TR-4")
+		make_leave_application(anstalld, "Sjukfrånvaro", "2026-08-31", "2026-09-01")
+		self.assertEqual([r[0] for r in self.egna(anstalld)], [date(2026, 9, 1)])
+
+	def test_arb_och_franvaro_samma_dag(self):
+		anstalld = self.timanstalld("Tim Båda", "TR-5")
+		make_attendance(anstalld, "2026-09-22", 4, status="Half Day")
+		make_leave_application(
+			anstalld, "Sjukfrånvaro", "2026-09-22", "2026-09-22", half_day=1, half_day_date="2026-09-22"
+		)
+		self.assertEqual(
+			self.egna(anstalld),
+			[
+				(date(2026, 9, 22), date(2026, 9, 22), 4.25, None, False),
+				(date(2026, 9, 22), date(2026, 9, 22), 4.0, None, True),
+			],
+		)

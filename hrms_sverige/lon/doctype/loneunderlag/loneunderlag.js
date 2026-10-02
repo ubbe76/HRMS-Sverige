@@ -10,13 +10,13 @@ frappe.ui.form.on("Loneunderlag", {
 	refresh(frm) {
 		if (frm.is_new()) return;
 		if (frm.doc.docstatus === 0) {
-			frm.add_custom_button(__("Hämta frånvaro"), () =>
+			frm.add_custom_button(__("Hämta frånvaro och tid"), () =>
 				frm
 					.call({
 						doc: frm.doc,
 						method: "hamta_franvaro",
 						freeze: true,
-						freeze_message: __("Hämtar frånvaro …"),
+						freeze_message: __("Hämtar frånvaro och tid …"),
 					})
 					.then(() => frm.reload_doc())
 			);

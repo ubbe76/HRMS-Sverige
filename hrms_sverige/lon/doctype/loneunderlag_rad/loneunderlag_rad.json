@@ -12,7 +12,9 @@
   "from_date",
   "to_date",
   "omfattning",
-  "leave_application"
+  "timmar",
+  "leave_application",
+  "attendance"
  ],
  "fields": [
   {
@@ -38,8 +40,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Frånvarotyp",
-   "options": "Leave Type",
-   "reqd": 1
+   "options": "Leave Type"
   },
   {
    "columns": 1,
@@ -67,12 +68,18 @@
   },
   {
    "columns": 1,
-   "default": "100",
    "fieldname": "omfattning",
    "fieldtype": "Percent",
    "in_list_view": 1,
-   "label": "Omfattning",
-   "reqd": 1
+   "label": "Omfattning"
+  },
+  {
+   "columns": 1,
+   "fieldname": "timmar",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Timmar",
+   "precision": "2"
   },
   {
    "columns": 1,
@@ -82,10 +89,17 @@
    "label": "Ledighetsansökan",
    "options": "Leave Application",
    "read_only": 1
+  },
+  {
+   "fieldname": "attendance",
+   "fieldtype": "Link",
+   "label": "Närvaro",
+   "options": "Attendance",
+   "read_only": 1
   }
  ],
  "istable": 1,
- "modified": "2026-10-02 15:00:00.000000",
+ "modified": "2026-10-02 20:00:00.000000",
  "modified_by": "Administrator",
  "module": "Lon",
  "name": "Loneunderlag Rad",

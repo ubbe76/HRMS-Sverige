@@ -101,3 +101,61 @@ def make_leave_application(
 	if submit:
 		doc.submit()
 	return doc.name
+
+
+def make_shift_type(name: str, start_time: str, end_time: str) -> str:
+	if not frappe.db.exists("Shift Type", name):
+		frappe.get_doc(
+			{"doctype": "Shift Type", "__newname": name, "start_time": start_time, "end_time": end_time}
+		).insert()
+	return name
+
+
+def assign_shift(employee: str, shift_type: str, start_date: str, end_date: str | None = None) -> str:
+	doc = frappe.get_doc(
+		{
+			"doctype": "Shift Assignment",
+			"employee": employee,
+			"company": COMPANY,
+			"shift_type": shift_type,
+			"start_date": start_date,
+			"end_date": end_date,
+			"status": "Active",
+		}
+	).insert()
+	doc.submit()
+	return doc.name
+
+
+def make_attendance(
+	employee: str, datum: str, working_hours: float, status: str = "Present", submit: bool = True
+) -> str:
+	doc = frappe.get_doc(
+		{
+			"doctype": "Attendance",
+			"employee": employee,
+			"company": COMPANY,
+			"attendance_date": datum,
+			"status": status,
+			"working_hours": working_hours,
+		}
+	).insert()
+	if submit:
+		doc.submit()
+	return doc.name
+
+
+def make_checkin(employee: str, tid: str, log_type: str = "IN", skip_auto_attendance: int = 0) -> str:
+	return (
+		frappe.get_doc(
+			{
+				"doctype": "Employee Checkin",
+				"employee": employee,
+				"time": tid,
+				"log_type": log_type,
+				"skip_auto_attendance": skip_auto_attendance,
+			}
+		)
+		.insert()
+		.name
+	)

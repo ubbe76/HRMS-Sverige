@@ -123,3 +123,14 @@ class TestEmployeeFields(IntegrationTestCase):
 		frappe.db.set_value("Custom Field", name, "label", "Tjänstgöringsgrad")
 		after_migrate()
 		self.assertEqual(frappe.db.get_value("Custom Field", name, "label"), "Tjänstgöringsgrad")
+
+
+class TestLoneform(IntegrationTestCase):
+	def test_loneform_finns_med_manadslon_och_timlon(self):
+		from hrms_sverige.setup.custom_fields import create_custom_fields
+
+		create_custom_fields()
+		falt = frappe.get_meta("Employee").get_field("loneform")
+		self.assertIsNotNone(falt)
+		self.assertEqual(falt.fieldtype, "Select")
+		self.assertEqual(falt.options.split("\n"), ["", "Månadslön", "Timlön"])

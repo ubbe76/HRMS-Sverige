@@ -1,3 +1,6 @@
+import os
+from unittest.mock import patch
+
 import frappe
 from frappe.tests import IntegrationTestCase
 from lxml import etree
@@ -6,7 +9,16 @@ from hrms_sverige.lon.doctype.loneunderlag.loneunderlag import ladda_ner
 from hrms_sverige.setup.custom_fields import create_custom_fields
 from hrms_sverige.setup.holidays import create_holiday_list
 from hrms_sverige.setup.leave import ensure_leave_types, ensure_paxml_tidkoder
-from hrms_sverige.tests.utils import COMPANY, ensure_test_company, make_leave_application, make_test_employee
+from hrms_sverige.tests.utils import (
+	COMPANY,
+	assign_shift,
+	ensure_test_company,
+	make_attendance,
+	make_checkin,
+	make_leave_application,
+	make_shift_type,
+	make_test_employee,
+)
 
 
 def nytt_underlag(manad="September", ar=2026):
@@ -156,3 +168,127 @@ class TestLoneunderlag(IntegrationTestCase):
 		doc.append("rader", rad(self.anstalld, "Sjukfrånvaro", "2031-12-01", "2031-12-01"))
 		doc.save()
 		self.assertRaisesRegex(frappe.ValidationError, "L-1", doc.submit)
+
+
+class TestLoneunderlagTid(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		ensure_test_company()
+		create_custom_fields()
+		ensure_leave_types()
+		ensure_paxml_tidkoder()
+		create_holiday_list(2026, COMPANY)
+		cls.dag = make_shift_type("_Test Dag", "08:00:00", "16:30:00")
+		cls.tim = make_test_employee("Lön Tim", employee_number="LT-1", loneform="Timlön")
+		assign_shift(cls.tim, cls.dag, "2026-08-01")
+		cls.narvaro = make_attendance(cls.tim, "2026-09-14", 7.866)
+		make_leave_application(cls.tim, "Sjukfrånvaro", "2026-09-15", "2026-09-15")
+
+	def setUp(self):
+		frappe.db.savepoint("lu_tid_test")
+
+	def tearDown(self):
+		frappe.db.rollback(save_point="lu_tid_test")
+
+	def tim_rader(self, doc):
+		return [
+			(r.tidkod, str(r.from_date), r.timmar, frappe.utils.flt(r.omfattning), r.attendance)
+			for r in doc.rader
+			if r.employee == self.tim
+		]
+
+	def godkant_underlag(self):
+		doc = nytt_underlag()
+		doc.hamta_franvaro()
+		doc.set("rader", [r for r in doc.rader if r.employee == self.tim])
+		doc.save()
+		doc.submit()
+		return doc
+
+	def test_hamta_ger_arb_och_franvaro_i_timmar(self):
+		doc = nytt_underlag()
+		doc.hamta_franvaro()
+		self.assertEqual(
+			self.tim_rader(doc),
+			[("ARB", "2026-09-14", 7.87, 0, self.narvaro), ("SJK", "2026-09-15", 8.5, 0, None)],
+		)
+
+	def test_hamta_tva_ganger_med_tid(self):
+		doc = nytt_underlag()
+		doc.hamta_franvaro()
+		antal = len(doc.rader)
+		doc.hamta_franvaro()
+		self.assertEqual(len(doc.rader), antal)
+
+	def test_godkann_och_fil_med_timmar(self):
+		doc = self.godkant_underlag()
+		ladda_ner(doc.name)
+		rot = etree.fromstring(frappe.response.filecontent)
+		xsd = os.path.join(os.path.dirname(__file__), "fixtures", "paxml-2.0.xsd")
+		schema = etree.XMLSchema(etree.parse(xsd))
+		self.assertTrue(schema.validate(rot), schema.error_log)
+		arb = rot.find("tidtransaktioner/tidtrans")
+		self.assertEqual(
+			(arb.findtext("tidkod"), arb.findtext("datum"), arb.findtext("timmar")),
+			("ARB", "2026-09-14", "7.87"),
+		)
+
+	def test_stampling_utan_narvaro_stoppar(self):
+		make_checkin(self.tim, "2026-09-16 08:02:00")
+		doc = nytt_underlag()
+		doc.hamta_franvaro()
+		self.assertRaisesRegex(frappe.ValidationError, "Stämplingar utan närvaro", doc.submit)
+
+	def test_bade_timmar_och_omfattning_stoppar(self):
+		doc = nytt_underlag("Oktober", 2031)
+		doc.append("rader", {**rad(self.tim, "Sjukfrånvaro", "2031-10-06", "2031-10-06"), "timmar": 8})
+		doc.save()
+		self.assertRaisesRegex(frappe.ValidationError, "antingen Timmar eller Omfattning", doc.submit)
+
+	def test_timrad_over_flera_dagar_stoppar(self):
+		doc = nytt_underlag("Oktober", 2031)
+		doc.append(
+			"rader",
+			{**rad(self.tim, "Sjukfrånvaro", "2031-10-06", "2031-10-07"), "omfattning": None, "timmar": 8},
+		)
+		doc.save()
+		self.assertRaisesRegex(frappe.ValidationError, "bara gälla en dag", doc.submit)
+
+	def test_for_manga_timmar_stoppar(self):
+		doc = nytt_underlag("Oktober", 2031)
+		doc.append(
+			"rader",
+			{**rad(self.tim, "Sjukfrånvaro", "2031-10-06", "2031-10-06"), "omfattning": None, "timmar": 25},
+		)
+		doc.save()
+		self.assertRaisesRegex(frappe.ValidationError, "högst 24", doc.submit)
+
+	def test_makulera_narvaro_i_exporterad_manad_tillats_med_varning(self):
+		self.godkant_underlag()
+		with patch("frappe.msgprint") as msgprint:
+			frappe.get_doc("Attendance", self.narvaro).cancel()
+		self.assertEqual(frappe.db.get_value("Attendance", self.narvaro, "docstatus"), 2)
+		self.assertTrue(any("redan exporterad" in str(c) for c in msgprint.call_args_list))
+
+	def test_ny_narvaro_i_exporterad_manad_varnar(self):
+		self.godkant_underlag()
+		with patch("frappe.msgprint") as msgprint:
+			make_attendance(self.tim, "2026-09-21", 8)
+		self.assertTrue(any("redan exporterad" in str(c) for c in msgprint.call_args_list))
+
+	def antal_varningar(self, msgprint):
+		return sum("redan exporterad" in str(c) for c in msgprint.call_args_list)
+
+	def test_godkand_ledighet_ger_en_varning(self):
+		self.godkant_underlag()
+		with patch("frappe.msgprint") as msgprint:
+			make_leave_application(self.tim, "Sjukfrånvaro", "2026-09-22", "2026-09-24")
+		self.assertEqual(self.antal_varningar(msgprint), 1)
+
+	def test_manadsavlonads_narvaro_varnar_inte(self):
+		self.godkant_underlag()
+		manad = make_test_employee("Lön Månad Närvaro", employee_number="LM-1")
+		with patch("frappe.msgprint") as msgprint:
+			make_attendance(manad, "2026-09-21", 8)
+		self.assertEqual(self.antal_varningar(msgprint), 0)

@@ -6,11 +6,12 @@ from datetime import date
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import getdate, now_datetime
+from frappe.utils import flt, getdate, now_datetime
 
 import hrms_sverige
 from hrms_sverige.lon.franvaro import rader_for_period
 from hrms_sverige.lon.paxml import TIDKODER, Huvud, Tidtransaktion, bygg_paxml, orgnr_fran_tax_id
+from hrms_sverige.lon.tid import stamplingar_utan_narvaro
 
 MANADER = [
 	"Januari",
@@ -39,14 +40,20 @@ class Loneunderlag(Document):
 		self.to_date = date(self.ar, manad, calendar.monthrange(self.ar, manad)[1])
 
 	def uppdatera_rader(self):
-		"""Anställningsnummer och tidkod hämtas på nytt, så att raderna speglar dagens register."""
+		"""Anställningsnummer och tidkod hämtas på nytt, så att raderna speglar dagens register.
+
+		Rader utan frånvarotyp (arbetad tid, ARB) behåller sin tidkod.
+		"""
 		for rad in self.rader:
 			rad.anstallningsnummer = (
 				frappe.db.get_value("Employee", rad.employee, "employee_number") or ""
 			).strip()
-			rad.tidkod = (
-				(frappe.db.get_value("Leave Type", rad.leave_type, "paxml_tidkod") or "").strip().upper()
-			)
+			if rad.leave_type:
+				rad.tidkod = (
+					(frappe.db.get_value("Leave Type", rad.leave_type, "paxml_tidkod") or "").strip().upper()
+				)
+			else:
+				rad.tidkod = (rad.tidkod or "").strip().upper()
 
 	def before_submit(self):
 		if not self.rader:
@@ -58,7 +65,7 @@ class Loneunderlag(Document):
 					", ".join(utan_nummer)
 				)
 			)
-		utan_kod = sorted({r.leave_type for r in self.rader if not r.tidkod})
+		utan_kod = sorted({r.leave_type for r in self.rader if r.leave_type and not r.tidkod})
 		if utan_kod:
 			frappe.throw(
 				_("Frånvarotyper utan PAXml-tidkod: {0}. Ange koden på frånvarotypen.").format(
@@ -73,8 +80,15 @@ class Loneunderlag(Document):
 				).format(", ".join(ogiltiga))
 			)
 		for r in self.rader:
-			if not 0 < (r.omfattning or 0) <= 100:
+			har_omfattning, har_timmar = bool(flt(r.omfattning)), bool(flt(r.timmar))
+			if har_omfattning == har_timmar:
+				frappe.throw(_("Rad {0}: ange antingen Timmar eller Omfattning.").format(r.idx))
+			if har_omfattning and not 0 < flt(r.omfattning) <= 100:
 				frappe.throw(_("Rad {0}: Omfattning måste vara större än 0 och högst 100 %.").format(r.idx))
+			if har_timmar and getdate(r.from_date) != getdate(r.to_date):
+				frappe.throw(_("Rad {0}: en rad med timmar får bara gälla en dag.").format(r.idx))
+			if har_timmar and not 0 < flt(r.timmar) <= 24:
+				frappe.throw(_("Rad {0}: timmar måste vara större än 0 och högst 24.").format(r.idx))
 			if not (
 				getdate(self.from_date) <= getdate(r.from_date) <= getdate(r.to_date) <= getdate(self.to_date)
 			):
@@ -83,6 +97,19 @@ class Loneunderlag(Document):
 						r.idx, self.manad, self.ar
 					)
 				)
+		luckor = stamplingar_utan_narvaro(self.company, self.from_date, self.to_date)
+		if luckor:
+			frappe.throw(
+				_(
+					"Stämplingar utan närvaro: {0}. Rätta stämplingarna eller markera närvaron innan "
+					"löneunderlaget godkänns."
+				).format(
+					"; ".join(
+						f"{anstalld} ({', '.join(str(d) for d in dagar)})"
+						for anstalld, dagar in sorted(luckor.items())
+					)
+				)
+			)
 		delade = sorted(
 			n
 			for n in {r.anstallningsnummer for r in self.rader}
@@ -140,7 +167,8 @@ class Loneunderlag(Document):
 				tidkod=rad.tidkod,
 				from_date=getdate(rad.from_date),
 				to_date=getdate(rad.to_date),
-				omfattning=rad.omfattning,
+				omfattning=flt(rad.omfattning) or None,
+				timmar=flt(rad.timmar, 2) or None,
 			)
 			for rad in self.rader
 		]

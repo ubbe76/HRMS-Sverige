@@ -81,3 +81,29 @@ class TestPaxml(UnitTestCase):
 		self.assertIsNone(orgnr_fran_tax_id(""))
 		self.assertIsNone(orgnr_fran_tax_id(None))
 		self.assertIsNone(orgnr_fran_tax_id("12345"))
+
+	def timrad(self, timmar=7.87, from_date=date(2026, 9, 14), to_date=date(2026, 9, 14)):
+		return Tidtransaktion(
+			postid=3, anstid="2001", tidkod="ARB", from_date=from_date, to_date=to_date, timmar=timmar
+		)
+
+	def test_timrad_skrivs_som_datum_och_timmar(self):
+		tt = self.parse(bygg_paxml(HUVUD, [self.timrad()])).find("tidtransaktioner/tidtrans")
+		self.assertEqual(tt.findtext("tidkod"), "ARB")
+		self.assertEqual(tt.findtext("datum"), "2026-09-14")
+		self.assertEqual(tt.findtext("timmar"), "7.87")
+		self.assertIsNone(tt.find("omfattning"))
+		self.assertIsNone(tt.find("datumfrom"))
+
+	def test_hela_timmar_far_tva_decimaler(self):
+		tt = self.parse(bygg_paxml(HUVUD, [self.timrad(8)])).find("tidtransaktioner/tidtrans")
+		self.assertEqual(tt.findtext("timmar"), "8.00")
+
+	def test_timrad_over_flera_dagar_ar_fel(self):
+		with self.assertRaises(ValueError):
+			bygg_paxml(HUVUD, [self.timrad(to_date=date(2026, 9, 15))])
+
+	def test_fil_med_timrader_validerar(self):
+		data = bygg_paxml(HUVUD, [transaktion(), self.timrad()])
+		schema = etree.XMLSchema(etree.parse(XSD))
+		self.assertTrue(schema.validate(etree.fromstring(data)), schema.error_log)

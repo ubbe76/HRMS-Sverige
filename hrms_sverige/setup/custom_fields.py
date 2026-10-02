@@ -32,6 +32,16 @@ def get_custom_fields():
 				"fieldtype": "Percent",
 				"insert_after": "arbetsdagar_per_vecka",
 			},
+			{
+				"fieldname": "loneform",
+				"label": _("Löneform"),
+				"fieldtype": "Select",
+				"options": "\nMånadslön\nTimlön",
+				"insert_after": "sysselsattningsgrad",
+				"description": _(
+					"Timlön: arbetad tid och frånvaro skickas i timmar i löneunderlaget. Tomt räknas som månadslön."
+				),
+			},
 		],
 		"Leave Type": [
 			{
