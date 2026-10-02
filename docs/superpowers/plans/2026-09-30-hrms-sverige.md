@@ -28,7 +28,7 @@ Frappes testlöpare (`IntegrationTestCase`/`UnitTestCase`).
 
 - Frappe/ERPNext/HRMS `>=16,<17`, gren `version-16` för `hrms` och `hrms_sverige`.
 - `required_apps = ["hrms"]` i `hrms_sverige/hooks.py`. `erpnext_sverige` rörs inte.
-- Inga företagsnamn i repot (GAWD är testdata). Tester använder eget testbolag `_Test HR Sverige AB`.
+- Inga riktiga företagsnamn i repot. Tester använder eget testbolag `_Test HR Sverige AB`.
 - Python: tabbar, radlängd 110, ruff + ruff-format via pre-commit (samma som `erpnext_sverige`).
 - Fältetiketter skrivs direkt på svenska med `_()` (som i `erpnext_sverige`).
 - Upstream-filer (`apps/hrms/**`, `apps/erpnext/**`, `apps/frappe/**`) ändras aldrig.
@@ -36,7 +36,7 @@ Frappes testlöpare (`IntegrationTestCase`/`UnitTestCase`).
 - Semester: 25 dagar/kalenderår; deltid `ceil(dagar × arbetsdagar / 5)`, bara för tilldelningar med
   `leave_policy_assignment`; tomt/5 arbetsdagar lämnar värdet orört.
 - Sparade dagar: `maximum_carry_forwarded_leaves = 5`, `expire_carry_forwarded_leaves_after_days = 1826`.
-- Tester körs på `test-erp.local` (har `allow_tests`), aldrig på `svensk-erp.local`.
+- Tester körs på `<testsite>` (har `allow_tests`), aldrig på `<site>`.
 - Commits avslutas med `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 
 ## Review Focus
@@ -103,7 +103,7 @@ apps/hrms_sverige/
 
 - [ ] **Step 1: Hämta HRMS**
 
-Från bench-roten (`~/ERPNext/my-frappe-bench`):
+Från bench-roten (`~/frappe-bench`):
 ```bash
 bench get-app hrms --branch version-16
 ```
@@ -114,14 +114,14 @@ Expected: `apps/hrms` finns, `hrms` tillagd i `sites/apps.txt`. Om kommandot slu
 - [ ] **Step 2: Installera HRMS på testsajten**
 
 ```bash
-bench --site test-erp.local install-app hrms
+bench --site <testsite> install-app hrms
 ```
 Expected: slutar utan traceback. Verifiera att `after_install` körts helt:
 ```bash
-bench --site test-erp.local execute frappe.db.get_value --args "['Custom Field', {'dt': 'Employee', 'fieldname': 'employment_type'}, 'name']"
+bench --site <testsite> execute frappe.db.get_value --args "['Custom Field', {'dt': 'Employee', 'fieldname': 'employment_type'}, 'name']"
 ```
 Expected: `"Employee-employment_type"` (inte `None`). Om `None`: kör
-`bench --site test-erp.local execute hrms.install.after_install` och kontrollera igen.
+`bench --site <testsite> execute hrms.install.after_install` och kontrollera igen.
 
 - [ ] **Step 3: Sätt required_apps och installera hrms_sverige**
 
@@ -131,10 +131,10 @@ required_apps = ["hrms"]
 ```
 Sedan:
 ```bash
-bench --site test-erp.local install-app hrms_sverige
+bench --site <testsite> install-app hrms_sverige
 cd apps/hrms_sverige && pre-commit install && cd ../..
 ```
-Expected: installationen lyckas; `bench --site test-erp.local list-apps` visar
+Expected: installationen lyckas; `bench --site <testsite> list-apps` visar
 `frappe, erpnext, erpnext_sverige, hrms, hrms_sverige` i den ordningen.
 
 - [ ] **Step 4: Skriv testhjälpare**
@@ -215,7 +215,7 @@ class TestInstall(IntegrationTestCase):
 - [ ] **Step 6: Kör testet**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_setup
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_setup
 ```
 Expected: `OK`, 2 tester.
 
@@ -298,7 +298,7 @@ class TestPersonnummer(UnitTestCase):
 - [ ] **Step 2: Kör och se att de fallerar**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_personnummer
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_personnummer
 ```
 Expected: FAIL/ERROR med `ModuleNotFoundError: No module named 'hrms_sverige.hr'`.
 
@@ -371,7 +371,7 @@ def normalize(value: str, today: date | None = None) -> str:
 - [ ] **Step 4: Kör testerna**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_personnummer
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_personnummer
 ```
 Expected: `OK`, 7 tester.
 
@@ -471,7 +471,7 @@ class TestEmployeeFields(IntegrationTestCase):
 - [ ] **Step 2: Kör och se att de fallerar**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_employee
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_employee
 ```
 Expected: ERROR `No module named 'hrms_sverige.setup'`.
 
@@ -575,7 +575,7 @@ doc_events = {
 - [ ] **Step 5: Kör testerna**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_employee
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_employee
 ```
 Expected: `OK`, 6 tester. Om `test_personnummer_hidden_without_hr_role` fallerar för att "Accounts User" saknar
 läsrätt på Employee: kontrollera med `frappe.get_meta("Employee").permissions` vilken icke-HR-roll som har
@@ -697,7 +697,7 @@ nationaldagen, midsommardagen, alla helgons dag, juldagen, annandag jul).
 - [ ] **Step 2: Kör och se att de fallerar**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_holidays
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_holidays
 ```
 Expected: ERROR `cannot import name 'create_holiday_list'` / modul saknas.
 
@@ -783,7 +783,7 @@ def _assign_to_company(holiday_list: str, company: str, from_date: date):
 - [ ] **Step 4: Kör testerna**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_holidays
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_holidays
 ```
 Expected: `OK`, 4 tester. Om `doc.country = "SE"` avvisas av Autocomplete-valideringen: ta bort raden (fältet
 behövs bara för ERPNext:s knapp "Hämta lokala helgdagar").
@@ -879,7 +879,7 @@ class TestLeaveSetup(IntegrationTestCase):
 - [ ] **Step 2: Kör och se att de fallerar**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_leave
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_leave
 ```
 Expected: ERROR `No module named 'hrms_sverige.setup.leave'`.
 
@@ -966,7 +966,7 @@ def ensure_semester_policy() -> str:
 - [ ] **Step 4: Kör testerna**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_leave
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_leave
 ```
 Expected: `OK`, 3 tester. Om `test_sick_leave_without_allocation` fallerar på saknad ledighetsgodkännare trots
 inställningen: sätt `"leave_approver": "Administrator"` i ansökan.
@@ -1106,7 +1106,7 @@ class TestDeltidAllocation(IntegrationTestCase):
 - [ ] **Step 2: Kör och se att de fallerar**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_deltid
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_deltid
 ```
 Expected: ERROR `No module named 'hrms_sverige.hr.leave_allocation'`.
 
@@ -1155,7 +1155,7 @@ doc_events = {
 - [ ] **Step 4: Kör testerna**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_deltid
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_deltid
 ```
 Expected: `OK`, 5 tester. `before_insert` körs före `validate`, där HRMS räknar `total_leaves_allocated` från
 `new_leaves_allocated`, så totalen följer med.
@@ -1218,7 +1218,7 @@ class TestSetupAll(IntegrationTestCase):
 - [ ] **Step 2: Kör och se att de fallerar**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_setup
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_setup
 ```
 Expected: ERROR `No module named 'hrms_sverige.setup.install'`.
 
@@ -1290,16 +1290,16 @@ after_migrate = "hrms_sverige.setup.install.after_migrate"
 - [ ] **Step 4: Kör testerna**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_setup
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_setup
 ```
 Expected: `OK`, 4 tester.
 
 - [ ] **Step 5: Kör uppsättningen på testsajtens riktiga företag och migrera**
 
 ```bash
-bench --site test-erp.local execute hrms_sverige.setup.install.setup_all
-bench --site test-erp.local migrate
-bench --site test-erp.local execute frappe.db.get_value --args "['Workspace', 'Payroll', 'is_hidden']"
+bench --site <testsite> execute hrms_sverige.setup.install.setup_all
+bench --site <testsite> migrate
+bench --site <testsite> execute frappe.db.get_value --args "['Workspace', 'Payroll', 'is_hidden']"
 ```
 Expected: sista kommandot skriver `1` (dold även efter migrate).
 
@@ -1445,15 +1445,15 @@ msgstr "Förskott betalt (bolagsvaluta)"
 msgid "Uploading..."
 msgstr "Ladda upp..."
 ```
-(Ta värdena från `bench --site test-erp.local execute hrms_sverige.scripts.sarskrivningar.report` –
+(Ta värdena från `bench --site <testsite> execute hrms_sverige.scripts.sarskrivningar.report` –
 KONFLIKT-raderna – om fler har tillkommit.)
 
 - [ ] **Step 4: Kör testet och se att ordlistetestet och scope-testet fallerar**
 
 ```bash
 bench compile-po-to-mo --app hrms_sverige --locale sv --force
-bench --site test-erp.local clear-cache
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_translations
+bench --site <testsite> clear-cache
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_translations
 ```
 Expected: `test_no_conflicts_with_erpnext_sverige` PASS; `test_glossary` och `test_no_title_case_in_scope` FAIL
 (den senare listar strängarna som återstår).
@@ -1461,7 +1461,7 @@ Expected: `test_no_conflicts_with_erpnext_sverige` PASS; `test_glossary` och `te
 - [ ] **Step 5: Ta fram arbetslistan**
 
 ```bash
-bench --site test-erp.local execute hrms_sverige.scripts.sarskrivningar.report --kwargs "{'output': '/tmp/claude-1000/hrms-sv.json', 'title_case_only': True}"
+bench --site <testsite> execute hrms_sverige.scripts.sarskrivningar.report --kwargs "{'output': '/tmp/hrms-sv.json', 'title_case_only': True}"
 ```
 Expected: cirka 950 kandidater. Filtrera ut de vars `msgid` innehåller något ord i `IN_SCOPE` (se testet) – det
 är obligatoriska. Övriga (lön, rekrytering, utlägg, medarbetarsamtal) är valfria i denna uppgift.
@@ -1499,8 +1499,8 @@ Arbeta i omgångar om ca 100 och kompilera + kör testet mellan omgångarna (ste
 
 ```bash
 bench compile-po-to-mo --app hrms_sverige --locale sv --force
-bench --site test-erp.local clear-cache
-bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_translations
+bench --site <testsite> clear-cache
+bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_translations
 ```
 Expected: `OK`, 3 tester.
 
@@ -1520,12 +1520,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 **Files:**
 - Modify: `apps/hrms_sverige/README.md`
-- Modify: `~/ERPNext/my-frappe-bench/CLAUDE.md` (ej versionshanterad)
+- Modify: `~/frappe-bench/CLAUDE.md` (ej versionshanterad)
 
 - [ ] **Step 1: Kör hela testsviten**
 
 ```bash
-bench --site test-erp.local run-tests --app hrms_sverige
+bench --site <testsite> run-tests --app hrms_sverige
 ```
 Expected: `OK`, alla tester (ca 34).
 
@@ -1584,8 +1584,8 @@ gpl-3.0
 ```bash
 bench build --app hrms
 bench build --app hrms_sverige
-bench --site test-erp.local clear-cache
-bench --site test-erp.local serve --port 8001
+bench --site <testsite> clear-cache
+bench --site <testsite> serve --port 8001
 ```
 Logga in som Administrator/admin på `http://localhost:8001`, språk svenska, och kontrollera:
 1. Skapa en anställd i testsajtens företag med personnummer `811218-9876`, anställningsform Tillsvidare,
@@ -1614,29 +1614,29 @@ git push -u origin version-16
 
 **Fråga användaren innan steg 5–6.**
 ```bash
-bench --site svensk-erp.local backup --with-files
+bench --site <site> backup --with-files
 ```
-Expected: sökvägar till databas- och fildump under `sites/svensk-erp.local/private/backups/`. Notera dem.
+Expected: sökvägar till databas- och fildump under `sites/<site>/private/backups/`. Notera dem.
 
-- [ ] **Step 6: Installera på svensk-erp.local**
+- [ ] **Step 6: Installera på <site>**
 
 ```bash
-bench --site svensk-erp.local install-app hrms
-bench --site svensk-erp.local execute frappe.db.get_value --args "['Custom Field', {'dt': 'Employee', 'fieldname': 'employment_type'}, 'name']"
-bench --site svensk-erp.local install-app hrms_sverige
-bench --site svensk-erp.local clear-cache
+bench --site <site> install-app hrms
+bench --site <site> execute frappe.db.get_value --args "['Custom Field', {'dt': 'Employee', 'fieldname': 'employment_type'}, 'name']"
+bench --site <site> install-app hrms_sverige
+bench --site <site> clear-cache
 ```
 Expected: båda installationerna utan traceback, mellankommandot skriver `"Employee-employment_type"`.
-Vid fel: `bench --site svensk-erp.local restore <databasdump> --with-public-files <...> --with-private-files <...>`
+Vid fel: `bench --site <site> restore <databasdump> --with-public-files <...> --with-private-files <...>`
 med filerna från steg 5.
 
 - [ ] **Step 7: Uppdatera CLAUDE.md i bench-roten**
 
-I `~/ERPNext/my-frappe-bench/CLAUDE.md`, lägg till i apptabellen:
+I `~/frappe-bench/CLAUDE.md`, lägg till i apptabellen:
 ```
 | `hrms` | 16.x | `github.com/frappe/hrms` | Upstream HR, don't edit — override from `hrms_sverige` |
 | `hrms_sverige` | 0.0.1 | `github.com/ubbe76/HRMS-Sverige` (GPL-3.0) | Our app: Swedish HR localization |
 ```
 (ersätt `16.x` med versionen från `bench version`) och ett avsnitt `## hrms_sverige (our app)` med: kräver `hrms`;
 `setup_all` körs vid installation och varje år; `sv.po`-rutinen som för `erpnext_sverige` men med
-`--app hrms_sverige`; tester på `test-erp.local`.
+`--app hrms_sverige`; tester på `<testsite>`.

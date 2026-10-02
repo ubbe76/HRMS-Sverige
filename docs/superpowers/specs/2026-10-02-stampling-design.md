@@ -140,7 +140,7 @@ passet började). Passet räknas från den senaste `IN`-stämplingen till nu. Me
 
 ## Tester
 
-Skrivs före koden (TDD) och körs på `test-erp.local` och i CI.
+Skrivs före koden (TDD) och körs på `<testsite>` och i CI.
 
 - **pin.py:**
   - hash och kontroll;
@@ -185,5 +185,5 @@ README och CHANGELOG uppdateras.
 Utrullningen görs tillsammans med del A, B och C2, efter provimporten i Crona:
 
 1. PR i HRMS-Sverige. CI ska gå igenom.
-2. `clear-cache` och `migrate` på test-erp.local och demo-erp.local. Provstämpla i webbläsaren med en testenhet.
-3. `clear-cache` och `migrate` på svensk-erp.local. HR skapar enheter och sätter PIN-koder.
+2. `clear-cache` och `migrate` på <testsite> och <demosite>. Provstämpla i webbläsaren med en testenhet.
+3. `clear-cache` och `migrate` på <site>. HR skapar enheter och sätter PIN-koder.

@@ -145,7 +145,7 @@ Företag anges som parameter eller hämtas från standardföretaget. Inga föret
 
 ## Tester
 
-Körs med `bench --site test-erp.local run-tests --app hrms_sverige`.
+Körs med `bench --site <testsite> run-tests --app hrms_sverige`.
 
 - **Personnummer:** giltiga 10- och 12-siffriga nummer med och utan bindestreck samt samordningsnummer godkänns
   och normaliseras. Fel kontrollsiffra, ogiltigt datum och fel längd avvisas.
@@ -158,14 +158,14 @@ Körs med `bench --site test-erp.local run-tests --app hrms_sverige`.
 
 ## Utrullning
 
-1. `bench get-app hrms --branch version-16` och `bench --site test-erp.local install-app hrms`. Kontrollera att
+1. `bench get-app hrms --branch version-16` och `bench --site <testsite> install-app hrms`. Kontrollera att
    installationen körs klart, eftersom ERPNext avbröts förra gången.
-2. Installera `hrms_sverige` på `test-erp.local` och kör testerna. Klicka igenom flödet på port 8001: lägg upp en
+2. Installera `hrms_sverige` på `<testsite>` och kör testerna. Klicka igenom flödet på port 8001: lägg upp en
    anställd, skapa semestertilldelning, ansök om ledighet och stämpla in.
 3. `bench build --app hrms` och `--app hrms_sverige`, `bench compile-po-to-mo --app hrms_sverige --locale sv --force`
    och clear-cache.
-4. Ta en säkerhetskopia av `svensk-erp.local` med `bench --site svensk-erp.local backup --with-files`.
-5. Installera `hrms` och `hrms_sverige` på `svensk-erp.local`.
+4. Ta en säkerhetskopia av `<site>` med `bench --site <site> backup --with-files`.
+5. Installera `hrms` och `hrms_sverige` på `<site>`.
 6. Uppdatera `CLAUDE.md` i bench-roten med de nya apparna.
 
 **Återställning:** återställ säkerhetskopian från steg 4. Att avinstallera appen räcker inte, eftersom HRMS

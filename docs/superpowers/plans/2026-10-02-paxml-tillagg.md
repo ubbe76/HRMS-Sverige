@@ -13,8 +13,8 @@
 ## Global Constraints
 
 - Appen `hrms_sverige` i `apps/hrms_sverige`, gren `feat/paxml-tillagg`. Byt tillbaka till `version-16` när du lämnar arbetet; benchen delas med produktionssiten.
-- `bench`-kommandon från `/home/ubbe/ERPNext/my-frappe-bench`. Tester bara på `test-erp.local`. Aldrig `migrate` på `svensk-erp.local`.
-- Efter ändringar i doctype-JSON, custom fields eller `hooks.py`: `bench --site test-erp.local clear-cache && bench --site test-erp.local migrate`.
+- `bench`-kommandon från `~/frappe-bench`. Tester bara på `<testsite>`. Aldrig `migrate` på `<site>`.
+- Efter ändringar i doctype-JSON, custom fields eller `hooks.py`: `bench --site <testsite> clear-cache && bench --site <testsite> migrate`.
 - Tabbar, radlängd 110, ruff via pre-commit (inga tvetydiga tecken som `–` i kommentarer; skriv "till"); om pre-commit ändrar en fil: `git add` och committa igen.
 - Koder: `MER`, `ÖT1`–`ÖT5`, `ÖK1`–`ÖK5`, `OB1`–`OB5`. Timmar avrundas till två decimaler; rader med 0 timmar tas inte med.
 - Tidsregel: Typ `OB` eller `Övertid`, Nivå 1–5, dagar `man tis ons tor fre lor son` + `helgdag`, Från/Till (Till <= Från betyder över midnatt; Från = Till betyder hela dygnet). En regel som går över midnatt hör till dagen den börjar.
@@ -77,7 +77,7 @@
 - [ ] **Step 1: Skapa grenen** (finns redan med specen)
 
 ```bash
-cd /home/ubbe/ERPNext/my-frappe-bench/apps/hrms_sverige
+cd ~/frappe-bench/apps/hrms_sverige
 git checkout feat/paxml-tillagg && git merge --ff-only origin/version-16 || git rebase origin/version-16
 ```
 
@@ -177,7 +177,7 @@ class TestRegler(UnitTestCase):
 
 - [ ] **Step 3: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_regler`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_regler`
 Expected: ERROR, `ModuleNotFoundError: No module named 'hrms_sverige.lon.regler'`.
 
 - [ ] **Step 4: Implementera** – `hrms_sverige/lon/regler.py`:
@@ -281,7 +281,7 @@ def dela_mertid(
 
 - [ ] **Step 5: Kör testerna**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_regler`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_regler`
 Expected: OK (15 tester).
 
 - [ ] **Step 6: Commit**
@@ -493,7 +493,7 @@ class TestLoneinstallningar(IntegrationTestCase):
 
 - [ ] **Step 5: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local clear-cache && bench --site test-erp.local migrate && bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_tillagg`
+Run: `bench --site <testsite> clear-cache && bench --site <testsite> migrate && bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_tillagg`
 Expected: ERROR, `ModuleNotFoundError: No module named 'hrms_sverige.lon.tillagg'`. (`migrate` skapar doctypes; controllerfilerna finns redan från Step 1–2.)
 
 - [ ] **Step 6: Implementera** – `hrms_sverige/lon/tillagg.py`:
@@ -575,7 +575,7 @@ Kompilera: `bench compile-po-to-mo --app hrms_sverige --locale sv --force`
 
 - [ ] **Step 7: Migrera och kör testerna**
 
-Run: `bench --site test-erp.local clear-cache && bench --site test-erp.local migrate && bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_tillagg`
+Run: `bench --site <testsite> clear-cache && bench --site <testsite> migrate && bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_tillagg`
 Expected: OK (4 tester).
 
 - [ ] **Step 8: Commit**
@@ -624,7 +624,7 @@ Claude-Session: https://claude.ai/code/session_016yYYj5agMiCoxsTCe4usfY"
 
 - [ ] **Step 2: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_tid`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_tid`
 Expected: ERROR, `ImportError: cannot import name 'planerat_skift'`.
 
 - [ ] **Step 3: Implementera** – i `hrms_sverige/lon/tid.py`, lägg till `from datetime import date, datetime, timedelta` och ersätt `planerade_timmar` med:
@@ -660,7 +660,7 @@ def planerade_timmar(employee: str, datum) -> float:
 
 - [ ] **Step 4: Kör testerna**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_tid`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_tid`
 Expected: OK (19 tester, inklusive del B:s).
 
 - [ ] **Step 5: Commit**
@@ -821,7 +821,7 @@ class TestTillaggsrader(IntegrationTestCase):
 
 - [ ] **Step 3: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_tillagg`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_tillagg`
 Expected: ERROR, `ImportError: cannot import name 'narvaro_utan_klockslag'` (och `tillaggsrader`).
 
 - [ ] **Step 4: Implementera** – lägg till i `hrms_sverige/lon/tillagg.py` (utöka importerna med `from datetime import date`, `from frappe.utils import flt, get_datetime, getdate, to_timedelta`, `from hrms.utils.holiday_list import get_holiday_list_for_employee`, `from hrms_sverige.lon.regler import OB, OVERTID, Tidsregel, dela_mertid, extra_tid, fordela, timmar` och `from hrms_sverige.lon.tid import planerat_skift`):
@@ -932,7 +932,7 @@ def narvaro_utan_klockslag(company: str, from_date, to_date) -> dict[str, list[d
 
 - [ ] **Step 5: Kör testerna**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_tillagg`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_tillagg`
 Expected: OK (14 tester). Om HRMS stoppar testdata (t.ex. närvaro med klockslag mot skift, eller stämpling som får skiftfält), justera **testdata**, inte beräkningen.
 
 - [ ] **Step 6: Commit**
@@ -1031,7 +1031,7 @@ class TestLoneunderlagTillagg(IntegrationTestCase):
 
 - [ ] **Step 2: Kör och se dem fallera**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_loneunderlag`
+Run: `bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_loneunderlag`
 Expected: FAIL i `TestLoneunderlagTillagg` (ARB 11.0 och inga tilläggsrader; ingen varning). Del A:s och B:s klasser går igenom.
 
 - [ ] **Step 3: ARB-avdrag** – i `hrms_sverige/lon/tid.py`, ändra signaturen och timmarna i `arbetad_tid`:
@@ -1102,12 +1102,12 @@ och ersätt listan som returneras med:
 
 - [ ] **Step 7: Migrera och kör testerna**
 
-Run: `bench --site test-erp.local clear-cache && bench --site test-erp.local migrate && bench --site test-erp.local run-tests --app hrms_sverige --module hrms_sverige.tests.test_loneunderlag`
+Run: `bench --site <testsite> clear-cache && bench --site <testsite> migrate && bench --site <testsite> run-tests --app hrms_sverige --module hrms_sverige.tests.test_loneunderlag`
 Expected: OK (alla klasser).
 
 - [ ] **Step 8: Hela sviten**
 
-Run: `bench --site test-erp.local run-tests --app hrms_sverige`
+Run: `bench --site <testsite> run-tests --app hrms_sverige`
 Expected: OK. Del B:s ARB-tester (närvaro utan klockslag) ger oförändrad ARB.
 
 - [ ] **Step 9: Commit**
@@ -1180,16 +1180,16 @@ dras MER- och övertidstimmarna från ARB, så lönearterna för MER och ÖT ska
 OB är ett rent tillägg.
 ```
 
-Bygg: `cd /home/ubbe/ERPNext/ERPNext-Sverige-docs && .venv/bin/mkdocs build --strict -q` – Expected: exit 0.
+Bygg: `cd <docs-repo> && .venv/bin/mkdocs build --strict -q` – Expected: exit 0.
 
 - [ ] **Step 4: Commit i båda repona**
 
 ```bash
-cd /home/ubbe/ERPNext/my-frappe-bench/apps/hrms_sverige
+cd ~/frappe-bench/apps/hrms_sverige
 git add README.md CHANGELOG.md
 git commit -m "docs: document overtime, extra time and OB" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_016yYYj5agMiCoxsTCe4usfY"
-cd /home/ubbe/ERPNext/ERPNext-Sverige-docs
+cd <docs-repo>
 git add docs/personal/loneunderlag.md
 git commit -m "docs: overtime, extra time and OB in the payroll export" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_016yYYj5agMiCoxsTCe4usfY"
@@ -1200,7 +1200,7 @@ git checkout main
 - [ ] **Step 5: Push, PR och CI**
 
 ```bash
-cd /home/ubbe/ERPNext/my-frappe-bench/apps/hrms_sverige
+cd ~/frappe-bench/apps/hrms_sverige
 git push -u origin feat/paxml-tillagg
 gh pr create --base version-16 --title "Löneunderlag: övertid, mertid och OB (PAXml, del C2)" --body "Del C2 av löneunderlaget till Crona Lön. Spec: docs/superpowers/specs/2026-10-02-paxml-tillagg-design.md
 
@@ -1214,10 +1214,10 @@ Expected: CI grön.
 - [ ] **Step 6: Demo-siten och tillbaka till version-16**
 
 ```bash
-cd /home/ubbe/ERPNext/my-frappe-bench
-bench --site demo-erp.local clear-cache && bench --site demo-erp.local migrate
+cd ~/frappe-bench
+bench --site <demosite> clear-cache && bench --site <demosite> migrate
 git -C apps/hrms_sverige checkout version-16
-bench --site test-erp.local clear-cache && bench --site demo-erp.local clear-cache
+bench --site <testsite> clear-cache && bench --site <demosite> clear-cache
 ```
 
 Merge och produktion görs först efter användarens godkännande, tillsammans med del A och B efter provimporten i Crona.

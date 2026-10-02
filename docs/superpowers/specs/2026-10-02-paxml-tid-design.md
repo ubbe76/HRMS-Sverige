@@ -126,7 +126,7 @@ Rader med omfattning skrivs som i del A.
 
 ## Tester
 
-Skrivs före koden (TDD) och körs på `test-erp.local` och i CI.
+Skrivs före koden (TDD) och körs på `<testsite>` och i CI.
 
 - **planerade_timmar:**
   - dagskift;
@@ -169,6 +169,6 @@ CHANGELOG uppdateras.
 Utrullningen görs tillsammans med del A, efter provimporten i Crona:
 
 1. PR i HRMS-Sverige. CI ska gå igenom.
-2. `clear-cache` och `migrate` på test-erp.local och demo-erp.local. Provkörning med en timavlönad testanställd.
+2. `clear-cache` och `migrate` på <testsite> och <demosite>. Provkörning med en timavlönad testanställd.
 3. Provimport i Crona (användaren).
-4. `clear-cache` och `migrate` på svensk-erp.local. Kontrollera att tabellerna och fälten finns.
+4. `clear-cache` och `migrate` på <site>. Kontrollera att tabellerna och fälten finns.
