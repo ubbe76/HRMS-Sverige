@@ -78,16 +78,21 @@
 		}
 		knappsats("Anställningsnummer", false, (nummer) => {
 			lage.nummer = nummer;
-			knappsats("PIN-kod", true, (pin) => {
-				lage.pin = pin;
-				identifiera();
-			});
+			lage.pin = "";
+			identifiera();
 		});
 	}
 
 	function identifiera() {
 		anropa("identifiera", { anstallningsnummer: lage.nummer, pin: lage.pin }).then((svar) => {
 			if (svar.fel) return start(), fel(svar.fel);
+			// PIN-kod frågas bara efter när den anställde (eller ett okänt nummer) kräver en
+			if (svar.behover_pin && !lage.pin)
+				return knappsats("PIN-kod", true, (pin) => {
+					lage.pin = pin;
+					identifiera();
+				});
+			if (svar.behover_pin) return start();
 			lage.svar = svar;
 			if (svar.maste_byta_pin) return bytPin();
 			valjRiktning();
@@ -159,7 +164,7 @@
 			log_type: riktning,
 			overtidsersattning: val,
 		}).then((svar) => {
-			if (svar.fel) return start(), fel(svar.fel);
+			if (svar.fel || svar.behover_pin) return start(), fel(svar.fel || "");
 			$("yta").innerHTML = "";
 			visa(
 				`${riktning === "IN" ? "Instämplad" : "Utstämplad"} ${svar.tid}`,

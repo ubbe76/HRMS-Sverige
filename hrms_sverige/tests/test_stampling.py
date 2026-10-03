@@ -11,6 +11,7 @@ from hrms_sverige.lon.stampling import (
 	FEL_ENHET_SPARRAD,
 	FEL_INLOGGNING,
 	FEL_LAST,
+	MAX_FEL_PER_ENHET,
 	byt_pin,
 	identifiera,
 	nyckel_hash,
@@ -85,6 +86,10 @@ class TestEnhetOchPin(StamplingTestCase):
 		anstalld = make_test_employee("Stämpel Gäst", employee_number="SP-3")
 		frappe.set_user("Guest")
 		self.assertRaises(frappe.PermissionError, satt_pin, anstalld, "4821")
+
+	def test_utan_pin_ar_av_som_standard(self):
+		falt = frappe.get_meta("Employee").get_field("stampel_utan_pin")
+		self.assertEqual((falt.fieldtype, falt.default, falt.read_only), ("Check", None, 0))
 
 	def test_fraga_minuter_har_standard(self):
 		self.assertEqual(
@@ -178,6 +183,38 @@ class TestIdentifiera(StamplingTestCase):
 			identifiera(self.nyckel, f"GISSA-{i}", "2468")
 		self.assertEqual(identifiera(self.nyckel, "ID-1", "4821"), {"fel": FEL_ENHET_SPARRAD})
 
+	def test_utan_pin_kravs_ingen_pin(self):
+		frappe.db.set_value("Employee", self.anstalld, "stampel_utan_pin", 1)
+		self.assertEqual(identifiera(self.nyckel, "ID-1", "")["fornamn"], "Åsa")
+		self.assertEqual(identifiera(self.nyckel, "ID-1", "9999")["fornamn"], "Åsa")
+		self.assertEqual(frappe.db.get_value("Employee", self.anstalld, "stampel_fel_forsok"), 0)
+
+	def test_utan_pin_hoppar_over_pinbyte(self):
+		ny = pin_anstalld("Utan Byte", "ID-4", "5173", maste_bytas=True)
+		frappe.db.set_value("Employee", ny, "stampel_utan_pin", 1)
+		self.assertFalse(identifiera(self.nyckel, "ID-4", "")["maste_byta_pin"])
+
+	def test_utan_pin_utan_satt_pin(self):
+		make_test_employee("Aldrig Pin", employee_number="ID-5", stampel_utan_pin=1)
+		self.assertEqual(identifiera(self.nyckel, "ID-5", "")["riktning"], "IN")
+
+	def test_behover_pin_samma_svar_for_okant_nummer(self):
+		self.assertEqual(identifiera(self.nyckel, "ID-1", ""), {"behover_pin": True})
+		self.assertEqual(identifiera(self.nyckel, "FINNS-EJ", ""), {"behover_pin": True})
+
+	def test_behover_pin_raknas_inte_som_fel(self):
+		for _ in range(MAX_FEL_PER_ENHET + 1):
+			identifiera(self.nyckel, "FINNS-EJ", "")
+		self.assertEqual(frappe.db.get_value("Employee", self.anstalld, "stampel_fel_forsok"), 0)
+		self.assertEqual(identifiera(self.nyckel, "ID-1", "4821")["fornamn"], "Åsa")
+
+	def test_byt_pin_nekas_utan_pin(self):
+		frappe.db.set_value("Employee", self.anstalld, "stampel_utan_pin", 1)
+		self.assertEqual(byt_pin(self.nyckel, "ID-1", "", "8264"), {"fel": FEL_INLOGGNING})
+		self.assertTrue(
+			pin_stammer("4821", frappe.db.get_value("Employee", self.anstalld, "stampel_pin_hash"))
+		)
+
 	def test_byt_pin_med_fel_gammal_pin(self):
 		self.assertEqual(byt_pin(self.nyckel, "ID-1", "0000", "8264"), {"fel": FEL_INLOGGNING})
 		self.assertEqual(frappe.db.get_value("Employee", self.anstalld, "stampel_fel_forsok"), 1)
@@ -248,6 +285,17 @@ class TestStampla(StamplingTestCase):
 			self.assertIn("fel", stampla(self.nyckel, "ST-1", "4821", "OUT", "Bonus"))
 		self.assertEqual(self.checkins(), [])
 
+	def test_stampla_utan_pin(self):
+		frappe.db.set_value("Employee", self.anstalld, "stampel_utan_pin", 1)
+		with klockan(8):
+			self.assertEqual(stampla(self.nyckel, "ST-1", "", "IN")["log_type"], "IN")
+		self.assertEqual(len(self.checkins()), 1)
+
+	def test_stampla_kraver_pin_annars(self):
+		with klockan(8):
+			self.assertEqual(stampla(self.nyckel, "ST-1", "", "IN"), {"behover_pin": True})
+		self.assertEqual(self.checkins(), [])
+
 	def test_maste_byta_pin_forst(self):
 		pin_anstalld("Ny", "ST-2", "5173", maste_bytas=True)
 		with klockan(8):
@@ -267,11 +315,19 @@ class TestStampla(StamplingTestCase):
 			svar = identifiera(self.nyckel, "ST-1", "4821")
 		self.assertEqual((svar["fraga_overtid"], svar["extra_minuter"]), (False, 10))
 
-	def test_ingen_fraga_utan_skift(self):
-		with klockan(9, dag=12):  # lördag: helgdag, inget skift
+	def test_fraga_vid_helgpass_med_schema(self):
+		with klockan(9, dag=12):  # lördag: hela passet är utanför schemat
 			stampla(self.nyckel, "ST-1", "4821", "IN")
 		with klockan(17, dag=12):
-			self.assertFalse(identifiera(self.nyckel, "ST-1", "4821")["fraga_overtid"])
+			svar = identifiera(self.nyckel, "ST-1", "4821")
+		self.assertEqual((svar["fraga_overtid"], svar["extra_minuter"]), (True, 480))
+
+	def test_ingen_fraga_utan_schema(self):
+		pin_anstalld("Utan Schema", "ST-4")
+		with klockan(9, dag=12):
+			stampla(self.nyckel, "ST-4", "4821", "IN")
+		with klockan(17, dag=12):
+			self.assertFalse(identifiera(self.nyckel, "ST-4", "4821")["fraga_overtid"])
 
 	def test_utstampling_utan_instampling(self):
 		with klockan(16, 45):

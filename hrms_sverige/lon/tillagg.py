@@ -5,8 +5,8 @@ from datetime import date, timedelta
 import frappe
 from frappe.utils import flt, get_datetime, getdate, to_timedelta
 
-from hrms_sverige.lon.regler import OB, OVERTID, Tidsregel, dela_mertid, extra_tid, fordela, timmar
-from hrms_sverige.lon.tid import ar_helgdag, planerat_skift
+from hrms_sverige.lon.regler import OB, OVERTID, Tidsregel, dela_mertid, fordela, timmar
+from hrms_sverige.lon.tid import ar_helgdag, tid_utanfor_schema
 
 DAGFALT = ("man", "tis", "ons", "tor", "fre", "lor", "son")
 NARVARO_STATUS = ("Present", "Half Day")
@@ -114,8 +114,7 @@ def tillaggsrader(company: str, from_date, to_date) -> list[dict]:
 			helg_cache[n.employee] = helgdagar(n.employee, from_date, to_date)
 		helg = helg_cache[n.employee]
 		arbetat_pass = arbetspass(n.name) or [arbetat]
-		skift = planerat_skift(n.employee, dag)
-		extra = [e for p in arbetat_pass for e in extra_tid(p, skift)]
+		extra = tid_utanfor_schema(n.employee, dag, arbetat_pass)
 		grad = flt(frappe.db.get_value("Employee", n.employee, "sysselsattningsgrad"))
 		if 0 < grad < 100:
 			inom = timmar(arbetat_pass) - timmar(extra)

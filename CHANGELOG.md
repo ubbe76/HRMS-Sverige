@@ -10,6 +10,9 @@
   Övertidsersättning (stämpling). Tilläggsrader per närvaro; timavlönades ARB minskas med MER och ÖT/ÖK.
 - **Stämplingssida:** `/stampla` med anställningsnummer och PIN-kod, registrerade enheter, låsning efter fem
   felaktiga försök och fråga om pengar eller komptid vid övertid.
+- **Helgpass är övertid:** ett pass på en helg eller röd dag räknas som övertid (eller mertid vid deltid) för den
+  som har ett skift. Den som saknar skift får som tidigare bara OB.
+- **Stämpla utan PIN:** ny inställning per anställd. Stämplingssidan frågar då bara efter anställningsnumret.
 
 ## v0.1.0 – 2026-10-02 (pre-release)
 
