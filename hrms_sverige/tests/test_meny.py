@@ -24,6 +24,21 @@ class TestMeny(IntegrationTestCase):
 		self.assertIn('fill="#06B58B" fill-opacity="0.1"', svg)
 		self.assertIn("#1F876C", svg)
 
+	def test_ikonvarianter_som_hrms(self):
+		# Desk väljer assets/<app>/icons/desktop_icons/<solid|subtle>/<etikett>.svg efter användarens ikonstil
+		farger = {
+			"solid": ('fill="#06B58B"/>', 'stroke="white"'),
+			"subtle": ('fill-opacity="0.1"', "#1F876C"),
+		}
+		for variant, (bakgrund, symbol) in farger.items():
+			svg = open(
+				frappe.get_app_path(
+					"hrms_sverige", "public", "icons", "desktop_icons", variant, f"{frappe.scrub(MENY)}.svg"
+				)
+			).read()
+			self.assertIn(bakgrund, svg, variant)
+			self.assertIn(symbol, svg, variant)
+
 	def test_sidomenyns_lankar(self):
 		lankar = [
 			(rad.link_type, rad.link_to)
