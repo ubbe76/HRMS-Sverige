@@ -33,9 +33,19 @@
 		// Dubbeltryck på pekskärmen: ignorera nya tryck medan ett anrop pågår
 		if (upptagen) return new Promise(() => {});
 		upptagen = true;
-		return frappe
-			.call({ method: METOD + funktion, type: "POST", args: { enhet, ...args } })
-			.then((r) => r.message || {})
+		// fetch i stället för frappe.call: webbsidornas frappe.call ger ett jQuery-promise utan finally
+		return fetch(`/api/method/${METOD}${funktion}`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Accept: "application/json",
+				"X-Frappe-CSRF-Token": frappe.csrf_token,
+			},
+			body: JSON.stringify({ enhet, ...args }),
+		})
+			.then((r) => r.json())
+			.then((r) => r.message || { fel: "Något gick fel. Försök igen." })
+			.catch(() => ({ fel: "Ingen kontakt med servern. Försök igen." }))
 			.finally(() => {
 				upptagen = false;
 			});
