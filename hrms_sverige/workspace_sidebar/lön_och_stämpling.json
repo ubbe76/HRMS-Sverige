@@ -1,7 +1,7 @@
 {
  "app": "hrms_sverige",
  "creation": "2026-10-03 12:00:00.000000",
- "modified": "2026-10-03 12:00:00.000000",
+ "modified": "2026-10-03 12:30:00.000000",
  "modified_by": "Administrator",
  "owner": "Administrator",
  "docstatus": 0,
@@ -10,7 +10,7 @@
  "name": "Lön och stämpling",
  "title": "Lön och stämpling",
  "module": "Lon",
- "header_icon": "banknote",
+ "header_icon": "file-clock",
  "idx": 0,
  "items": [
   {
