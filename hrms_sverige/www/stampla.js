@@ -60,6 +60,7 @@
 		for (const k of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "OK"]) {
 			const b = document.createElement("button");
 			b.textContent = k;
+			b.className = k === "OK" ? "btn btn-primary" : "btn btn-default";
 			b.onclick = () => {
 				if (k === "⌫") varde = varde.slice(0, -1);
 				else if (k === "OK") return varde && klar(varde);
@@ -138,8 +139,10 @@
 		rutnat.className = "knappar";
 		const text = { IN: "Stämpla in", OUT: "Stämpla ut" };
 		const andra = s.riktning === "IN" ? "OUT" : "IN";
-		rutnat.appendChild(knapp(text[s.riktning], "stor", () => fortsatt(s.riktning)));
-		rutnat.appendChild(knapp(text[andra], "andra", () => fortsatt(andra)));
+		rutnat.appendChild(
+			knapp(text[s.riktning], "btn btn-primary stor", () => fortsatt(s.riktning))
+		);
+		rutnat.appendChild(knapp(text[andra], "btn btn-default andra", () => fortsatt(andra)));
 		yta.appendChild(rutnat);
 		visa(`Hej ${s.fornamn}!`, "", "", 10);
 	}
@@ -155,7 +158,9 @@
 		const rutnat = document.createElement("div");
 		rutnat.className = "knappar val";
 		for (const val of ["Pengar", "Komptid"]) {
-			const klass = "andra" + (val === lage.svar.forval ? " vald" : "");
+			// Förvalet markeras med temats primärfärg
+			const klass =
+				"btn andra " + (val === lage.svar.forval ? "btn-primary" : "btn-default");
 			rutnat.appendChild(knapp(val, klass, () => stampla("OUT", val)));
 		}
 		yta.appendChild(rutnat);
