@@ -1,4 +1,4 @@
-"""Stämplingssidan: gäst-API för registrerade enheter, med anställningsnummer och PIN-kod."""
+"""Stämplingssidan: gäst-API för registrerade enheter, med anställningsnummer och PIN-kod (om den krävs)."""
 
 import hashlib
 from datetime import timedelta
@@ -10,8 +10,8 @@ from frappe.rate_limiter import rate_limit
 from frappe.utils import cint, get_datetime, now_datetime
 
 from hrms_sverige.lon.pin import hasha_pin, kontrollera_pin_regler, pin_stammer
-from hrms_sverige.lon.regler import extra_tid, timmar
-from hrms_sverige.lon.tid import planerat_skift
+from hrms_sverige.lon.regler import timmar
+from hrms_sverige.lon.tid import tid_utanfor_schema
 
 HR_ROLLER = ("HR Manager", "HR User")
 
@@ -52,6 +52,10 @@ class Nekad(Exception):
 	pass
 
 
+class BehoverPin(Exception):
+	"""Anställningsnumret kräver en PIN-kod; samma svar för okända nummer, så att de inte avslöjas."""
+
+
 def _svar(fn):
 	"""Nekanden returneras som {"fel": ...}, så att räknaren för felaktiga försök sparas (inget undantag)."""
 
@@ -59,6 +63,8 @@ def _svar(fn):
 	def wrapper(*args, **kwargs):
 		try:
 			return fn(*args, **kwargs)
+		except BehoverPin:
+			return {"behover_pin": True}
 		except Nekad as nekad:
 			return {"fel": _(str(nekad))}
 		except frappe.ValidationError as fel:
@@ -96,6 +102,7 @@ def _anstalld(anstallningsnummer: str, pin: str, enhet: str) -> frappe._dict:
 		[
 			"name",
 			"first_name",
+			"stampel_utan_pin",
 			"stampel_pin_hash",
 			"stampel_pin_maste_bytas",
 			"stampel_fel_forsok",
@@ -105,11 +112,18 @@ def _anstalld(anstallningsnummer: str, pin: str, enhet: str) -> frappe._dict:
 		as_dict=True,
 	)
 	if not rad:
+		if not pin:
+			raise BehoverPin
 		_rakna_enhetsfel(enhet)
 		raise Nekad(FEL_INLOGGNING)
 	nu = now_datetime()
 	if rad.stampel_last_till and get_datetime(rad.stampel_last_till) > nu:
 		raise Nekad(FEL_LAST)
+	if rad.stampel_utan_pin:
+		rad.stampel_pin_maste_bytas = 0
+		return rad
+	if not pin:
+		raise BehoverPin
 	if not pin_stammer(pin, rad.stampel_pin_hash):
 		_rakna_enhetsfel(enhet)
 		# Räknas upp i databasen, så att samtidiga felaktiga försök inte skriver över varandra
@@ -161,10 +175,7 @@ def _fraga_overtid(employee: str, nu) -> tuple[bool, int]:
 	if not instampling:
 		return False, 0
 	start = get_datetime(instampling[0])
-	skift = planerat_skift(employee, start.date())
-	if not skift:
-		return False, 0
-	minuter = round(timmar(extra_tid((start, nu), skift)) * 60)
+	minuter = round(timmar(tid_utanfor_schema(employee, start.date(), [(start, nu)])) * 60)
 	grans = cint(frappe.db.get_single_value("Loneinstallningar", "overtid_fraga_minuter") or 15)
 	return minuter > grans, minuter
 
@@ -197,6 +208,8 @@ def identifiera(enhet: str, anstallningsnummer: str, pin: str) -> dict:
 def byt_pin(enhet: str, anstallningsnummer: str, pin: str, ny_pin: str) -> dict:
 	namn = _enhet(enhet)
 	rad = _anstalld(anstallningsnummer, pin, namn)
+	if rad.stampel_utan_pin:
+		raise Nekad(FEL_INLOGGNING)
 	kontrollera_pin_regler(ny_pin, gammal=pin)
 	frappe.db.set_value(
 		"Employee",

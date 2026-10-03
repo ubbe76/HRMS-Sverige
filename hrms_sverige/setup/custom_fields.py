@@ -54,12 +54,23 @@ def get_custom_fields():
 				),
 			},
 			{
+				"fieldname": "stampel_utan_pin",
+				"label": _("Stämpla utan PIN"),
+				"fieldtype": "Check",
+				"permlevel": PERSONNUMMER_PERMLEVEL,
+				"insert_after": "overtid_som",
+				"description": _(
+					"Den anställde stämplar med bara anställningsnumret. Vem som helst vid enheten kan då "
+					"stämpla åt den anställde. Utan bocken krävs en PIN-kod (Stämpling > Sätt PIN)."
+				),
+			},
+			{
 				"fieldname": "stampel_pin_maste_bytas",
 				"label": _("PIN måste bytas"),
 				"fieldtype": "Check",
 				"read_only": 1,
 				"permlevel": PERSONNUMMER_PERMLEVEL,
-				"insert_after": "overtid_som",
+				"insert_after": "stampel_utan_pin",
 				"description": _(
 					"Sätts när HR sätter en PIN-kod; den anställde byter vid första stämplingen."
 				),

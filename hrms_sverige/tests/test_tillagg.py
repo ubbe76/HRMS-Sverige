@@ -171,10 +171,35 @@ class TestTillaggsrader(IntegrationTestCase):
 			[("ÖT1", "2026-09-16", 3.5), ("ÖT2", "2026-09-16", 1.0), ("OB1", "2026-09-16", 3.0)],
 		)
 
-	def test_utan_skift_bara_ob(self):
+	def test_helgpass_med_schema_ar_overtid(self):
 		a = self.anstalld("Till Lördag", "TL-7", self.dag)
 		make_attendance(a, "2026-09-12", 4, in_time="2026-09-12 10:00:00", out_time="2026-09-12 14:00:00")
+		self.assertEqual(self.egna(a), [("ÖT1", "2026-09-12", 4.0), ("OB3", "2026-09-12", 4.0)])
+
+	def test_helgpass_utan_schema_bara_ob(self):
+		a = self.anstalld("Till Extra", "TL-13")
+		make_attendance(a, "2026-09-12", 4, in_time="2026-09-12 10:00:00", out_time="2026-09-12 14:00:00")
 		self.assertEqual(self.egna(a), [("OB3", "2026-09-12", 4.0)])
+
+	def test_rod_vardag_med_schema_ar_overtid(self):
+		# Kristi himmelsfärd, torsdag 14 maj 2026
+		a = self.anstalld("Till Röd Dag", "TL-14")
+		assign_shift(a, self.dag, "2026-01-01")
+		make_attendance(a, "2026-05-14", 4, in_time="2026-05-14 10:00:00", out_time="2026-05-14 14:00:00")
+		rader = [
+			(r["tidkod"], r["timmar"])
+			for r in tillaggsrader(COMPANY, date(2026, 5, 1), date(2026, 5, 31))
+			if r["employee"] == a
+		]
+		self.assertEqual(rader, [("ÖT1", 4.0), ("OB3", 4.0)])
+
+	def test_helgpass_for_deltid_ger_mertid_forst(self):
+		a = self.anstalld("Till Deltid Helg", "TL-15", self.halv, sysselsattningsgrad=50)
+		make_attendance(a, "2026-09-12", 10, in_time="2026-09-12 08:00:00", out_time="2026-09-12 18:00:00")
+		self.assertEqual(
+			self.egna(a),
+			[("MER", "2026-09-12", 8.0), ("ÖT1", "2026-09-12", 2.0), ("OB3", "2026-09-12", 10.0)],
+		)
 
 	def test_manadsavlonad_far_ob_men_ingen_arb(self):
 		a = self.anstalld("Till Månad", "TL-8", self.dag)

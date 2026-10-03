@@ -6,6 +6,8 @@ import frappe
 from frappe.utils import flt, getdate, to_timedelta
 from hrms.utils.holiday_list import get_holiday_list_for_employee
 
+from hrms_sverige.lon.regler import Intervall, extra_tid
+
 TIMLON = "Timlön"
 ARB = "ARB"
 
@@ -37,11 +39,8 @@ def ar_helgdag(employee: str, datum, bara_roda: bool = False) -> bool:
 	return bool(frappe.db.exists("Holiday", filters))
 
 
-def planerat_skift(employee: str, datum) -> tuple[datetime, datetime] | None:
-	"""Det planerade skiftets start och slut den dagen; None på helgdagar och utan skift."""
-	datum = getdate(datum)
-	if ar_helgdag(employee, datum):
-		return None
+def _skifttyp(employee: str, datum: date) -> str | None:
+	"""Skiftet som gäller för datumet enligt tilldelning eller standardskift, helgdag eller inte."""
 	tilldelningar = frappe.get_all(
 		"Shift Assignment",
 		filters={"employee": employee, "docstatus": 1, "status": "Active", "start_date": ("<=", datum)},
@@ -51,12 +50,35 @@ def planerat_skift(employee: str, datum) -> tuple[datetime, datetime] | None:
 	skift = next(
 		(t.shift_type for t in tilldelningar if not t.end_date or getdate(t.end_date) >= datum), None
 	)
-	skift = skift or frappe.db.get_value("Employee", employee, "default_shift")
+	return skift or frappe.db.get_value("Employee", employee, "default_shift")
+
+
+def planerat_skift(employee: str, datum) -> tuple[datetime, datetime] | None:
+	"""Det planerade skiftets start och slut den dagen; None på helgdagar och utan skift."""
+	datum = getdate(datum)
+	if ar_helgdag(employee, datum):
+		return None
+	skift = _skifttyp(employee, datum)
 	if not skift:
 		return None
 	start, slut = frappe.db.get_value("Shift Type", skift, ["start_time", "end_time"])
 	borjan = datetime.combine(datum, datetime.min.time()) + to_timedelta(start)
 	return borjan, borjan + timedelta(hours=skiftlangd(start, slut))
+
+
+def tid_utanfor_schema(employee: str, datum, arbetat: list[Intervall]) -> list[Intervall]:
+	"""Arbetad tid utanför schemat, som blir mertid eller övertid.
+
+	En vanlig dag är det tiden utanför skiftet. En helgdag (helg eller röd dag) är hela passet utanför
+	schemat för den som har ett skift. Den som saknar skift har inget schema och ingen extra tid.
+	"""
+	datum = getdate(datum)
+	skift = planerat_skift(employee, datum)
+	if skift:
+		return [e for p in arbetat for e in extra_tid(p, skift)]
+	if ar_helgdag(employee, datum) and _skifttyp(employee, datum):
+		return list(arbetat)
+	return []
 
 
 def planerade_timmar(employee: str, datum) -> float:
