@@ -5,18 +5,18 @@
 {% block footer %}{% endblock %}
 {% block content %}
 <style>
-	body { background: #f4f5f6; }
+	/* Färger, typsnitt och knappar kommer från webbtemat (Website Theme) via Frappes variabler och .btn-klasser */
 	/* width: 100 %, annars krymper rutan till knapparnas minsta bredd i webbplatsens layout */
-	.st { width: 100%; max-width: 440px; box-sizing: border-box; margin: 6vh auto; padding: 16px; font-family: system-ui, sans-serif; text-align: center; }
+	.st { width: 100%; max-width: 440px; box-sizing: border-box; margin: 6vh auto; padding: 16px; text-align: center; color: var(--text-color); }
 	.st h1 { font-size: 1.6rem; margin-bottom: 0.5rem; }
-	.st .falt { font-size: 2rem; letter-spacing: 0.3rem; min-height: 3rem; border-bottom: 2px solid #888; margin: 1rem 0; }
+	.st p { color: var(--text-muted); }
+	.st .falt { font-size: 2rem; letter-spacing: 0.3rem; min-height: 3rem; border-bottom: 2px solid var(--border-color); margin: 1rem 0; }
 	.st .knappar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-	.st button { font-size: 1.8rem; padding: 20px 0; border-radius: 12px; border: 1px solid #ccc; background: #fff; color: #222; touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
-	.st button:active { background: #e3e6e8; }
-	.st button.stor { grid-column: span 3; font-size: 1.8rem; background: #1f7a45; color: #fff; border: none; }
-	.st button.andra { grid-column: span 3; font-size: 1.1rem; }
-	.st .fel { color: #b00020; min-height: 1.5rem; }
-	.st .val button.vald { outline: 4px solid #1f7a45; }
+	/* Höjden sätts med min-height: Frappes .btn-padding har högre specificitet och ger för små tryckytor */
+	.st .btn { display: flex; align-items: center; justify-content: center; min-height: 4.5rem; font-size: 1.8rem; border-radius: var(--border-radius-lg, 12px); touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
+	.st .btn.stor { grid-column: span 3; min-height: 5rem; }
+	.st .btn.andra { grid-column: span 3; min-height: 3.5rem; font-size: 1.1rem; }
+	.st .fel { color: var(--alert-text-danger); min-height: 1.5rem; }
 </style>
 <div class="st">
 	<h1 id="rubrik">Stämpling</h1>
