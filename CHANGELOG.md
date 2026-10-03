@@ -1,6 +1,8 @@
 # Ändringslogg
 
-## Ej släppt
+## v0.2.0 – 2026-10-03 (pre-release)
+
+Löneunderlag till lönesystem via PAXml och en stämplingssida. Provat med import i Crona Lön.
 
 - **Löneunderlag till Crona Lön:** godkänd frånvaro per bolag och månad som PAXml 2.0-fil, med PAXml-tidkod på
   frånvarotypen och varning när en redan exporterad månad ändras.
@@ -13,6 +15,15 @@
 - **Helgpass är övertid:** ett pass på en helg eller röd dag räknas som övertid (eller mertid vid deltid) för den
   som har ett skift. Den som saknar skift får som tidigare bara OB.
 - **Stämpla utan PIN:** ny inställning per anställd. Stämplingssidan frågar då bara efter anställningsnumret.
+- **Meny Lön och stämpling** under Frappe HR, med Löneunderlag, Stämplingsenhet och Löneinställningar och en egen
+  ikon i hrms stil (solid och subtle).
+- **Stämplingssidan följer webbtemat:** temats färger, typsnitt och Frappes knappar, utan webbplatsens meny och
+  sidfot.
+
+### Rättat
+
+- Stämplingssidan: OK gjorde ingenting (webbsidornas `frappe.call` ger ett jQuery-promise utan `finally`), och
+  knapparna var ihoptryckta.
 
 ## v0.1.0 – 2026-10-02 (pre-release)
 
