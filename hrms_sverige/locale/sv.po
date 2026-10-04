@@ -1909,6 +1909,9 @@ msgstr "Namngivning av anställd efter"
 msgid "Employee not found"
 msgstr "Anställd hittades inte"
 
+msgid "Employee Number"
+msgstr "Anställningsnummer"
+
 msgid "Employee Onboarding"
 msgstr "Introduktion"
 

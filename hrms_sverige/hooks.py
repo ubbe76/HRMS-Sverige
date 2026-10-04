@@ -147,6 +147,9 @@ setup_wizard_complete = "hrms_sverige.setup.install.after_setup_wizard"
 # Hook on document methods and events
 
 doc_events = {
+	"HR Settings": {
+		"on_update": "hrms_sverige.hr.anstallningsnummer.visa_anstallningsnummer",
+	},
 	"Employee": {
 		"validate": "hrms_sverige.hr.personnummer.validate_employee",
 	},

@@ -134,3 +134,45 @@ class TestLoneform(IntegrationTestCase):
 		self.assertIsNotNone(falt)
 		self.assertEqual(falt.fieldtype, "Select")
 		self.assertEqual(falt.options.split("\n"), ["", "Månadslön", "Timlön"])
+
+
+class TestAnstallningsnummer(IntegrationTestCase):
+	"""Löneunderlaget kräver anställningsnummer, så fältet ska synas även när anställda namnges med nummerserie."""
+
+	def setUp(self):
+		frappe.db.savepoint("anstallningsnummer")
+
+	def tearDown(self):
+		frappe.db.rollback(save_point="anstallningsnummer")
+		frappe.clear_cache(doctype="Employee")
+
+	def falt(self):
+		frappe.clear_cache(doctype="Employee")
+		return frappe.get_meta("Employee").get_field("employee_number")
+
+	def satt_namngivning(self, varde):
+		hr = frappe.get_single("HR Settings")
+		hr.emp_created_by = varde
+		hr.flags.ignore_mandatory = True
+		hr.save()
+
+	def test_syns_med_nummerserie(self):
+		self.satt_namngivning("Naming Series")
+		self.assertFalse(self.falt().hidden)
+		self.assertFalse(self.falt().reqd)
+
+	def test_obligatoriskt_nar_det_ar_id(self):
+		self.satt_namngivning("Employee Number")
+		self.assertFalse(self.falt().hidden)
+		self.assertTrue(self.falt().reqd)
+
+	def test_after_migrate_visar_dolt_falt(self):
+		from frappe.custom.doctype.property_setter.property_setter import make_property_setter
+
+		from hrms_sverige.setup.install import after_migrate
+
+		make_property_setter(
+			"Employee", "employee_number", "hidden", 1, "Check", validate_fields_for_doctype=False
+		)
+		after_migrate()
+		self.assertFalse(self.falt().hidden)

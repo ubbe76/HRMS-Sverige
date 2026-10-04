@@ -16,6 +16,7 @@ class TestTranslations(UnitTestCase):
 			self.assertEqual(frappe._("Employment Type"), "Anställningsform")
 			self.assertEqual(frappe._("Uploading..."), "Laddar upp...")
 			self.assertEqual(frappe._("Allocated Leaves"), "Tilldelad ledighet")
+			self.assertEqual(frappe._("Employee Number"), "Anställningsnummer")
 		finally:
 			frappe.local.lang = previous
 

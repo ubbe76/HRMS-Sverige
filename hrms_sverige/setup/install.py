@@ -1,6 +1,7 @@
 import erpnext
 from frappe.utils import getdate
 
+from hrms_sverige.hr.anstallningsnummer import visa_anstallningsnummer
 from hrms_sverige.setup.custom_fields import create_custom_fields, ensure_personnummer_permissions
 from hrms_sverige.setup.employment_types import ensure_employment_types
 from hrms_sverige.setup.holidays import create_holiday_list
@@ -23,6 +24,7 @@ def setup_all(company: str | None = None):
 	create_custom_fields()
 	ensure_personnummer_permissions()
 	ensure_employment_types()
+	visa_anstallningsnummer()
 	ensure_leave_types()
 	ensure_paxml_tidkoder()
 	remove_unused_hrms_leave_types()
@@ -48,4 +50,5 @@ def after_migrate():
 	# Migrate synkar om arbetsytor och ikoner från HRMS och kan visa dem igen.
 	create_custom_fields()
 	ensure_paxml_tidkoder()
+	visa_anstallningsnummer()
 	hide_unused()
