@@ -75,6 +75,20 @@ def extra_tid(arbetat: Intervall, skift: Intervall | None) -> list[Intervall]:
 	return extra
 
 
+def dela_av_raster(intervall: list[Intervall], raster: list[Intervall]) -> list[Intervall]:
+	"""Arbetad tid utan obetalda raster. En stämplad rast ligger redan utanför passen och dras inte två gånger."""
+	kvar = list(intervall)
+	for r_start, r_slut in raster:
+		delar = []
+		for start, slut in kvar:
+			if start < min(slut, r_start):
+				delar.append((start, min(slut, r_start)))
+			if max(start, r_slut) < slut:
+				delar.append((max(start, r_slut), slut))
+		kvar = delar
+	return kvar
+
+
 def dela_mertid(
 	extra: list[Intervall], inom_skift_timmar: float, tak_timmar: float
 ) -> tuple[list[Intervall], list[Intervall]]:

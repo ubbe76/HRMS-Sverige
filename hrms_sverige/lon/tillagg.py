@@ -5,8 +5,8 @@ from datetime import date, timedelta
 import frappe
 from frappe.utils import flt, get_datetime, getdate, to_timedelta
 
-from hrms_sverige.lon.regler import OB, OVERTID, Tidsregel, dela_mertid, fordela, timmar
-from hrms_sverige.lon.tid import ar_helgdag, tid_utanfor_schema
+from hrms_sverige.lon.regler import OB, OVERTID, Tidsregel, dela_av_raster, dela_mertid, fordela, timmar
+from hrms_sverige.lon.tid import ar_helgdag, arbetspass, skiftraster, tid_utanfor_schema
 
 DAGFALT = ("man", "tis", "ons", "tor", "fre", "lor", "son")
 NARVARO_STATUS = ("Present", "Half Day")
@@ -36,6 +36,12 @@ def heltid_per_dag() -> float:
 	return flt(frappe.db.get_single_value("Loneinstallningar", "heltid_per_dag")) or 8.0
 
 
+def heltid_for_dag(dag: date) -> float:
+	"""Gränsen för mertid den veckodagen: Heltid per veckodag om den är satt, annars Heltid per dag."""
+	sekunder = flt(frappe.db.get_single_value("Loneinstallningar", f"heltid_{DAGFALT[dag.weekday()]}"))
+	return sekunder / 3600 if sekunder > 0 else heltid_per_dag()
+
+
 def helgdagar(employee: str, from_date, to_date) -> set[date]:
 	"""Röda dagar (inte vanliga veckoledigheter) från dagen före till dagen efter perioden.
 
@@ -49,23 +55,6 @@ def helgdagar(employee: str, from_date, to_date) -> set[date]:
 			roda.add(dag)
 		dag += timedelta(days=1)
 	return roda
-
-
-def arbetspass(attendance: str) -> list[tuple]:
-	"""In- och utstämplingspar kopplade till närvaron, så att raster inte räknas som arbetad tid."""
-	pass_, start = [], None
-	for logg in frappe.get_all(
-		"Employee Checkin",
-		filters={"attendance": attendance},
-		fields=["log_type", "time"],
-		order_by="time asc",
-	):
-		if logg.log_type == "IN" and start is None:
-			start = get_datetime(logg.time)
-		elif logg.log_type == "OUT" and start is not None:
-			pass_.append((start, get_datetime(logg.time)))
-			start = None
-	return [p for p in pass_ if p[1] > p[0]]
 
 
 def overtidsval(attendance: str, employee: str) -> str:
@@ -102,7 +91,6 @@ def tillaggsrader(company: str, from_date, to_date) -> list[dict]:
 	regler = regler_fran_installningar()
 	ob_regler = [r for r in regler if r.typ == OB]
 	ot_regler = [r for r in regler if r.typ == OVERTID]
-	tak = heltid_per_dag()
 	rader = []
 	helg_cache: dict[str, set[date]] = {}
 	for n in _narvaro(company, from_date, to_date, med_klockslag=True):
@@ -113,12 +101,12 @@ def tillaggsrader(company: str, from_date, to_date) -> list[dict]:
 		if n.employee not in helg_cache:
 			helg_cache[n.employee] = helgdagar(n.employee, from_date, to_date)
 		helg = helg_cache[n.employee]
-		arbetat_pass = arbetspass(n.name) or [arbetat]
+		arbetat_pass = dela_av_raster(arbetspass(n.name) or [arbetat], skiftraster(n.employee, dag))
 		extra = tid_utanfor_schema(n.employee, dag, arbetat_pass)
 		grad = flt(frappe.db.get_value("Employee", n.employee, "sysselsattningsgrad"))
 		if 0 < grad < 100:
 			inom = timmar(arbetat_pass) - timmar(extra)
-			mertid, overtid = dela_mertid(extra, inom, tak)
+			mertid, overtid = dela_mertid(extra, inom, heltid_for_dag(dag))
 		else:
 			mertid, overtid = [], extra
 		prefix = "ÖK" if overtidsval(n.name, n.employee) == KOMPTID else "ÖT"

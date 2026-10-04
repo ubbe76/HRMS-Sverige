@@ -103,10 +103,17 @@ def make_leave_application(
 	return doc.name
 
 
-def make_shift_type(name: str, start_time: str, end_time: str) -> str:
+def make_shift_type(name: str, start_time: str, end_time: str, raster: list[tuple[str, int]] = ()) -> str:
+	"""Skifttyp med obetalda raster som (börjar, minuter), t.ex. [("12:00:00", 40)]."""
 	if not frappe.db.exists("Shift Type", name):
 		frappe.get_doc(
-			{"doctype": "Shift Type", "__newname": name, "start_time": start_time, "end_time": end_time}
+			{
+				"doctype": "Shift Type",
+				"__newname": name,
+				"start_time": start_time,
+				"end_time": end_time,
+				"obetalda_raster": [{"borjar": borjar, "minuter": minuter} for borjar, minuter in raster],
+			}
 		).insert()
 	return name
 

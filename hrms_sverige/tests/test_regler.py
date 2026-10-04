@@ -6,6 +6,7 @@ from hrms_sverige.lon.regler import (
 	OB,
 	OVERTID,
 	Tidsregel,
+	dela_av_raster,
 	dela_mertid,
 	extra_tid,
 	fordela,
@@ -91,3 +92,29 @@ class TestRegler(UnitTestCase):
 
 	def test_timmar(self):
 		self.assertEqual(timmar([(dt(MANDAG, 7), dt(MANDAG, 8)), (dt(MANDAG, 16, 30), dt(MANDAG, 18))]), 2.5)
+
+	def test_rast_dras_av_mitt_i_passet(self):
+		frukost = (dt(MANDAG, 9), dt(MANDAG, 9, 20))
+		self.assertEqual(
+			dela_av_raster([(dt(MANDAG, 7), dt(MANDAG, 12))], [frukost]),
+			[(dt(MANDAG, 7), dt(MANDAG, 9)), (dt(MANDAG, 9, 20), dt(MANDAG, 12))],
+		)
+
+	def test_tva_raster(self):
+		raster = [(dt(MANDAG, 9), dt(MANDAG, 9, 20)), (dt(MANDAG, 12), dt(MANDAG, 12, 40))]
+		self.assertEqual(timmar(dela_av_raster([(dt(MANDAG, 7), dt(MANDAG, 16, 15))], raster)), 8.25)
+
+	def test_stamplad_rast_dras_inte_tva_ganger(self):
+		pass_ = [(dt(MANDAG, 7), dt(MANDAG, 12)), (dt(MANDAG, 12, 40), dt(MANDAG, 16, 15))]
+		self.assertEqual(dela_av_raster(pass_, [(dt(MANDAG, 12), dt(MANDAG, 12, 40))]), pass_)
+
+	def test_delvis_stamplad_rast_ger_hela_rasten(self):
+		pass_ = [(dt(MANDAG, 7), dt(MANDAG, 12, 5)), (dt(MANDAG, 12, 35), dt(MANDAG, 16, 15))]
+		# Utstämplad 12:05-12:35 under rasten 12:00-12:40: hela rasten är obetald, inte bara den stämplade delen
+		self.assertAlmostEqual(
+			timmar(dela_av_raster(pass_, [(dt(MANDAG, 12), dt(MANDAG, 12, 40))])), 9.25 - 40 / 60
+		)
+
+	def test_rast_utanfor_passet_paverkar_inte(self):
+		pass_ = [(dt(MANDAG, 13), dt(MANDAG, 16))]
+		self.assertEqual(dela_av_raster(pass_, [(dt(MANDAG, 9), dt(MANDAG, 9, 20))]), pass_)
