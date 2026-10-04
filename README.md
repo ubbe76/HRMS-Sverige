@@ -24,7 +24,10 @@ Svensk anpassning av Frappe HRMS: personalregister, frånvaro/ledighet och närv
   timavlönade, arbetad tid från stämpling och närvaro, och laddar ner det som PAXml 2.0-fil, byggd för Crona Lön.
   Frånvarotypens **PAXml-tidkod** (SEM, SJK, VAB, FPE, TJL, KOM, ATK) och ARB kopplas till lönearter i lönesystemet.
   **Löneform** på den anställde (Månadslön/Timlön) styr om tid och frånvaro skickas i procent eller timmar.
-  Anställningsnumret måste vara samma som i lönesystemet.
+  Anställningsnumret måste vara samma som i lönesystemet. Fältet **Anställningsnummer** visas alltid; HRMS döljer
+  det annars när anställda namnges med nummerserie. Sätt gärna **HR-inställningar > Namngivning av anställd efter**
+  till *Employee Number*, så blir numret den anställdes ID. Vid bytet fyller HRMS i ID:t (HR-EMP-…) som nummer på
+  anställda som saknar ett; ändra dem till numret i lönesystemet.
 - Övertid, mertid och OB: egna tidsregler i **Löneinställningar** (veckodagar, helgdagar och klockslag per nivå).
   Närvarons in- och utstämplingstid jämförs med planerat skift och ger MER, ÖT1–ÖT5 eller ÖK1–ÖK5 och OB1–OB5 i
   löneunderlaget. Ett pass på en helg eller röd dag är övertid för den som har ett skift. Valet pengar eller
