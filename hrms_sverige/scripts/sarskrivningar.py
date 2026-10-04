@@ -175,13 +175,20 @@ def _labels(path: str) -> list[str]:
 		labels += [d.get("label"), d.get("title")]
 	if d.get("doctype") == "DocType":
 		labels.append(d.get("name"))
+	# Rubriker på översikternas kort och diagram, som visas med __()
+	if d.get("doctype") == "Number Card":
+		labels.append(d.get("label"))
+	if d.get("doctype") == "Dashboard Chart":
+		labels.append(d.get("chart_name"))
+	if d.get("doctype") == "Dashboard":
+		labels.append(d.get("dashboard_name"))
 	for key in ("fields", "items", "links", "shortcuts", "cards"):
 		labels += [row.get("label") for row in d.get(key) or [] if isinstance(row, dict)]
 	return [label for label in labels if label]
 
 
 def find_untranslated_labels() -> list[str]:
-	"""Etiketter (doctypes, fält, arbetsytor, sidomeny) i HRMS-delar vi använder som saknar svensk översättning."""
+	"""Etiketter (doctypes, fält, arbetsytor, sidomeny, översikternas kort och diagram) i HRMS-delar vi använder som saknar svensk översättning."""
 	from frappe.translate import get_all_translations
 
 	translations = get_all_translations("sv")
