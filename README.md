@@ -37,6 +37,9 @@ Svensk anpassning av Frappe HRMS: personalregister, frånvaro/ledighet och närv
 
 Redis (kö och cache) måste vara igång, annars avbryts HRMS installation halvvägs.
 
+Senast testad med frappe 16.36.1, erpnext 16.37.0 och hrms 16.20.1 (2026-10-04). CI kör testerna mot senaste
+`version-16` av frappe, erpnext och hrms vid varje pull request.
+
 ```bash
 bench get-app hrms --branch version-16
 bench get-app https://github.com/ubbe76/HRMS-Sverige --branch version-16
