@@ -6,6 +6,15 @@
  "field_order": [
   "heltid_per_dag",
   "overtid_fraga_minuter",
+  "section_heltid_veckodag",
+  "heltid_man",
+  "heltid_tis",
+  "heltid_ons",
+  "heltid_tor",
+  "column_break_heltid",
+  "heltid_fre",
+  "heltid_lor",
+  "heltid_son",
   "section_regler",
   "tidsregler"
  ],
@@ -26,6 +35,67 @@
    "label": "Fråga om övertid efter (minuter)"
   },
   {
+   "collapsible": 1,
+   "description": "Gräns för mertid en viss veckodag när den skiljer sig från Heltid per dag, t.ex. en kortare fredag. Tomt: Heltid per dag gäller.",
+   "fieldname": "section_heltid_veckodag",
+   "fieldtype": "Section Break",
+   "label": "Heltid per veckodag",
+   "collapsible_depends_on": "eval:doc.heltid_man||doc.heltid_tis||doc.heltid_ons||doc.heltid_tor||doc.heltid_fre||doc.heltid_lor||doc.heltid_son"
+  },
+  {
+   "fieldname": "heltid_man",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Måndag"
+  },
+  {
+   "fieldname": "heltid_tis",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Tisdag"
+  },
+  {
+   "fieldname": "heltid_ons",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Onsdag"
+  },
+  {
+   "fieldname": "heltid_tor",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Torsdag"
+  },
+  {
+   "fieldname": "column_break_heltid",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "heltid_fre",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Fredag"
+  },
+  {
+   "fieldname": "heltid_lor",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Lördag"
+  },
+  {
+   "fieldname": "heltid_son",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "hide_seconds": 1,
+   "label": "Söndag"
+  },
+  {
    "description": "OB och övertidsnivåer. Till före eller lika med Från går över midnatt; Från = Till är hela dygnet. Helgdag är röda dagar i helglistan. Där regler överlappar gäller högsta nivån.",
    "fieldname": "section_regler",
    "fieldtype": "Section Break",
@@ -39,7 +109,7 @@
   }
  ],
  "issingle": 1,
- "modified": "2026-10-03 00:00:00.000000",
+ "modified": "2026-10-04 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Lon",
  "name": "Loneinstallningar",

@@ -5,6 +5,7 @@ from frappe.tests import IntegrationTestCase
 
 from hrms_sverige.lon.regler import OB, OVERTID
 from hrms_sverige.lon.tillagg import (
+	heltid_for_dag,
 	heltid_per_dag,
 	narvaro_utan_klockslag,
 	regler_fran_installningar,
@@ -64,6 +65,12 @@ class TestLoneinstallningar(IntegrationTestCase):
 		)
 		self.assertEqual((ot.typ, ot.niva, ot.dagar, ot.helgdag), (OVERTID, 2, frozenset({5, 6}), True))
 		self.assertEqual(heltid_per_dag(), 7.5)
+
+	def test_heltid_per_veckodag(self):
+		satt_tidsregler([], heltid=8)
+		frappe.db.set_single_value("Loneinstallningar", "heltid_fre", 5 * 3600 + 38 * 60)
+		self.assertAlmostEqual(heltid_for_dag(date(2026, 9, 18)), 5 + 38 / 60)  # fredag
+		self.assertEqual(heltid_for_dag(date(2026, 9, 14)), 8)  # måndag utan eget värde
 
 	def test_niva_utanfor_1_till_5_stoppas(self):
 		self.assertRaisesRegex(
@@ -240,3 +247,24 @@ class TestTillaggsrader(IntegrationTestCase):
 			stampling = make_checkin(a, f"2026-09-18 {tid}:00", typ)
 			frappe.db.set_value("Employee Checkin", stampling, "attendance", narvaro)
 		self.assertEqual(self.egna(a), [("MER", "2026-09-18", 4.0)])
+
+	def test_ob_raknas_inte_pa_obetald_rast(self):
+		kvall = make_shift_type("_Test Kväll Rast", "14:00:00", "22:00:00", [("19:00:00", 30)])
+		a = self.anstalld("Till Kvällsrast", "TL-20", kvall)
+		make_attendance(a, "2026-09-14", 8, in_time="2026-09-14 14:00:00", out_time="2026-09-14 22:00:00")
+		self.assertEqual(self.egna(a), [("OB1", "2026-09-14", 3.5)])
+
+	def test_overtid_borjar_efter_skiftet_trots_raster(self):
+		lang = make_shift_type("_Test Mån-tor", "07:00:00", "16:15:00", [("09:00:00", 20), ("12:00:00", 40)])
+		a = self.anstalld("Till Lång Dag", "TL-21", lang, sysselsattningsgrad=100)
+		make_attendance(a, "2026-09-14", 10.25, in_time="2026-09-14 07:00:00", out_time="2026-09-14 17:15:00")
+		self.assertEqual(self.egna(a), [("ÖT1", "2026-09-14", 1.0)])
+
+	def test_mertid_en_kort_fredag_for_deltid(self):
+		# Heltid på fredag är 5 h 38 min. Deltidsskift 07-10 med 20 min frukost ger 2 h 40 min inom skiftet;
+		# 10-14 är extra: 2 h 58 min mertid upp till heltid, resten övertid.
+		frappe.db.set_single_value("Loneinstallningar", "heltid_fre", 5 * 3600 + 38 * 60)
+		kort = make_shift_type("_Test Deltid Fredag", "07:00:00", "10:00:00", [("09:00:00", 20)])
+		a = self.anstalld("Till Kort Fredag", "TL-22", kort, sysselsattningsgrad=50)
+		make_attendance(a, "2026-09-18", 6.67, in_time="2026-09-18 07:00:00", out_time="2026-09-18 14:00:00")
+		self.assertEqual(self.egna(a), [("MER", "2026-09-18", 2.97), ("ÖT1", "2026-09-18", 1.03)])

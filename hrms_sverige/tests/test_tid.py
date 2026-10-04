@@ -8,6 +8,7 @@ from hrms_sverige.lon.tid import (
 	planerade_timmar,
 	planerat_skift,
 	skiftlangd,
+	skiftraster,
 	stamplingar_utan_narvaro,
 )
 from hrms_sverige.setup.custom_fields import create_custom_fields
@@ -34,6 +35,11 @@ class TestTid(IntegrationTestCase):
 		create_holiday_list(2026, COMPANY)
 		cls.dag = make_shift_type("_Test Dag", "08:00:00", "16:30:00")
 		cls.natt = make_shift_type("_Test Natt", "22:00:00", "06:00:00")
+		cls.lang = make_shift_type(
+			"_Test Mån-tor", "07:00:00", "16:15:00", [("09:00:00", 20), ("12:00:00", 40)]
+		)
+		cls.fredag = make_shift_type("_Test Fredag", "07:00:00", "12:58:00", [("09:00:00", 20)])
+		cls.natt_rast = make_shift_type("_Test Natt Rast", "22:00:00", "06:00:00", [("02:00:00", 30)])
 
 	def setUp(self):
 		frappe.db.savepoint("tid_test")
@@ -186,3 +192,85 @@ class TestTid(IntegrationTestCase):
 		make_checkin(anstalld, "2026-09-01 06:02:00", "OUT")
 		make_attendance(anstalld, "2026-08-31", 8)
 		self.assertNotIn(anstalld, stamplingar_utan_narvaro(COMPANY, *SEPT))
+
+	def test_obetalda_raster_dras_av_planerade_timmar(self):
+		anstalld = self.timanstalld("Tid Rast", "T-30")
+		assign_shift(anstalld, self.lang, "2026-09-01")
+		self.assertEqual(planerade_timmar(anstalld, "2026-09-14"), 8.25)
+
+	def test_raster_som_klockslag(self):
+		anstalld = self.timanstalld("Tid Rast Klockslag", "T-31")
+		assign_shift(anstalld, self.lang, "2026-09-01")
+		self.assertEqual(
+			skiftraster(anstalld, "2026-09-14"),
+			[
+				(datetime(2026, 9, 14, 9, 0), datetime(2026, 9, 14, 9, 20)),
+				(datetime(2026, 9, 14, 12, 0), datetime(2026, 9, 14, 12, 40)),
+			],
+		)
+
+	def test_rast_efter_midnatt_i_nattskift(self):
+		anstalld = self.timanstalld("Tid Rast Natt", "T-32")
+		frappe.db.set_value("Employee", anstalld, "default_shift", self.natt_rast)
+		self.assertEqual(
+			skiftraster(anstalld, "2026-09-14"), [(datetime(2026, 9, 15, 2, 0), datetime(2026, 9, 15, 2, 30))]
+		)
+		self.assertEqual(planerade_timmar(anstalld, "2026-09-14"), 7.5)
+
+	def test_inga_raster_pa_helgdag(self):
+		anstalld = self.timanstalld("Tid Rast Helg", "T-33")
+		assign_shift(anstalld, self.lang, "2026-09-01")
+		self.assertEqual(skiftraster(anstalld, "2026-09-12"), [])  # lördag
+
+	def test_vecka_med_lang_mandag_till_torsdag_och_kort_fredag(self):
+		# 07:00-16:15 mån-tor med 20 + 40 min rast, fredag 07:00-12:58 med 20 min rast: 38 h 38 min
+		anstalld = self.timanstalld("Tid Vecka", "T-34")
+		assign_shift(anstalld, self.lang, "2026-09-14", "2026-09-17")
+		assign_shift(anstalld, self.fredag, "2026-09-18", "2026-09-18")
+		vecka = [planerade_timmar(anstalld, date(2026, 9, d)) for d in range(14, 21)]
+		self.assertEqual([round(t, 2) for t in vecka], [8.25, 8.25, 8.25, 8.25, 5.63, 0, 0])
+		self.assertAlmostEqual(sum(vecka), 38 + 38 / 60)
+
+	def arb(self, anstalld, avdrag=None):
+		return [r["timmar"] for r in arbetad_tid(COMPANY, *SEPT, avdrag) if r["employee"] == anstalld]
+
+	def test_arbetad_tid_utan_ostamplade_raster(self):
+		# HRMS räknar första in till sista ut, 9 h 15 min; rasterna är obetalda
+		anstalld = self.timanstalld("Tid Arb Rast", "T-35")
+		assign_shift(anstalld, self.lang, "2026-09-01")
+		make_attendance(
+			anstalld, "2026-09-14", 9.25, in_time="2026-09-14 07:00:00", out_time="2026-09-14 16:15:00"
+		)
+		self.assertEqual(self.arb(anstalld), [8.25])
+
+	def test_arbetad_tid_redan_utan_raster_andras_inte(self):
+		anstalld = self.timanstalld("Tid Arb Manuell", "T-36")
+		assign_shift(anstalld, self.lang, "2026-09-01")
+		make_attendance(
+			anstalld, "2026-09-14", 8.25, in_time="2026-09-14 07:00:00", out_time="2026-09-14 16:15:00"
+		)
+		self.assertEqual(self.arb(anstalld), [8.25])
+
+	def test_stamplad_lunch_dras_inte_tva_ganger(self):
+		anstalld = self.timanstalld("Tid Arb Lunch", "T-37")
+		assign_shift(anstalld, self.lang, "2026-09-01")
+		narvaro = make_attendance(
+			anstalld,
+			"2026-09-14",
+			9.25 - 40 / 60,
+			in_time="2026-09-14 07:00:00",
+			out_time="2026-09-14 16:15:00",
+		)
+		for tid, typ in (("07:00", "IN"), ("12:00", "OUT"), ("12:40", "IN"), ("16:15", "OUT")):
+			frappe.db.set_value(
+				"Employee Checkin", make_checkin(anstalld, f"2026-09-14 {tid}:00", typ), "attendance", narvaro
+			)
+		self.assertEqual(self.arb(anstalld), [8.25])
+
+	def test_arbetad_tid_med_overtid_och_raster(self):
+		anstalld = self.timanstalld("Tid Arb Övertid", "T-38")
+		assign_shift(anstalld, self.lang, "2026-09-01")
+		narvaro = make_attendance(
+			anstalld, "2026-09-14", 10.25, in_time="2026-09-14 07:00:00", out_time="2026-09-14 17:15:00"
+		)
+		self.assertEqual(self.arb(anstalld, {narvaro: 1.0}), [8.25])

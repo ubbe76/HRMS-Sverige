@@ -10,7 +10,7 @@
 Svensk anpassning av Frappe HRMS: personalregister, frånvaro/ledighet och närvaro.
 
 - Frånvarotyper: Semester (25 dagar/år, max 5 sparade dagar/år, förfaller efter 5 år), Sjukfrånvaro, VAB,
-  Föräldraledighet, Tjänstledighet, Kompledighet.
+  Föräldraledighet, Tjänstledighet, Kompledighet, Arbetstidskonto.
   HRMS engelska standardtyper (Casual Leave, Sick Leave m.fl.) tas bort om de inte används.
 - Helglistor "Sverige ÅÅÅÅ" med röda dagar samt midsommar-, jul- och nyårsafton, kopplade till företaget
   från 1 januari.
@@ -22,16 +22,46 @@ Svensk anpassning av Frappe HRMS: personalregister, frånvaro/ledighet och närv
 - Rättade svenska översättningar för frånvaro, närvaro och skift.
 - Löneunderlag till lönesystemet: dokumentet **Löneunderlag** samlar månadens godkända frånvaro och, för
   timavlönade, arbetad tid från stämpling och närvaro, och laddar ner det som PAXml 2.0-fil, byggd för Crona Lön.
-  Frånvarotypens **PAXml-tidkod** (SEM, SJK, VAB, FPE, TJL, KOM) och ARB kopplas till lönearter i lönesystemet.
+  Frånvarotypens **PAXml-tidkod** (SEM, SJK, VAB, FPE, TJL, KOM, ATK) och ARB kopplas till lönearter i lönesystemet.
   **Löneform** på den anställde (Månadslön/Timlön) styr om tid och frånvaro skickas i procent eller timmar.
   Anställningsnumret måste vara samma som i lönesystemet.
 - Övertid, mertid och OB: egna tidsregler i **Löneinställningar** (veckodagar, helgdagar och klockslag per nivå).
   Närvarons in- och utstämplingstid jämförs med planerat skift och ger MER, ÖT1–ÖT5 eller ÖK1–ÖK5 och OB1–OB5 i
   löneunderlaget. Ett pass på en helg eller röd dag är övertid för den som har ett skift. Valet pengar eller
   komptid tas från utstämplingen eller den anställdes förval.
+- Obetalda raster: tabellen **Obetalda raster** på skifttypen (börjar, minuter). Rasterna dras av från planerade
+  timmar, arbetad tid (ARB), mertid, övertid och OB. En rast som den anställde stämplar ut på dras inte två gånger.
+- Heltid per veckodag i **Löneinställningar**: gränsen för mertid en dag som skiljer sig från *Heltid per dag*,
+  t.ex. en kortare fredag.
 - Stämplingssida `/stampla` för en gemensam surfplatta eller dator: anställningsnummer och PIN-kod, in- och
   utstämpling och val av pengar eller komptid vid övertid. Enheter registreras som **Stämplingsenhet** med en
   hemlig länk; HR sätter PIN-koder med **Sätt PIN** på den anställde, eller bockar i **Stämpla utan PIN**.
+
+### Arbetstidsförkortning och veckoschema
+
+Ett schema som skiljer sig mellan veckodagarna läggs upp med en skifttyp per sorts dag och ett **Skiftschema**
+per skifttyp (veckodagar), som tilldelas den anställde med **Tilldelning av skiftschema**. Exempel: 15 minuter
+längre dagar måndag till torsdag och arbetstidskontot (Teknikavtalet) uttaget som kortare fredag:
+
+| Skifttyp | Dagar | Tid | Obetalda raster | Arbetstid |
+|---|---|---|---|---|
+| Mån-tor | måndag–torsdag | 07:00–16:15 | 09:00 20 min, 12:00 40 min | 8 h 15 min |
+| Fredag | fredag | 07:00–12:58 | 09:00 20 min | 5 h 38 min |
+
+Veckan blir 38 h 38 min. I **Löneinställningar** sätts *Heltid per dag* till 8,25 (timmar) och *Heltid per veckodag*
+fredag till 5 h 38 min, så att deltidsanställdas mertid slutar och övertiden börjar vid heltid den dagen. Arbete
+efter skiftets slut är övertid för heltidsanställda. I lönesystemet ställs arbetstidskontot in så att det används
+till förkortningen och inte betalas ut.
+
+Tre sätt att ta ut arbetstidskontot:
+
+- **Kortare arbetstid**, varje dag eller en dag i veckan: bara skiften, som i exemplet. Inget skickas i löneunderlaget.
+- **Ledighet**: frånvarotypen **Arbetstidskonto** (PAXml `ATK`). Den kräver ingen tilldelning; saldot förs i
+  lönesystemet.
+- **Pengar eller pension**: sköts helt i lönesystemet.
+
+En röd dag ger ingen planerad tid. Faller den i en vecka med inarbetad tid (t.ex. en fredag) och tiden ska tas ut
+en annan dag, ändras skiftet för de dagarna med en egen skifttilldelning.
 
 ### Installation
 

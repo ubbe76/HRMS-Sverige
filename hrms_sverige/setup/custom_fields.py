@@ -114,6 +114,19 @@ def get_custom_fields():
 				),
 			},
 		],
+		"Shift Type": [
+			{
+				"fieldname": "obetalda_raster",
+				"label": _("Obetalda raster"),
+				"fieldtype": "Table",
+				"options": "Skiftrast",
+				"insert_after": "end_time",
+				"description": _(
+					"Fasta raster som inte räknas som arbetstid: planerade timmar, arbetad tid, mertid, övertid "
+					"och OB. En rast som den anställde stämplar ut på dras inte av två gånger."
+				),
+			},
+		],
 		"Leave Type": [
 			{
 				"fieldname": "paxml_tidkod",

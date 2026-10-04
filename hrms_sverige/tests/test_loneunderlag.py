@@ -91,6 +91,15 @@ class TestLoneunderlag(IntegrationTestCase):
 		tt = etree.fromstring(frappe.response.filecontent).find("tidtransaktioner/tidtrans")
 		self.assertEqual((tt.get("anstid"), tt.get("postid"), tt.findtext("tidkod")), ("L-1", "1", "SJK"))
 
+	def test_arbetstidskonto_som_atk_i_filen(self):
+		make_leave_application(self.anstalld, "Arbetstidskonto", "2031-10-10", "2031-10-10")
+		doc = nytt_underlag("Oktober", 2031)
+		doc.hamta_franvaro()
+		doc.submit()
+		ladda_ner(doc.name)
+		tt = etree.fromstring(frappe.response.filecontent).find("tidtransaktioner/tidtrans")
+		self.assertEqual((tt.findtext("tidkod"), tt.findtext("datum")), ("ATK", "2031-10-10"))
+
 	def test_saknat_anstallningsnummer_stoppar(self):
 		utan = make_test_employee("Lön Utan")
 		frappe.db.set_value("Employee", utan, "employee_number", None)

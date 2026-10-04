@@ -6,6 +6,7 @@ import frappe
 
 SEMESTER = "Semester"
 KOMPLEDIGHET = "Kompledighet"
+ARBETSTIDSKONTO = "Arbetstidskonto"
 ARLIG_SEMESTER = 25
 SEMESTER_POLICY_TITLE = "Semester 25 dagar"
 
@@ -25,6 +26,8 @@ LEAVE_TYPES = {
 	"Föräldraledighet": {"is_lwp": 1, "include_holiday": 0},
 	"Tjänstledighet": {"is_lwp": 1, "include_holiday": 0},
 	KOMPLEDIGHET: {"is_compensatory": 1, "is_lwp": 0, "include_holiday": 0},
+	# Teknikavtalets arbetstidskonto uttaget som ledighet. Saldot förs i lönesystemet.
+	ARBETSTIDSKONTO: {"is_lwp": 1, "include_holiday": 0},
 }
 
 
@@ -46,6 +49,7 @@ PAXML_TIDKODER = {
 	"Föräldraledighet": "FPE",
 	"Tjänstledighet": "TJL",
 	KOMPLEDIGHET: "KOM",
+	ARBETSTIDSKONTO: "ATK",
 }
 
 
@@ -60,9 +64,12 @@ def remove_unused_hrms_leave_types():
 			frappe.clear_last_message()
 
 
-def ensure_leave_types():
-	"""Skapa saknade frånvarotyper. Befintliga rörs inte, så HR:s ändringar ligger kvar."""
+def ensure_leave_types(names=None):
+	"""Skapa saknade frånvarotyper (alla, eller bara `names`). Befintliga rörs inte, så HR:s ändringar
+	ligger kvar."""
 	for name, settings in LEAVE_TYPES.items():
+		if names is not None and name not in names:
+			continue
 		if frappe.db.exists("Leave Type", name):
 			continue
 		doc = frappe.new_doc("Leave Type")

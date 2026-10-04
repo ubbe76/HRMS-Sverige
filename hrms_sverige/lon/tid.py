@@ -3,10 +3,10 @@
 from datetime import date, datetime, timedelta
 
 import frappe
-from frappe.utils import flt, getdate, to_timedelta
+from frappe.utils import flt, get_datetime, getdate, to_timedelta
 from hrms.utils.holiday_list import get_holiday_list_for_employee
 
-from hrms_sverige.lon.regler import Intervall, extra_tid
+from hrms_sverige.lon.regler import Intervall, dela_av_raster, extra_tid, timmar
 
 TIMLON = "Timlön"
 ARB = "ARB"
@@ -66,6 +66,27 @@ def planerat_skift(employee: str, datum) -> tuple[datetime, datetime] | None:
 	return borjan, borjan + timedelta(hours=skiftlangd(start, slut))
 
 
+def skiftraster(employee: str, datum) -> list[Intervall]:
+	"""Det planerade skiftets obetalda raster som klockslag; en rast före skiftets start ligger dagen efter."""
+	skift = planerat_skift(employee, datum)
+	if not skift:
+		return []
+	raster = []
+	for rad in frappe.get_all(
+		"Skiftrast",
+		filters={"parenttype": "Shift Type", "parent": _skifttyp(employee, getdate(datum))},
+		fields=["borjar", "minuter"],
+		order_by="idx asc",
+	):
+		start = datetime.combine(skift[0].date(), datetime.min.time()) + to_timedelta(rad.borjar)
+		if start < skift[0]:
+			start += timedelta(days=1)
+		slut = min(start + timedelta(minutes=rad.minuter), skift[1])
+		if start < slut:
+			raster.append((start, slut))
+	return raster
+
+
 def tid_utanfor_schema(employee: str, datum, arbetat: list[Intervall]) -> list[Intervall]:
 	"""Arbetad tid utanför schemat, som blir mertid eller övertid.
 
@@ -81,10 +102,27 @@ def tid_utanfor_schema(employee: str, datum, arbetat: list[Intervall]) -> list[I
 	return []
 
 
+def arbetspass(attendance: str) -> list[tuple]:
+	"""In- och utstämplingspar kopplade till närvaron, så att raster inte räknas som arbetad tid."""
+	pass_, start = [], None
+	for logg in frappe.get_all(
+		"Employee Checkin",
+		filters={"attendance": attendance},
+		fields=["log_type", "time"],
+		order_by="time asc",
+	):
+		if logg.log_type == "IN" and start is None:
+			start = get_datetime(logg.time)
+		elif logg.log_type == "OUT" and start is not None:
+			pass_.append((start, get_datetime(logg.time)))
+			start = None
+	return [p for p in pass_ if p[1] > p[0]]
+
+
 def planerade_timmar(employee: str, datum) -> float:
-	"""Timmar enligt planerat skift den dagen; 0 på helgdagar och utan skift."""
+	"""Timmar enligt planerat skift den dagen, utan obetalda raster; 0 på helgdagar och utan skift."""
 	skift = planerat_skift(employee, datum)
-	return (skift[1] - skift[0]).total_seconds() / 3600 if skift else 0.0
+	return timmar(dela_av_raster([skift], skiftraster(employee, datum))) if skift else 0.0
 
 
 def arbetad_tid(company: str, from_date, to_date, avdrag: dict[str, float] | None = None) -> list[dict]:
@@ -105,13 +143,13 @@ def arbetad_tid(company: str, from_date, to_date, avdrag: dict[str, float] | Non
 			"employee": ("in", anstallda),
 			"working_hours": (">", 0),
 		},
-		fields=["name", "employee", "attendance_date", "working_hours"],
+		fields=["name", "employee", "attendance_date", "working_hours", "in_time", "out_time"],
 		order_by="attendance_date asc",
 	)
 	avdrag = avdrag or {}
 	rader = []
 	for n in narvaro:
-		timmar_arb = round(flt(n.working_hours) - avdrag.get(n.name, 0.0), 2)
+		timmar_arb = round(_utan_ostamplade_raster(n) - avdrag.get(n.name, 0.0), 2)
 		if timmar_arb > 0:
 			rader.append(
 				{
@@ -124,6 +162,22 @@ def arbetad_tid(company: str, from_date, to_date, avdrag: dict[str, float] | Non
 				}
 			)
 	return rader
+
+
+def _utan_ostamplade_raster(narvaro) -> float:
+	"""Närvarons arbetade timmar, högst passen utan skiftets obetalda raster.
+
+	HRMS räknar från första in- till sista utstämplingen och tar då med en rast som ingen stämplat. Är
+	timmarna redan lägre (rasten stämplad eller avdragen för hand) gäller de.
+	"""
+	timmar_arb = flt(narvaro.working_hours)
+	if not (narvaro.in_time and narvaro.out_time):
+		return timmar_arb
+	raster = skiftraster(narvaro.employee, narvaro.attendance_date)
+	if not raster:
+		return timmar_arb
+	pass_ = arbetspass(narvaro.name) or [(get_datetime(narvaro.in_time), get_datetime(narvaro.out_time))]
+	return min(timmar_arb, timmar(dela_av_raster(pass_, raster)))
 
 
 def stamplingar_utan_narvaro(company: str, from_date, to_date) -> dict[str, list[date]]:

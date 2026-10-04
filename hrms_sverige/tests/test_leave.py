@@ -29,6 +29,28 @@ class TestLeaveSetup(IntegrationTestCase):
 		self.assertEqual(semester.include_holiday, 0)
 		self.assertEqual(frappe.db.get_value("Leave Type", "Kompledighet", "is_compensatory"), 1)
 
+	def test_arbetstidskonto_kraver_ingen_tilldelning(self):
+		from hrms_sverige.setup.leave import ARBETSTIDSKONTO, PAXML_TIDKODER
+
+		self.assertEqual(frappe.db.get_value("Leave Type", ARBETSTIDSKONTO, "is_lwp"), 1)
+		self.assertEqual(PAXML_TIDKODER[ARBETSTIDSKONTO], "ATK")
+
+	def test_patch_skapar_arbetstidskonto_pa_befintlig_site(self):
+		from hrms_sverige.patches.skapa_arbetstidskonto import execute
+		from hrms_sverige.setup.custom_fields import create_custom_fields
+		from hrms_sverige.setup.leave import ARBETSTIDSKONTO
+
+		create_custom_fields()
+		frappe.db.savepoint("atk_patch")
+		try:
+			frappe.delete_doc("Leave Type", ARBETSTIDSKONTO, force=True)
+			frappe.delete_doc("Leave Type", "VAB", force=True)  # borttagen av HR: ska inte återskapas
+			execute()
+			self.assertEqual(frappe.db.get_value("Leave Type", ARBETSTIDSKONTO, "paxml_tidkod"), "ATK")
+			self.assertFalse(frappe.db.exists("Leave Type", "VAB"))
+		finally:
+			frappe.db.rollback(save_point="atk_patch")
+
 	def test_idempotent(self):
 		ensure_leave_types()
 		p1 = ensure_semester_policy()
