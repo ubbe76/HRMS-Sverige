@@ -188,6 +188,9 @@ msgstr "Frånvarodagar"
 msgid "Absent Records"
 msgstr "Frånvaroposter"
 
+msgid "Accepted Job Applicants"
+msgstr "Antagna sökande"
+
 msgid "Account No"
 msgstr "Kontonummer"
 
@@ -250,6 +253,9 @@ msgstr "Åtgärd vid godkännande"
 
 msgid "active"
 msgstr "aktiv"
+
+msgid "Active Employees"
+msgstr "Aktiva anställda"
 
 msgid "Activity Name"
 msgstr "Aktivitetsnamn"
@@ -551,6 +557,9 @@ msgstr "Sökandens namn"
 msgid "Applicant Rating"
 msgstr "Sökandens betyg"
 
+msgid "Applicant-to-Hire Percentage"
+msgstr "Andel sökande som anställs"
+
 msgid "Application"
 msgstr "Ansökan"
 
@@ -664,6 +673,9 @@ msgstr "Godkänn"
 
 msgid "Approved"
 msgstr "Godkänd"
+
+msgid "Approved Claims (This Month)"
+msgstr "Godkända utlägg (denna månad)"
 
 msgid "Approver"
 msgstr "Godkännare"
@@ -1255,6 +1267,9 @@ msgstr "Begärt belopp för anställd {0} ska vara större än 0"
 msgid "Claims"
 msgstr "Anspråk"
 
+msgid "Claims by Type"
+msgstr "Utlägg per typ"
+
 msgid "Cleared"
 msgstr "Avklarad"
 
@@ -1591,8 +1606,20 @@ msgstr "Ta bort {0}"
 msgid "Department Approver"
 msgstr "Avdelningsgodkännare"
 
+msgid "Department Wise Employee Count"
+msgstr "Anställda per avdelning"
+
+msgid "Department wise Expense Claims"
+msgstr "Utlägg per avdelning"
+
 msgid "Department Wise Openings"
 msgstr "Utlysta tjänster per avdelning"
+
+msgid "Department Wise Salary(Last Month)"
+msgstr "Lön per avdelning (förra månaden)"
+
+msgid "Department wise Timesheet Hours"
+msgstr "Tidrapporterade timmar per avdelning"
 
 msgid "Department {0} does not belong to company: {1}"
 msgstr "Avdelning {0} tillhör inte bolag: {1}"
@@ -1614,6 +1641,15 @@ msgstr "Beskrivning av en utlyst tjänst"
 
 msgid "Designation Skill"
 msgstr "Befattningsfärdighet"
+
+msgid "Designation Wise Employee Count"
+msgstr "Anställda per befattning"
+
+msgid "Designation Wise Openings"
+msgstr "Utlysta tjänster per befattning"
+
+msgid "Designation Wise Salary(Last Month)"
+msgstr "Lön per befattning (förra månaden)"
 
 msgid "Designation: {0}"
 msgstr "Befattning: {0}"
@@ -1683,6 +1719,9 @@ msgstr "Dubblett av lönekvarhållning"
 
 msgid "Early Exit"
 msgstr "Tidig utstämpling"
+
+msgid "Early Exit (This Month)"
+msgstr "Tidig utstämpling (denna månad)"
 
 msgid "Early Exit By"
 msgstr "Tidig utstämpling med"
@@ -1774,6 +1813,9 @@ msgstr "Förskottssaldo"
 msgid "Employee Advance return is scheduled via Additional Salary: {0} | <a href='{1}'> {2} </a>"
 msgstr "Återbetalning av personalförskott är schemalagd via tilläggslön: {0} | <a href='{1}'> {2} </a>"
 
+msgid "Employee Advance Status"
+msgstr "Status för personalförskott"
+
 msgid "Employee Advance Summary"
 msgstr "Förskottssammanställning"
 
@@ -1855,6 +1897,9 @@ msgstr "Inställningar för avgång"
 msgid "Employee Exits"
 msgstr "Avgångar"
 
+msgid "Employee Exits (This Year)"
+msgstr "Avgångar (i år)"
+
 msgid "Employee Feedback Criteria"
 msgstr "Återkopplingskriterier"
 
@@ -1896,6 +1941,9 @@ msgstr "Frånvarosaldo"
 
 msgid "Employee Leave Balance Summary"
 msgstr "Sammanställning av frånvarosaldo"
+
+msgid "Employee Lifecycle"
+msgstr "Anställningens livscykel"
 
 msgid "Employee Loan"
 msgstr "Lån till anställd"
@@ -2062,11 +2110,26 @@ msgstr "Anställd {0} som avgick {1} måste anges som 'Slutat'"
 msgid "Employee: {0} have to complete minimum {1} years for gratuity"
 msgstr "Anställd: {0} måste ha minst {1} år för avgångsvederlag"
 
+msgid "Employees by Age"
+msgstr "Anställda per ålder"
+
+msgid "Employees by Branch"
+msgstr "Anställda per filial"
+
+msgid "Employees by Grade"
+msgstr "Anställda per lönegrad"
+
+msgid "Employees by Type"
+msgstr "Anställda per anställningsform"
+
 msgid "Employees cannot give feedback to themselves. Use {0} instead: {1}"
 msgstr "Anställda kan inte ge återkoppling till sig själva. Använd {0} istället: {1}"
 
 msgid "Employees HTML"
 msgstr "Anställda HTML"
+
+msgid "Employees Joining (This Quarter)"
+msgstr "Nyanställda (detta kvartal)"
 
 msgid "Employees on Half Day HTML"
 msgstr "Anställda på halvdag, HTML"
@@ -2076,6 +2139,9 @@ msgstr "Lediga anställda denna månad"
 
 msgid "Employees on leave today"
 msgstr "Lediga anställda i dag"
+
+msgid "Employees Relieving (This Quarter)"
+msgstr "Avgående anställda (detta kvartal)"
 
 msgid "Employees will miss holiday reminders from {} until {}. <br> Do you want to proceed with this change?"
 msgstr "Anställda kommer att missa helgdagspåminnelser från {} till {}. <br> Vill du fortsätta med denna ändring?"
@@ -2379,6 +2445,9 @@ msgstr "Utlägg {0} finns redan för fordonsloggen"
 
 msgid "Expense Claims"
 msgstr "Utlägg"
+
+msgid "Expense Claims (This Month)"
+msgstr "Utlägg (denna månad)"
 
 msgid "Expense Date"
 msgstr "Kostnadsdatum"
@@ -2696,6 +2765,9 @@ msgstr "Framtida inkomstskatt"
 msgid "Gain Loss Account"
 msgstr "Konto för valutakursresultat"
 
+msgid "Gender Diversity Ratio"
+msgstr "Könsfördelning"
+
 msgid "Geolocation Error"
 msgstr "Geolokaliseringsfel"
 
@@ -2864,6 +2936,9 @@ msgstr "Rekryteringsflöde"
 msgid "Hiring Settings"
 msgstr "Anställningsinställningar"
 
+msgid "Hiring vs Attrition Count"
+msgstr "Nyanställningar och avgångar"
+
 msgid "Holiday List Assignment"
 msgstr "Koppling till helglista"
 
@@ -2932,6 +3007,9 @@ msgstr "HR-telemetrimilstolpe"
 
 msgid "HRMS"
 msgstr "HRMS"
+
+msgid "Human Resource"
+msgstr "Personal"
 
 msgid "Identification Document Number"
 msgstr "Nummer på identitetshandling"
@@ -3314,6 +3392,9 @@ msgstr "Jan"
 msgid "Job Applicant"
 msgstr "Sökande"
 
+msgid "Job Applicant Pipeline"
+msgstr "Sökande per steg"
+
 msgid "Job Applicant Source"
 msgstr "Sökandekälla"
 
@@ -3326,11 +3407,20 @@ msgstr "Sökande får inte förekomma två gånger i samma intervjuomgång. Inte
 msgid "Job Applicants are not allowed to appear twice for the same Interview Type. Interview {0} already scheduled for Job Applicant {1}"
 msgstr "Sökande får inte delta två gånger i samma intervjutyp. Intervjun {0} är redan bokad för den sökande {1}"
 
+msgid "Job Applicants by Country"
+msgstr "Sökande per land"
+
 msgid "Job Application"
 msgstr "Jobbansökan"
 
+msgid "Job Application Frequency"
+msgstr "Ansökningar över tid"
+
 msgid "Job Application Route"
 msgstr "Sökväg för jobbansökan"
+
+msgid "Job Application Status"
+msgstr "Status för ansökningar"
 
 msgid "Job Description"
 msgstr "Jobbeskrivning"
@@ -3338,8 +3428,14 @@ msgstr "Jobbeskrivning"
 msgid "Job Offer"
 msgstr "Anställningserbjudande"
 
+msgid "Job Offer Acceptance Rate"
+msgstr "Andel accepterade anställningserbjudanden"
+
 msgid "Job Offer status"
 msgstr "Status för anställningserbjudande"
+
+msgid "Job Offer Status"
+msgstr "Status för anställningserbjudanden"
 
 msgid "Job Offer Term"
 msgstr "Villkor i anställningserbjudande"
@@ -3352,6 +3448,9 @@ msgstr "Villkor i anställningserbjudande"
 
 msgid "Job Offer: {0} is already for Job Applicant: {1}"
 msgstr "Anställningserbjudande: {0} finns redan för sökande: {1}"
+
+msgid "Job Offers (This Month)"
+msgstr "Anställningserbjudanden (denna månad)"
 
 msgid "Job Opening"
 msgstr "Utlyst tjänst"
@@ -3442,6 +3541,9 @@ msgstr "Sen instämpling"
 
 msgid "Late Entry & Early Exit Settings for Auto Attendance"
 msgstr "Inställningar för sen instämpling och tidig utstämpling vid automatisk närvaro"
+
+msgid "Late Entry (This Month)"
+msgstr "Sen instämpling (denna månad)"
 
 msgid "Late Entry By"
 msgstr "Sen ankomst med"
@@ -4014,6 +4116,9 @@ msgstr "Ny återkoppling"
 msgid "New Hires (This Month)"
 msgstr "Nyanställda (denna månad)"
 
+msgid "New Hires (This Year)"
+msgstr "Nyanställda (i år)"
+
 msgid "New Leave(s) Allocated"
 msgstr "Nya tilldelade dagar"
 
@@ -4236,6 +4341,12 @@ msgstr "Nov"
 msgid "Number Of Employees"
 msgstr "Antal anställda"
 
+msgid "Number of Employees on Leave (This Month)"
+msgstr "Antal lediga anställda (denna månad)"
+
+msgid "Number of Employees on Leave (Today)"
+msgstr "Antal lediga anställda (idag)"
+
 msgid "Number of Leaves"
 msgstr "Antal dagar"
 
@@ -4289,6 +4400,9 @@ msgstr "Introduktionsaktiviteter"
 
 msgid "Onboarding Begins On"
 msgstr "Introduktionen börjar"
+
+msgid "Onboardings (This Month)"
+msgstr "Introduktioner (denna månad)"
 
 msgid "Only Approvers can Approve this Request."
 msgstr "Endast godkännare kan godkänna denna begäran."
@@ -4974,6 +5088,9 @@ msgstr "Befordran"
 msgid "Promotion Date"
 msgstr "Befordringsdatum"
 
+msgid "Promotions (This Month)"
+msgstr "Befordringar (denna månad)"
+
 msgid "Property already added"
 msgstr "Egenskapen är redan tillagd"
 
@@ -5108,6 +5225,12 @@ msgstr "Avvisa"
 
 msgid "Reject Employee Referral"
 msgstr "Avvisa medarbetarrekommendation"
+
+msgid "Rejected Claims (This Month)"
+msgstr "Avslagna utlägg (denna månad)"
+
+msgid "Rejected Job Applicants"
+msgstr "Avslagna sökande"
 
 msgid "Rejection"
 msgstr "Avslag"
@@ -5667,6 +5790,9 @@ msgstr "Avgångsaktiviteter"
 msgid "Separation Begins On"
 msgstr "Avgång börjar"
 
+msgid "Separations (This Month)"
+msgstr "Avgångar (denna månad)"
+
 msgid "Service Details"
 msgstr "Serviceuppgifter"
 
@@ -5741,6 +5867,9 @@ msgstr "Skift och närvaro"
 
 msgid "Shift Assignment"
 msgstr "Skifttilldelning"
+
+msgid "Shift Assignment Breakup"
+msgstr "Skifttilldelningar per skift"
 
 msgid "Shift Assignment Details"
 msgstr "Skifttilldelningsdetaljer"
@@ -6207,6 +6336,9 @@ msgstr "Tid till tillsättning"
 msgid "Timelines"
 msgstr "Tidslinjer"
 
+msgid "Timesheet Activity Breakup"
+msgstr "Tidrapporter per aktivitetstyp"
+
 msgid "Timesheet Details"
 msgstr "Tidrapportsuppgifter"
 
@@ -6264,6 +6396,9 @@ msgstr "Idag har {0} jobbat {1} {2} hos oss! 🎉"
 msgid "Total Absent"
 msgstr "Totalt frånvarande"
 
+msgid "Total Absent (This Month)"
+msgstr "Frånvarande (denna månad)"
+
 msgid "Total Accrued"
 msgstr "Totalt periodiserat"
 
@@ -6297,6 +6432,9 @@ msgstr "Totalbeloppet kan inte vara noll"
 msgid "Total Amount Reimbursed"
 msgstr "Totalt återbetalat belopp"
 
+msgid "Total Applicants (This Month)"
+msgstr "Sökande (denna månad)"
+
 msgid "Total Asset Recovery Cost"
 msgstr "Total återställningskostnad för tillgångar"
 
@@ -6311,6 +6449,9 @@ msgstr "Total personalkostnad (CTC)"
 
 msgid "Total Days Without Pay"
 msgstr "Totalt antal dagar utan lön"
+
+msgid "Total Declaration Submitted"
+msgstr "Inlämnade deklarationer av skattebefrielse"
 
 msgid "Total Declared Amount"
 msgstr "Totalt deklarerat belopp"
@@ -6366,6 +6507,9 @@ msgstr "Totalt i ord"
 msgid "Total in words (Company Currency)"
 msgstr "Totalt i ord (bolagets valuta)"
 
+msgid "Total Incentive Given(Last month)"
+msgstr "Utbetalda incitament (förra månaden)"
+
 msgid "Total Income Tax"
 msgstr "Total inkomstskatt"
 
@@ -6408,6 +6552,9 @@ msgstr "Totalt antal ofakturerade timmar"
 msgid "Total of all employee benefits cannot be greater that Max Benefits Amount {0}"
 msgstr "Summan av alla anställdas förmåner får inte vara högre än maximalt förmånsbelopp {0}"
 
+msgid "Total Outgoing Salary(Last month)"
+msgstr "Utbetald lön (förra månaden)"
+
 msgid "Total Overtime Duration"
 msgstr "Total övertid"
 
@@ -6422,6 +6569,9 @@ msgstr "Total utbetalning"
 
 msgid "Total Present"
 msgstr "Totalt närvarande"
+
+msgid "Total Present (This Month)"
+msgstr "Närvarande (denna månad)"
 
 msgid "Total Principal Amount"
 msgstr "Totalt huvudbelopp"
@@ -6440,6 +6590,9 @@ msgstr "Total lön som bokförts för denna anställd från månadens början ti
 
 msgid "Total salary booked for this employee from the beginning of the year (payroll period or fiscal year) up to the current salary slip's end date."
 msgstr "Total lön som bokförts för denna anställd från årets början (löneperiod eller bokföringsår) till aktuell lönespecifikations slutdatum."
+
+msgid "Total Salary Structure"
+msgstr "Antal lönestrukturer"
 
 msgid "Total Sanctioned Amount"
 msgstr "Totalt beviljat belopp"
@@ -6504,8 +6657,14 @@ msgstr "Utbildningsresultat"
 msgid "Training Result Employee"
 msgstr "Anställd i utbildningsresultat"
 
+msgid "Training Type"
+msgstr "Utbildningstyp"
+
 msgid "Trainings"
 msgstr "Utbildning"
+
+msgid "Trainings (This Month)"
+msgstr "Utbildningar (denna månad)"
 
 msgid "Trainings (This Week)"
 msgstr "Utbildningar (denna vecka)"
@@ -6515,6 +6674,9 @@ msgstr "Transaktioner kan inte skapas för inaktiv anställd {0}."
 
 msgid "Transfer Date"
 msgstr "Överföringsdatum"
+
+msgid "Transfers (This Month)"
+msgstr "Förflyttningar (denna månad)"
 
 msgid "Travel"
 msgstr "Resa"
@@ -6836,6 +6998,12 @@ msgstr "Tröskel för arbetstid vid halvdag"
 
 msgid "Workshop"
 msgstr "Verkstad"
+
+msgid "Y-O-Y Promotions"
+msgstr "Befordringar per år"
+
+msgid "Y-O-Y Transfers"
+msgstr "Förflyttningar per år"
 
 msgid "year"
 msgstr "år"
