@@ -1,5 +1,22 @@
 # Ändringslogg
 
+## v0.3.0 – 2026-10-05 (pre-release)
+
+Skift med obetalda raster och arbetstidsförkortning enligt Teknikavtalet. Kör `migrate` efter uppdateringen.
+
+- **Obetalda raster** på skifttypen (börjar, minuter). Rasterna dras av från planerade timmar, arbetad tid (ARB),
+  mertid, övertid och OB. En rast som den anställde stämplar ut på dras inte av två gånger.
+- **Heltid per veckodag** i Löneinställningar: gränsen för mertid en dag som skiljer sig från Heltid per dag,
+  till exempel en kortare fredag.
+- **Arbetstidskonto (ATK):** ny frånvarotyp med PAXml-tidkod ATK för den som tar ut Teknikavtalets
+  arbetstidskonto som ledighet. Befintliga siter får den vid migrate.
+- **Anställningsnummer** visas alltid på den anställde (HRMS döljer det annars vid namngivning med
+  nummerserie), och etiketten heter Anställningsnummer i stället för Nummer.
+- **Översikternas kort och diagram** har svenska rubriker (56 st), till exempel Närvarande (denna månad) och
+  Sen instämpling (denna månad). Kontrollen av oöversatta etiketter omfattar nu även kort och diagram.
+- **Testade versioner:** README anger frappe 16.36.1, erpnext 16.37.0 och hrms 16.20.1, och `pyproject.toml`
+  kräver version 16 av frappe, erpnext och hrms.
+
 ## v0.2.0 – 2026-10-03 (pre-release)
 
 Löneunderlag till lönesystem via PAXml och en stämplingssida. Provat med import i Crona Lön.
