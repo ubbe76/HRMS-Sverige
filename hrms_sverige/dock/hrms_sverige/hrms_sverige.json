@@ -1,0 +1,28 @@
+{
+ "app": "hrms_sverige",
+ "creation": "2026-10-13 19:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Dock",
+ "idx": 0,
+ "items": [
+  {
+   "added": 0,
+   "doctype": "Dock Item",
+   "hidden": 0,
+   "icon": "file-clock",
+   "idx": 1,
+   "link_to": "Lön och stämpling",
+   "link_type": "Sidebar",
+   "parentfield": "items",
+   "parenttype": "Dock",
+   "title": "Lön och stämpling"
+  }
+ ],
+ "modified": "2026-10-13 19:00:00.000000",
+ "modified_by": "Administrator",
+ "mount_on": "hrms",
+ "name": "hrms_sverige",
+ "owner": "Administrator",
+ "standard": 1,
+ "user": ""
+}
