@@ -7262,3 +7262,655 @@ msgstr "Tidsregel"
 
 msgid "Stamplingsenhet"
 msgstr "Stämplingsenhet"
+
+# Nya strängar i frappe 16.51, erpnext 16.50 och hrms 16.50
+msgid "A bonus, arrear or deduction for one payroll period. See [Additional Salary](https://docs.frappe.io/hr/additional-salary)."
+msgstr "En bonus, retroaktiv lön eller ett avdrag för en löneperiod. Se [Tilläggslön](https://docs.frappe.io/hr/additional-salary)."
+
+msgid "A course you run for employees, with its trainer and what it covers. See [Training Program](https://docs.frappe.io/hr/training-program)."
+msgstr "En kurs du håller för anställda, med utbildare och innehåll. Se [Utbildningsprogram](https://docs.frappe.io/hr/training-program)."
+
+msgid "A kind of leave, such as casual or sick, and its rules. See [Leave Type](https://docs.frappe.io/hr/leave-type)."
+msgstr "En sorts ledighet, till exempel tillfällig ledighet eller sjukfrånvaro, och dess regler. Se [Frånvarotyp](https://docs.frappe.io/hr/leave-type)."
+
+msgid "A measurable target for an employee, tracked against a KRA. See [Goal](https://docs.frappe.io/hr/goal)."
+msgstr "Ett mätbart mål för en anställd, som följs upp mot ett nyckelresultatområde (KRA). Se [Mål](https://docs.frappe.io/hr/goal)."
+
+msgid "A punch from a biometric device or the mobile app. Auto attendance turns these into attendance. See [Employee Checkin](https://docs.frappe.io/hr/employee-checkin)."
+msgstr "En stämpling från en biometrisk enhet eller mobilappen. Automatisk närvaro omvandlar dessa till närvaro. Se [Stämpling](https://docs.frappe.io/hr/employee-checkin)."
+
+msgid "A reviewer's ratings and comments on an employee for the cycle. See [Employee Performance Feedback](https://docs.frappe.io/hr/employee-performance-feedback)."
+msgstr "En bedömares betyg och kommentarer om en anställd för perioden. Se [Prestationsåterkoppling](https://docs.frappe.io/hr/employee-performance-feedback)."
+
+msgid "A role you are hiring for, which you can publish on your job portal. See [Job Opening](https://docs.frappe.io/hr/job-opening)."
+msgstr "En tjänst du rekryterar till, som du kan publicera på din jobbportal. Se [Utlyst tjänst](https://docs.frappe.io/hr/job-opening)."
+
+msgid "A session of a training program and the employees attending it. See [Training Event](https://docs.frappe.io/hr/training-event)."
+msgstr "Ett tillfälle i ett utbildningsprogram och de anställda som deltar. Se [Utbildningstillfälle](https://docs.frappe.io/hr/training-event)."
+
+msgid "A shift's working hours and the rules for marking attendance from check-ins. See [Shift Type](https://docs.frappe.io/hr/shift-type)."
+msgstr "Ett skifts arbetstider och reglerna för att registrera närvaro från stämplingar. Se [Skifttyp](https://docs.frappe.io/hr/shift-type)."
+
+msgid "Add Checkin"
+msgstr "Lägg till stämpling"
+
+msgid "Add Checkin for Another Employee"
+msgstr "Lägg till stämpling för en annan anställd"
+
+msgid "Add Employee"
+msgstr "Lägg till anställd"
+
+msgid "Add Job Applicant"
+msgstr "Lägg till sökande"
+
+msgid "Add a key result area"
+msgstr "Lägg till ett nyckelresultatområde"
+
+msgid "Add a leave type"
+msgstr "Lägg till en frånvarotyp"
+
+msgid "Add a salary component"
+msgstr "Lägg till en lönekomponent"
+
+msgid "Add an applicant"
+msgstr "Lägg till en sökande"
+
+msgid "Add income tax slabs"
+msgstr "Lägg till skattetabeller"
+
+msgid "Add your employees"
+msgstr "Lägg till dina anställda"
+
+msgid "An area an employee is measured on, such as quality or delivery. See [Appraisal Template](https://docs.frappe.io/hr/appraisal-template)."
+msgstr "Ett område som en anställd bedöms på, till exempel kvalitet eller leverans. Se [Bedömningsmall](https://docs.frappe.io/hr/appraisal-template)."
+
+msgid "An earning or deduction on the salary slip, such as Basic or Provident Fund. See [Salary Component](https://docs.frappe.io/hr/salary-component)."
+msgstr "Ett tillägg eller avdrag på lönespecifikationen, till exempel grundlön eller pensionsavsättning. Se [Lönekomponent](https://docs.frappe.io/hr/salary-component)."
+
+msgid "An employee's claim for money they spent on work. The expense approver approves and submits it. See [Expense Claim](https://docs.frappe.io/hr/expense-claim)."
+msgstr "En anställds begäran om ersättning för pengar som lagts ut i tjänsten. Utläggsgodkännaren godkänner och skickar in den. Se [Utgiftsersättning](https://docs.frappe.io/hr/expense-claim)."
+
+msgid "An employee's request for time off. Their leave approver approves and submits it. See [Leave Application](https://docs.frappe.io/hr/leave-application)."
+msgstr "En anställds ansökan om ledighet. Ledighetsgodkännaren godkänner och skickar in den. Se [Ledighetsansökan](https://docs.frappe.io/hr/leave-application)."
+
+msgid "An employee's request to be marked present for days on duty or working from home. See [Attendance Request](https://docs.frappe.io/hr/attendance-request)."
+msgstr "En anställds begäran om att registreras som närvarande för dagar med tjänsteärende eller hemarbete. Se [Närvarobegäran](https://docs.frappe.io/hr/attendance-request)."
+
+msgid "An interview round with the applicant and the people interviewing them. See [Interview](https://docs.frappe.io/hr/interview)."
+msgstr "En intervjuomgång med den sökande och de som intervjuar. Se [Intervju](https://docs.frappe.io/hr/interview)."
+
+msgid "An unknown error occurred while fetching your geolocation"
+msgstr "Ett okänt fel uppstod när din plats skulle hämtas"
+
+msgid "Apply for Leave"
+msgstr "Ansök om ledighet"
+
+msgid "Appraisals (This Year)"
+msgstr "Medarbetarbedömningar (i år)"
+
+msgid "Appraise an employee"
+msgstr "Bedöm en anställd"
+
+msgid "Approval and funding for a work trip before it happens. See [Travel Request](https://docs.frappe.io/hr/travel-request)."
+msgstr "Godkännande och finansiering av en tjänsteresa innan den äger rum. Se [Resebegäran](https://docs.frappe.io/hr/travel-request)."
+
+msgid "Approve a leave request"
+msgstr "Godkänn en ledighetsansökan"
+
+msgid "Approve an expense claim"
+msgstr "Godkänn en utgiftsersättning"
+
+msgid "Approve an expense claim and pay the employee back."
+msgstr "Godkänn en utgiftsersättning och betala tillbaka till den anställde."
+
+msgid "Approved claims that have not been paid back yet."
+msgstr "Godkända ersättningar som ännu inte har betalats ut."
+
+msgid "Assign Salary Structure"
+msgstr "Tilldela lönestruktur"
+
+msgid "Assign a shift"
+msgstr "Tilldela ett skift"
+
+msgid "Assign it to an employee"
+msgstr "Tilldela den till en anställd"
+
+msgid "Assignment must start between {0} and {1}"
+msgstr "Tilldelningen måste börja mellan {0} och {1}"
+
+msgid "Bank/Cash Account Not Set"
+msgstr "Bank-/kassakonto saknas"
+
+msgid "Benefit Claims"
+msgstr "Förmånsanspråk"
+
+msgid "Benefit Claims (This Month)"
+msgstr "Förmånsanspråk (denna månad)"
+
+msgid "Benefit Ledger"
+msgstr "Förmånsregister"
+
+msgid "Build a salary structure"
+msgstr "Bygg en lönestruktur"
+
+msgid "Build a salary structure, assign it and run payroll."
+msgstr "Bygg en lönestruktur, tilldela den och kör lönekörning."
+
+msgid "Build an appraisal template"
+msgstr "Bygg en bedömningsmall"
+
+msgid "Bundle leave types into a policy"
+msgstr "Samla frånvarotyper i en policy"
+
+msgid "Check each employee's tax"
+msgstr "Kontrollera varje anställds skatt"
+
+msgid "Check in to create your first log."
+msgstr "Stämpla in för att skapa din första logg."
+
+msgid "Check leave balances"
+msgstr "Kontrollera frånvarosaldon"
+
+msgid "Check the month's attendance"
+msgstr "Kontrollera månadens närvaro"
+
+msgid "Checking In..."
+msgstr "Stämplar in..."
+
+msgid "Checking Out..."
+msgstr "Stämplar ut..."
+
+msgid "Choose flexible benefits"
+msgstr "Välj flexibla förmåner"
+
+msgid "Close Job Opening"
+msgstr "Stäng utlyst tjänst"
+
+msgid "Compare scores across a cycle"
+msgstr "Jämför poäng inom en bedömningsperiod"
+
+msgid "Couldn't automatically pick a Bank/Cash Account for this return. Please set one in the Accounting Entries below, or set a Default Cash Account in the {0} to avoid this next time."
+msgstr "Kunde inte automatiskt välja ett bank-/kassakonto för denna återbetalning. Ange ett under Bokföringsposter nedan, eller ange ett standardkassakonto i {0} för att undvika detta nästa gång."
+
+msgid "Create Appointment Letter"
+msgstr "Skapa anställningsbrev"
+
+msgid "Create Appraisal"
+msgstr "Skapa medarbetarbedömning"
+
+msgid "Create Appraisal Cycle"
+msgstr "Skapa bedömningsperiod"
+
+msgid "Create Appraisal Template"
+msgstr "Skapa bedömningsmall"
+
+msgid "Create Assignments"
+msgstr "Skapa tilldelningar"
+
+msgid "Create Attendance Request"
+msgstr "Skapa närvarobegäran"
+
+msgid "Create Benefit Application"
+msgstr "Skapa förmånsansökan"
+
+msgid "Create Declaration"
+msgstr "Skapa deklaration"
+
+msgid "Create Employee Advance"
+msgstr "Skapa personalförskott"
+
+msgid "Create Expense Claim"
+msgstr "Skapa utgiftsersättning"
+
+msgid "Create Goal"
+msgstr "Skapa mål"
+
+msgid "Create Gratuity Rule"
+msgstr "Skapa regel för avgångsvederlag"
+
+msgid "Create Holiday List"
+msgstr "Skapa helglista"
+
+msgid "Create Income Tax Slab"
+msgstr "Skapa skattetabell"
+
+msgid "Create KRA"
+msgstr "Skapa KRA"
+
+msgid "Create Leave Policy"
+msgstr "Skapa frånvaropolicy"
+
+msgid "Create Leave Type"
+msgstr "Skapa frånvarotyp"
+
+msgid "Create Payroll Entry"
+msgstr "Skapa löneregistrering"
+
+msgid "Create Payroll Period"
+msgstr "Skapa löneperiod"
+
+msgid "Create Salary Component"
+msgstr "Skapa lönekomponent"
+
+msgid "Create Salary Structure"
+msgstr "Skapa lönestruktur"
+
+msgid "Create Shift Type"
+msgstr "Skapa skifttyp"
+
+msgid "Create Template"
+msgstr "Skapa mall"
+
+msgid "Create Training Event"
+msgstr "Skapa utbildningstillfälle"
+
+msgid "Create Training Program"
+msgstr "Skapa utbildningsprogram"
+
+msgid "Create Travel Request"
+msgstr "Skapa resebegäran"
+
+msgid "Create {0}"
+msgstr "Skapa {0}"
+
+msgid "Creates salary slips for everyone in a period and books the salary. See [Payroll Entry](https://docs.frappe.io/hr/payroll-entry)."
+msgstr "Skapar lönespecifikationer för alla i en period och bokför lönen. Se [Löneregistrering](https://docs.frappe.io/hr/payroll-entry)."
+
+msgid "Daily Work Summary is deprecated and will be removed in an upcoming release."
+msgstr "Daglig arbetssammanfattning är utfasad och tas bort i en kommande version."
+
+msgid "Declare tax exemptions"
+msgstr "Deklarera skattebefrielser"
+
+msgid "Deduct the right tax"
+msgstr "Dra rätt skatt"
+
+msgid "Define a shift"
+msgstr "Definiera ett skift"
+
+msgid "Define a shift, put an employee on it and mark their attendance."
+msgstr "Definiera ett skift, tilldela det till en anställd och registrera närvaron."
+
+msgid "Each employee's attendance for every day of the month."
+msgstr "Varje anställds närvaro för varje dag i månaden."
+
+msgid "Each employee's goal, feedback and self appraisal scores in a cycle."
+msgstr "Varje anställds poäng för mål, återkoppling och självbedömning i en bedömningsperiod."
+
+msgid "Employee Onboarding: {0} already exists for Job Offer: {1}"
+msgstr "Introduktion: {0} finns redan för anställningserbjudande: {1}"
+
+msgid "Employee must be a non-empty string."
+msgstr "Anställd måste vara en icke-tom sträng."
+
+msgid "Employee {0} does not belong to Company {1}"
+msgstr "Anställd {0} tillhör inte bolaget {1}"
+
+msgid "Employee {0} does not belong to company: {1}"
+msgstr "Anställd {0} tillhör inte bolaget: {1}"
+
+msgid "Employees by branch, department, designation or grade."
+msgstr "Anställda per filial, avdelning, befattning eller lönegrad."
+
+msgid "Error in calculating project profitability"
+msgstr "Fel vid beräkning av projektlönsamhet"
+
+msgid "Every salary slip in a period, component by component."
+msgstr "Alla lönespecifikationer i en period, komponent för komponent."
+
+msgid "Get to know Frappe HR"
+msgstr "Lär känna Frappe HR"
+
+msgid "Give Feedback"
+msgstr "Ge återkoppling"
+
+msgid "Give an employee an advance"
+msgstr "Ge en anställd ett förskott"
+
+msgid "Give an employee leave"
+msgstr "Tilldela en anställd ledighet"
+
+msgid "Give feedback"
+msgstr "Ge återkoppling"
+
+msgid "Goals In Progress"
+msgstr "Pågående mål"
+
+msgid "Handle an exit"
+msgstr "Hantera en avgång"
+
+msgid "Hire your first employee"
+msgstr "Anställ din första medarbetare"
+
+msgid "How an employee splits their flexible benefit amount across components. See [Employee Benefit Application](https://docs.frappe.io/hr/employee-benefit-application)."
+msgstr "Hur en anställd fördelar sitt flexibla förmånsbelopp mellan komponenter. Se [Förmånsansökan](https://docs.frappe.io/hr/employee-benefit-application)."
+
+msgid "How gratuity is calculated from years of service. See [Gratuity Rule](https://docs.frappe.io/hr/gratuity-rule)."
+msgstr "Hur avgångsvederlag beräknas utifrån antal tjänsteår. Se [Regel för avgångsvederlag](https://docs.frappe.io/hr/gratuity-rule)."
+
+msgid "How many days of each leave type an employee gets in a year. See [Leave Policy](https://docs.frappe.io/hr/leave-policy)."
+msgstr "Hur många dagar av varje frånvarotyp en anställd får per år. Se [Frånvaropolicy](https://docs.frappe.io/hr/leave-policy)."
+
+msgid "How much of each leave type every employee has left."
+msgstr "Hur mycket av varje frånvarotyp varje anställd har kvar."
+
+msgid "Income Tax"
+msgstr "Inkomstskatt"
+
+msgid "Job Offer Status Not Updated"
+msgstr "Status för anställningserbjudande inte uppdaterad"
+
+msgid "Job Offer {0} already exists for {1}"
+msgstr "Anställningserbjudande {0} finns redan för {1}"
+
+msgid "Linked Job Offer {0} was {1}. Please update the Job Offer status if this hire was intended."
+msgstr "Det kopplade anställningserbjudandet {0} är {1}. Uppdatera erbjudandets status om anställningen är avsedd."
+
+msgid "Look at your workforce"
+msgstr "Se över din personalstyrka"
+
+msgid "Make an offer"
+msgstr "Ge ett erbjudande"
+
+msgid "Manage time off"
+msgstr "Hantera ledighet"
+
+msgid "Manual"
+msgstr "Manuell"
+
+msgid "Mark attendance"
+msgstr "Registrera närvaro"
+
+msgid "Money paid before the expense, settled later against the claim. See [Employee Advance](https://docs.frappe.io/hr/employee-advance)."
+msgstr "Pengar som betalas ut före utgiften och senare regleras mot utgiftsersättningen. Se [Personalförskott](https://docs.frappe.io/hr/employee-advance)."
+
+msgid "No check-ins yet"
+msgstr "Inga stämplingar ännu"
+
+msgid "Onboard a new hire"
+msgstr "Introducera en nyanställd"
+
+msgid "One employee's ratings for a cycle. The cycle can create these for everyone in it. See [Appraisal](https://docs.frappe.io/hr/appraisal)."
+msgstr "En anställds betyg för en bedömningsperiod. Perioden kan skapa dessa för alla som ingår i den. Se [Medarbetarbedömning](https://docs.frappe.io/hr/appraisal)."
+
+msgid "Ongoing Appraisal Cycles"
+msgstr "Pågående bedömningsperioder"
+
+msgid "Open Appraisal Overview"
+msgstr "Öppna bedömningsöversikt"
+
+msgid "Open Employee Analytics"
+msgstr "Öppna analys av anställda"
+
+msgid "Open Employee Leave Balance"
+msgstr "Öppna frånvarosaldo"
+
+msgid "Open Expenses"
+msgstr "Öppna kostnader"
+
+msgid "Open Income Tax Computation"
+msgstr "Öppna beräkning av inkomstskatt"
+
+msgid "Open Leaves"
+msgstr "Öppna ledigheter"
+
+msgid "Open Monthly Attendance Sheet"
+msgstr "Öppna närvarorapport per månad"
+
+msgid "Open Payroll"
+msgstr "Öppna lön"
+
+msgid "Open Performance"
+msgstr "Öppna prestation"
+
+msgid "Open Recruitment"
+msgstr "Öppna rekrytering"
+
+msgid "Open Recruitment Analytics"
+msgstr "Öppna rekryteringsanalys"
+
+msgid "Open Salary Register"
+msgstr "Öppna löneregister"
+
+msgid "Open Shift & Attendance"
+msgstr "Öppna skift och närvaro"
+
+msgid "Open Tax & Benefits"
+msgstr "Öppna skatt och förmåner"
+
+msgid "Open Tenure"
+msgstr "Öppna anställningstid"
+
+msgid "Open Unpaid Claims"
+msgstr "Öppna obetalda ersättningar"
+
+msgid "Open Unpaid Expense Claim"
+msgstr "Öppna obetalda utgiftsersättningar"
+
+msgid "Open a job"
+msgstr "Utlys en tjänst"
+
+msgid "Open a job, add an applicant and make them an offer."
+msgstr "Utlys en tjänst, lägg till en sökande och ge ett erbjudande."
+
+msgid "Openings, applicants and offers for each designation in a staffing plan."
+msgstr "Utlysta tjänster, sökande och erbjudanden per befattning i en bemanningsplan."
+
+msgid "Optional. Leave blank to use the Mode of Payment set on this Advance, or the Company's Default Cash Account."
+msgstr "Valfritt. Lämna tomt för att använda betalsättet på detta förskott, eller bolagets standardkassakonto."
+
+msgid "Pay a one-off amount"
+msgstr "Betala ut ett engångsbelopp"
+
+msgid "Pay the employee back"
+msgstr "Betala tillbaka till den anställde"
+
+msgid "Pick an approved claim from the list this opens and use Create > Payment on it. The payment is then linked to the claim and marks it paid. See [Expense Claim](https://docs.frappe.io/hr/expense-claim#payment-for-expense-claim)."
+msgstr "Välj en godkänd ersättning i listan som öppnas och använd Skapa > Betalning på den. Betalningen kopplas då till ersättningen och markerar den som betald. Se [Utgiftsersättning](https://docs.frappe.io/hr/expense-claim#payment-for-expense-claim)."
+
+msgid "Plan a training program"
+msgstr "Planera ett utbildningsprogram"
+
+msgid "Plan a work trip"
+msgstr "Planera en tjänsteresa"
+
+msgid "Proof of what was declared, so the exemption counts in the final tax. See [Employee Tax Exemption Proof Submission](https://docs.frappe.io/hr/employee-tax-exemption-proof-submission)."
+msgstr "Underlag för det som deklarerats, så att befrielsen räknas med i den slutliga skatten. Se [Inlämning av underlag för skattebefrielse](https://docs.frappe.io/hr/employee-tax-exemption-proof-submission)."
+
+msgid "Puts an employee on a salary structure with their base pay from a date. See [Salary Structure Assignment](https://docs.frappe.io/hr/salary-structure-assignment)."
+msgstr "Kopplar en anställd till en lönestruktur med grundlön från ett visst datum. Se [Tilldelning av lönestruktur](https://docs.frappe.io/hr/salary-structure-assignment)."
+
+msgid "Puts an employee on a shift from a date. See [Shift Assignment](https://docs.frappe.io/hr/shift-assignment)."
+msgstr "Kopplar en anställd till ett skift från ett visst datum. Se [Skifttilldelning](https://docs.frappe.io/hr/shift-assignment)."
+
+msgid "Record a check-in"
+msgstr "Registrera en stämpling"
+
+msgid "Reopen Job Opening"
+msgstr "Öppna utlyst tjänst igen"
+
+msgid "Request attendance"
+msgstr "Begär närvaro"
+
+msgid "Return Advance"
+msgstr "Återbetala förskott"
+
+msgid "Review performance"
+msgstr "Utvärdera prestation"
+
+msgid "Review the salary register"
+msgstr "Granska löneregistret"
+
+msgid "Run payroll"
+msgstr "Kör lönekörning"
+
+msgid "Run your first payroll"
+msgstr "Kör din första lönekörning"
+
+msgid "Schedule a training"
+msgstr "Boka en utbildning"
+
+msgid "Schedule an interview"
+msgstr "Boka en intervju"
+
+msgid "See what is still owed"
+msgstr "Se vad som återstår att betala"
+
+msgid "Send an appointment letter"
+msgstr "Skicka ett anställningsbrev"
+
+msgid "Set a goal"
+msgstr "Sätt ett mål"
+
+msgid "Set the payroll period and tax slabs, and record what employees declare."
+msgstr "Ange löneperiod och skattetabeller och registrera vad de anställda deklarerar."
+
+msgid "Set up a gratuity rule"
+msgstr "Skapa en regel för avgångsvederlag"
+
+msgid "Set up what employees are measured on and run an appraisal cycle."
+msgstr "Ange vad anställda bedöms på och kör en bedömningsperiod."
+
+msgid "Set your holidays"
+msgstr "Ange dina helgdagar"
+
+msgid "Set your holidays and leave types, give leave and approve a request."
+msgstr "Ange helgdagar och frånvarotyper, tilldela ledighet och godkänn en ansökan."
+
+msgid "Set your payroll period"
+msgstr "Ange din löneperiod"
+
+msgid "Settle employee expenses"
+msgstr "Reglera anställdas utgifter"
+
+msgid "Someone who applied for a job opening. Applications from the job portal arrive here. See [Job Applicant](https://docs.frappe.io/hr/job-applicant)."
+msgstr "Någon som har sökt en utlyst tjänst. Ansökningar från jobbportalen hamnar här. Se [Sökande](https://docs.frappe.io/hr/job-applicant)."
+
+msgid "Start Onboarding"
+msgstr "Starta introduktion"
+
+msgid "Start Separation"
+msgstr "Starta avgång"
+
+msgid "Start an appraisal cycle"
+msgstr "Starta en bedömningsperiod"
+
+msgid "Submit proof of exemptions"
+msgstr "Lämna in underlag för skattebefrielser"
+
+msgid "Tax & Exemption Setup"
+msgstr "Inställningar för skatt och befrielse"
+
+msgid "Tax Exemption Proofs (This Year)"
+msgstr "Underlag för skattebefrielse (i år)"
+
+msgid "Taxable income, exemptions and tax for each employee in a payroll period."
+msgstr "Beskattningsbar inkomst, befrielser och skatt för varje anställd under en löneperiod."
+
+msgid "The KRAs and rating criteria for a role, with their weightage. See [Appraisal Template](https://docs.frappe.io/hr/appraisal-template)."
+msgstr "Nyckelresultatområden (KRA) och betygskriterier för en befattning, med deras viktning. Se [Bedömningsmall](https://docs.frappe.io/hr/appraisal-template)."
+
+msgid "The days an employee can take of a leave type in a period. See [Leave Allocation](https://docs.frappe.io/hr/leave-allocation)."
+msgstr "Antalet dagar av en frånvarotyp som en anställd kan ta ut under en period. Se [Frånvarotilldelning](https://docs.frappe.io/hr/leave-allocation)."
+
+msgid "The earnings and deductions that make up a salary, and how each is calculated. See [Salary Structure](https://docs.frappe.io/hr/salary-structure)."
+msgstr "De tillägg och avdrag som utgör en lön, och hur vart och ett beräknas. Se [Lönestruktur](https://docs.frappe.io/hr/salary-structure)."
+
+msgid "The financial year that tax is calculated over. See [Payroll Period](https://docs.frappe.io/hr/payroll-period)."
+msgstr "Det inkomstår som skatten beräknas över. Se [Löneperiod](https://docs.frappe.io/hr/payroll-period)."
+
+msgid "The formal letter that confirms the role and its terms. See [Appointment Letter](https://docs.frappe.io/hr/appointment-letter)."
+msgstr "Det formella brevet som bekräftar befattningen och dess villkor. Se [Anställningsbrev](https://docs.frappe.io/hr/appointment-letter)."
+
+msgid "The investments and expenses an employee plans to claim against tax. See [Employee Tax Exemption Declaration](https://docs.frappe.io/hr/employee-tax-exemption-declaration)."
+msgstr "De investeringar och utgifter en anställd planerar att göra skatteavdrag för. Se [Deklaration av skattebefrielse](https://docs.frappe.io/hr/employee-tax-exemption-declaration)."
+
+msgid "The people you manage, with their joining date, department and reporting manager. See [Employee](https://docs.frappe.io/hr/employee)."
+msgstr "Personerna du ansvarar för, med anställningsdatum, avdelning och närmaste chef. Se [Personal](https://docs.frappe.io/hr/employee)."
+
+msgid "The review period, and the employees and templates in it. See [Appraisal Cycle](https://docs.frappe.io/hr/appraisal-cycle)."
+msgstr "Bedömningsperioden samt de anställda och mallar som ingår i den. Se [Bedömningsperiod](https://docs.frappe.io/hr/appraisal-cycle)."
+
+msgid "The tasks to finish when someone joins, reused for every new hire. See [Employee Onboarding](https://docs.frappe.io/hr/employee-onboarding)."
+msgstr "Uppgifterna som ska göras när någon börjar, återanvänds för varje nyanställd. Se [Introduktion](https://docs.frappe.io/hr/employee-onboarding)."
+
+msgid "The tax rate for each range of income. See [Income Tax Slab](https://docs.frappe.io/hr/income-tax-slab)."
+msgstr "Skattesatsen för varje inkomstintervall. Se [Skattetabell](https://docs.frappe.io/hr/income-tax-slab)."
+
+msgid "The terms you offer the applicant. Submit it once they accept. See [Job Offer](https://docs.frappe.io/hr/job-offer)."
+msgstr "Villkoren du erbjuder den sökande. Skicka in det när hen har accepterat. Se [Anställningserbjudande](https://docs.frappe.io/hr/job-offer)."
+
+msgid "The weekly offs and public holidays your employees get. See [Holiday List](https://docs.frappe.io/hr/holiday-list)."
+msgstr "Helger och allmänna helgdagar som dina anställda är lediga. Se [Helglista](https://docs.frappe.io/hr/holiday-list)."
+
+msgid "Total Applicants (This month)"
+msgstr "Antal sökande (denna månad)"
+
+msgid "Total Employees"
+msgstr "Antal anställda"
+
+msgid "Total Working Days must be greater than zero. Please review Salary Slip {0}."
+msgstr "Totalt antal arbetsdagar måste vara större än noll. Kontrollera lönespecifikation {0}."
+
+msgid "Track attendance and shifts"
+msgstr "Följ upp närvaro och skift"
+
+msgid "Track hiring against your plan"
+msgstr "Följ upp rekryteringen mot din plan"
+
+msgid "Track the joining tasks for a new hire and the exit tasks when someone leaves."
+msgstr "Följ upp introduktionsuppgifterna för en nyanställd och avgångsuppgifterna när någon slutar."
+
+msgid "Tracks the exit tasks when an employee leaves. Submit it once they are done. See [Employee Separation](https://docs.frappe.io/hr/employee-separation)."
+msgstr "Följer upp avgångsuppgifterna när en anställd slutar. Skicka in den när de är klara. Se [Avgång](https://docs.frappe.io/hr/employee-separation)."
+
+msgid "Tracks the joining tasks for one new employee. Submit it once they are done. See [Employee Onboarding](https://docs.frappe.io/hr/employee-onboarding)."
+msgstr "Följer upp introduktionsuppgifterna för en nyanställd. Skicka in den när de är klara. Se [Introduktion](https://docs.frappe.io/hr/employee-onboarding)."
+
+msgid "Unmarked days must be a list of dates."
+msgstr "Omarkerade dagar måste vara en lista med datum."
+
+msgid "Updated the status of Job Offer {0} for {1} to {2}"
+msgstr "Uppdaterade status för anställningserbjudande {0} för {1} till {2}"
+
+msgid "User denied location prompt. Please allow access to your location in your browser settings and try again."
+msgstr "Användaren nekade platsåtkomst. Tillåt åtkomst till din plats i webbläsarens inställningar och försök igen."
+
+msgid "View Additional Salary entries"
+msgstr "Visa tilläggslöner"
+
+msgid "Welcome and see off employees"
+msgstr "Välkomna och ta farväl av anställda"
+
+msgid "Whether an employee was present, absent or on leave on a day. See [Attendance](https://docs.frappe.io/hr/attendance)."
+msgstr "Om en anställd var närvarande, frånvarande eller ledig en viss dag. Se [Närvaro](https://docs.frappe.io/hr/attendance)."
+
+msgid "Write an onboarding checklist"
+msgstr "Skriv en checklista för introduktion"
+
+msgid "You are not allowed to create or modify an Expense Claim for Employee {0}"
+msgstr "Du får inte skapa eller ändra en utgiftsersättning för anställd {0}"
+
+msgid "You do not have access to Employee {0}"
+msgstr "Du har inte åtkomst till anställd {0}"
+
+msgid "You haven't created a {0} for {1} yet."
+msgstr "Du har inte skapat någon {0} för {1} ännu."
+
+msgid "goal"
+msgstr "mål"
+
+msgid "goals"
+msgstr "mål"
+
+msgid "the selected company"
+msgstr "det valda bolaget"
+
+msgid "{0} recorded outside shift hours. It will not be considered for attendance."
+msgstr "{0} registrerades utanför skiftets arbetstid. Den räknas inte med i närvaron."
+
+msgid "{0} successful"
+msgstr "{0} lyckades"
+
+msgid "{0} was assigned {1}"
+msgstr "{0} tilldelades {1}"
