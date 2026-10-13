@@ -171,7 +171,7 @@ def _labels(path: str) -> list[str]:
 	if not isinstance(d, dict):
 		return []
 	labels = []
-	if d.get("doctype") in ("Workspace", "Workspace Sidebar", "Desktop Icon"):
+	if d.get("doctype") in ("Workspace", "Workspace Sidebar", "Sidebar", "Dock", "Desktop Icon"):
 		labels += [d.get("label"), d.get("title")]
 	if d.get("doctype") == "DocType":
 		labels.append(d.get("name"))

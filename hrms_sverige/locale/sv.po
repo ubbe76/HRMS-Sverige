@@ -1037,6 +1037,9 @@ msgstr "Utbetalningsdatum för bonus kan inte vara ett datum i det förflutna"
 msgid "Bookkeeping for once-per-site activation telemetry. The document name is the event name, so the primary key makes claiming a milestone atomic across concurrent transactions."
 msgstr "Bokföring av aktiveringstelemetri som skickas en gång per site. Dokumentnamnet är händelsens namn, så primärnyckeln gör att en milstolpe bara kan registreras en gång även vid samtidiga transaktioner."
 
+msgid "Branch"
+msgstr "Filial"
+
 msgid "Branch: {0}"
 msgstr "Filial: {0}"
 
@@ -3575,6 +3578,12 @@ msgstr "Frånvarotilldelning"
 msgid "Leave Allocation Exists"
 msgstr "Frånvarotilldelning finns redan"
 
+msgid "Leave Applications by Type"
+msgstr "Ledighetsansökningar per typ"
+
+msgid "Leave Setup"
+msgstr "Ledighetsinställningar"
+
 msgid "Leave allocation is skipped for {0}, because number of leaves to be allocated is 0."
 msgstr "Frånvarotilldelning hoppas över för {0}, eftersom antalet dagar som ska tilldelas är 0."
 
@@ -3676,6 +3685,9 @@ msgstr "Post i frånvaroreskontran"
 
 msgid "Leave Ledger Entry's To date needs to be after From date. Currently, From Date is {0} and To Date is {1}"
 msgstr "Frånvaroregisterpostens Till-datum måste vara efter Från-datum. Från-datum är för närvarande {0} och Till-datum är {1}"
+
+msgid "Leave for optional holiday"
+msgstr "Ledighet för valfri helgdag"
 
 msgid "Leave of type {0} cannot be longer than {1}."
 msgstr "Ledighet av typen {0} får inte vara längre än {1}."
@@ -3799,6 +3811,9 @@ msgstr "Livscykel"
 
 msgid "Lime"
 msgstr "Lime"
+
+msgid "Limits"
+msgstr "Begränsningar"
 
 msgid "Link the cycle and tag KRA to your goal to update the appraisal's goal score based on the goal progress"
 msgstr "Länka perioden och tagga KRA till ditt mål för att uppdatera bedömningens målpoäng utifrån målets framsteg"
@@ -5861,6 +5876,12 @@ msgstr "Faktisk skiftstart"
 
 msgid "Shift Actual Start Time"
 msgstr "Faktisk starttid för skift"
+
+msgid "Shift Assignments"
+msgstr "Skifttilldelningar"
+
+msgid "Shift Setup"
+msgstr "Skiftinställningar"
 
 msgid "Shift and Attendance"
 msgstr "Skift och närvaro"

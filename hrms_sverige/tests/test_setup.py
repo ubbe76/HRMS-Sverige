@@ -46,6 +46,23 @@ class TestSetupAll(IntegrationTestCase):
 				self.assertEqual(frappe.db.get_value("Desktop Icon", name, "hidden"), 1, name)
 		self.assertEqual(frappe.db.get_value("Workspace", "Leaves", "is_hidden"), 0)
 
+	def test_dolda_i_dockan(self):
+		# Apps-läget (frappe 16.51+): samma delar dolda i HRMS-menyn, övriga synliga och i samma ordning
+		from frappe.desk.doctype.dock.dock import resolve_app_dock
+
+		from hrms_sverige.setup.install import setup_all
+		from hrms_sverige.setup.workspaces import HIDDEN
+
+		fore = [(e["link_type"], e["link_to"]) for e in resolve_app_dock("hrms", gated=False)]
+		setup_all(COMPANY)
+		rail = resolve_app_dock("hrms", gated=False)
+		self.assertEqual([(e["link_type"], e["link_to"]) for e in rail], fore)
+		dolda = {e["link_to"] for e in rail if e["hidden"]}
+		self.assertTrue(set(HIDDEN) & {e["link_to"] for e in rail})
+		self.assertEqual(dolda, set(HIDDEN) & {e["link_to"] for e in rail})
+		self.assertNotIn("Leaves", dolda)
+		self.assertNotIn("Lön och stämpling", dolda)
+
 
 class TestAfterSetupWizard(IntegrationTestCase):
 	"""Vid installation finns inget företag än; helgdagslistor och ledighetsperioder skapas efter wizarden."""
