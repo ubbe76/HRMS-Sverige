@@ -72,3 +72,20 @@ class TestMeny(IntegrationTestCase):
 		)
 		for link_type, link_to in lankar:
 			self.assertTrue(frappe.db.exists(link_type, link_to), link_to)
+
+	def test_dockans_etiketter_oversatta(self):
+		# frappe 16.51 översätter inte dockans titlar; utan ERPNext Sverige gör den här appen det för HRMS
+		from unittest.mock import patch
+
+		from hrms_sverige.boot import oversatt_dockan
+
+		bootinfo = frappe._dict(dock={"hrms": [{"title": "Leaves"}], "erpnext": [{"title": "Stock"}]})
+		previous = frappe.local.lang
+		frappe.local.lang = "sv"
+		try:
+			with patch("frappe.get_installed_apps", return_value=["frappe", "erpnext", "hrms", APP]):
+				oversatt_dockan(bootinfo)
+		finally:
+			frappe.local.lang = previous
+		self.assertNotEqual(bootinfo.dock["hrms"][0]["title"], "Leaves")
+		self.assertEqual(bootinfo.dock["erpnext"][0]["title"], "Stock")
