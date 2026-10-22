@@ -70,7 +70,7 @@ en annan dag, ändras skiftet för de dagarna med en egen skifttilldelning.
 
 Redis (kö och cache) måste vara igång, annars avbryts HRMS installation halvvägs.
 
-Senast testad med frappe 16.51.1, erpnext 16.50.0 och hrms 16.50.0 (2026-10-13). CI kör testerna mot senaste
+Senast testad med frappe 16.52.0, erpnext 16.52.0 och hrms 16.51.0 (2026-10-22). CI kör testerna mot senaste
 `version-16` av frappe, erpnext och hrms vid varje pull request.
 
 ```bash
