@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/images/hrms-sverige-dark.svg">
-    <img alt="HRMS Sverige" src=".github/images/hrms-sverige.svg" width="420">
+    <source media="(prefers-color-scheme: dark)" srcset=".github/images/svensk-hr-dark.svg">
+    <img alt="Svensk HR" src=".github/images/svensk-hr.svg" width="334">
   </picture>
 </p>
 
