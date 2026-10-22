@@ -3932,6 +3932,9 @@ msgstr "Registrerad närvaro, HTML"
 msgid "Marking Attendance"
 msgstr "Registrerar närvaro"
 
+msgid "Masters"
+msgstr "Stamdata"
+
 msgid "Max Amount Eligible For Claim"
 msgstr "Högsta belopp som berättigar till ersättning"
 
